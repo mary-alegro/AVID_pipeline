@@ -1,0 +1,11 @@
+package persistacq;
+
+public class AcqPersist {
+	
+	public AcqPersist() {
+	}
+
+	public void saveParams(String fileName, Object[] obj) {
+		
+	}
+}

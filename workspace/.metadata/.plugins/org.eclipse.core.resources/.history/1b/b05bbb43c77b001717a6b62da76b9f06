@@ -1,0 +1,10 @@
+package persistacq;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.LOCAL_VARIABLE, ElementType.PARAMETER})
+public @interface AcqParam {
+	String id();
+}

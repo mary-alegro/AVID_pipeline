@@ -1,0 +1,103 @@
+2017-08-01T11:07:53.713402 tid3908 [IFO,LogManager] Enabled primary log file C:\Users\Maryana\Projects\workspace\MMStudio2\CoreLogs\CoreLog20170801T110753_pid8300.txt
+2017-08-01T11:07:53.713402 tid3908 [IFO,App] User: Maryana
+2017-08-01T11:07:53.713402 tid3908 [IFO,App] Host: DESKTOP-GNS4JAE
+2017-08-01T11:07:53.713402 tid3908 [IFO,App] MM Studio version: 2.0.x dev
+2017-08-01T11:07:53.713402 tid3908 [IFO,App] MMCore version 8.5.0
+2017-08-01T11:07:53.713402 tid3908 [IFO,App] Device API version 67, Module API version 10
+2017-08-01T11:07:53.713402 tid3908 [IFO,App] Operating System: Windows 8 (amd64) 6.2
+2017-08-01T11:07:53.713402 tid3908 [IFO,App] JVM: Java HotSpot(TM) 64-Bit Server VM, version 1.6.0_45, 64-bit
+2017-08-01T11:07:53.790457 tid3908 [IFO,App] EDTHangLogger: Started monitoring of EDT hangs
+                                   [       ] [heartbeat timeout = 4500 ms, hang check interval = 1000 ms]
+2017-08-01T11:07:54.167224 tid2264 [IFO,App] Searching for plugins in C:\Users\Maryana\Projects\workspace\MMStudio2/mmplugins
+2017-08-01T11:07:54.208253 tid2264 [IFO,App] Searching for plugins in C:\Users\Maryana\Projects\workspace\MMStudio2/mmautofocus
+2017-08-01T11:07:54.208253 tid2264 [IFO,App] Searching for plugins in class loader
+2017-08-01T11:08:06.499489 tid2264 [IFO,App] Found plugin org.micromanager.acquisition.internal.DefaultMDAPlugin@4430d83d
+2017-08-01T11:08:06.501490 tid2264 [IFO,App] Found plugin org.micromanager.display.internal.gearmenu.ExportImagesItem@7aec8784
+2017-08-01T11:08:06.501490 tid2264 [IFO,App] Found plugin org.micromanager.display.internal.gearmenu.LineProfileItem@3eb52a28
+2017-08-01T11:08:06.502491 tid2264 [IFO,App] Found plugin org.micromanager.display.internal.inspector.OverlaysPlugin@31dd7736
+2017-08-01T11:08:06.502991 tid2264 [IFO,App] Found plugin org.micromanager.display.internal.overlays.ScaleBarPlugin@2c3299f6
+2017-08-01T11:08:06.502991 tid2264 [IFO,App] Found plugin org.micromanager.display.internal.overlays.TimestampPlugin@2e19fc25
+2017-08-01T11:08:06.503992 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.AutofocusButtons@4ab83be0
+2017-08-01T11:08:06.503992 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.CloseAllButton@5631573
+2017-08-01T11:08:06.504993 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.ExposureTime@23faa614
+2017-08-01T11:08:06.505493 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.LiveButton@3a87d472
+2017-08-01T11:08:06.505993 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.MDAButtons@29978933
+2017-08-01T11:08:06.506994 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.PresetButton@62d844a9
+2017-08-01T11:08:06.506994 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.RefreshButton@6483e5f1
+2017-08-01T11:08:06.507494 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.SavedMDAButton@56f2c96c
+2017-08-01T11:08:06.507995 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.ScriptButton@7e9f5cc
+2017-08-01T11:08:06.507995 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.ShutterControl@11082823
+2017-08-01T11:08:06.508495 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.SnapButton@21453d72
+2017-08-01T11:08:06.508995 tid2264 [IFO,App] Found plugin org.micromanager.quickaccess.internal.controls.TextLabel@48c5186e
+2017-08-01T11:08:06.508995 tid2264 [IFO,App] Plugin loading took 12341ms
+2017-08-01T11:08:06.508995 tid3908 [IFO,App] Finished waiting for plugins to load
+2017-08-01T11:08:09.587189 tid3908 [IFO,Core] Did unload all devices
+2017-08-01T11:08:09.589190 tid3908 [IFO,Core] Did load device COM3 from SerialManager; label = COM3
+2017-08-01T11:08:09.589690 tid3908 [IFO,Core] Did load device FreeSerialPort from FreeSerialPort; label = FreeSerialPort
+2017-08-01T11:08:09.591692 tid3908 [WRN,Core:dev:Camera-1] Requested device named "Camera-1" but the actual device is named "#4&2eefdbe7&0&0001#{6994ad04-93ef-11"
+2017-08-01T11:08:09.591692 tid3908 [IFO,Core] Did load device Camera-1 from PVCAM; label = Camera-1
+2017-08-01T11:08:09.591692 tid3908 [IFO,Core] Will initialize 3 devices
+2017-08-01T11:08:09.591692 tid3908 [IFO,Core] Will initialize device COM3
+2017-08-01T11:08:09.594694 tid3908 [IFO,Core] Did initialize device COM3
+2017-08-01T11:08:09.594694 tid3908 [IFO,Core] Will initialize device FreeSerialPort
+2017-08-01T11:08:09.595194 tid3908 [IFO,Core] Did initialize device FreeSerialPort
+2017-08-01T11:08:09.595194 tid3908 [IFO,Core] Will initialize device Camera-1
+2017-08-01T11:08:09.795336 tid3908 [IFO,dev:Camera-1] [PVCAM] ERR: pl_get_param for PARAM_FRAME_BUFFER_SIZE ATTR_CURRENT failed, pvErr:49, pvMsg:'Camera has not been configured for acquisition (C0_ACQ_NOT_CONFIGURED)' [PVCAMUniversal.cpp(299)]
+2017-08-01T11:08:09.809847 tid3908 [IFO,dev:Camera-1] Device adapter requests invalid values ( 0, 0) for property: CircularBufferFrameCount
+2017-08-01T11:08:09.824857 tid3908 [IFO,Core] Did initialize device Camera-1
+2017-08-01T11:08:09.824857 tid3908 [IFO,Core] Default camera set to Camera-1
+2017-08-01T11:08:09.824857 tid3908 [IFO,Core] Finished initializing 3 devices
+2017-08-01T11:08:09.824857 tid3908 [IFO,Core] Default camera set to Camera-1
+2017-08-01T11:08:09.827860 tid3908 [IFO,Core] Did update system state cache
+2017-08-01T11:08:10.211632 tid3908 [IFO,App] Error: Failed to find Script Panel Beanshell startup script
+2017-08-01T11:08:10.956161 tid3908 [IFO,App] Rebuilding config group table
+2017-08-01T11:08:10.956161 tid3908 [IFO,App] Finished rebuilding config group table
+2017-08-01T11:08:11.000193 tid3908 [IFO,App] Startup script (C:\Users\Maryana\Projects\workspace\MMStudio2\MMStartup.bsh) not present
+2017-08-01T11:08:11.000193 tid3908 [IFO,App] Updating GUI; config pad = true; from cache = false
+2017-08-01T11:08:11.004696 tid3908 [IFO,App] Rebuilding config group table
+2017-08-01T11:08:11.004696 tid3908 [IFO,App] Finished rebuilding config group table
+2017-08-01T11:08:11.007699 tid3908 [IFO,Core] Did update system state cache
+2017-08-01T11:08:11.007699 tid3908 [IFO,App] Finished updating GUI
+2017-08-01T11:08:13.724629 tid8728 [IFO,dev:Camera-1] Device adapter requests invalid values ( 0, 0) for property: CircularBufferFrameCount
+2017-08-01T11:08:22.185142 tid8728 [IFO,dev:Camera-1] Device adapter requests invalid values ( 0, 0) for property: CircularBufferFrameCount
+2017-08-01T11:08:26.855961 tid8728 [IFO,App] Setting value ON at row 27
+2017-08-01T11:08:26.855961 tid8728 [IFO,App] Camera-1/Color:ON
+2017-08-01T11:08:26.856462 tid8728 [IFO,Core] Did update system state cache
+2017-08-01T11:08:26.859964 tid8728 [IFO,App] Updating GUI; config pad = true; from cache = true
+2017-08-01T11:08:26.860464 tid8728 [IFO,App] Rebuilding config group table
+2017-08-01T11:08:26.860464 tid8728 [IFO,App] Finished rebuilding config group table
+2017-08-01T11:08:27.233729 tid8728 [IFO,dev:Camera-1] Device adapter requests invalid values ( 0, 0) for property: CircularBufferFrameCount
+2017-08-01T11:08:27.364823 tid8728 [IFO,Core] Did update system state cache
+2017-08-01T11:08:27.370327 tid8728 [IFO,App] Updating GUI; config pad = true; from cache = false
+2017-08-01T11:08:27.371327 tid8728 [IFO,App] Rebuilding config group table
+2017-08-01T11:08:27.371327 tid8728 [IFO,App] Finished rebuilding config group table
+2017-08-01T11:08:27.373829 tid8728 [IFO,Core] Did update system state cache
+2017-08-01T11:08:27.378833 tid8728 [IFO,App] Finished updating GUI
+2017-08-01T11:08:27.385838 tid8728 [IFO,App] Finished updating GUI
+2017-08-01T11:09:02.104014 tid8728 [IFO,App] Setting value 2.95 at row 31
+2017-08-01T11:09:02.104515 tid8728 [IFO,App] Camera-1/Color - Blue scale:2.95
+2017-08-01T11:09:02.105015 tid8728 [IFO,Core] Did update system state cache
+2017-08-01T11:09:02.108518 tid8728 [IFO,App] Updating GUI; config pad = true; from cache = true
+2017-08-01T11:09:02.109018 tid8728 [IFO,App] Rebuilding config group table
+2017-08-01T11:09:02.109018 tid8728 [IFO,App] Finished rebuilding config group table
+2017-08-01T11:09:02.525313 tid8728 [IFO,dev:Camera-1] Device adapter requests invalid values ( 0, 0) for property: CircularBufferFrameCount
+2017-08-01T11:09:02.530818 tid8728 [IFO,App] Finished updating GUI
+2017-08-01T11:09:06.480124 tid8728 [IFO,App] Setting value 1.08 at row 33
+2017-08-01T11:09:06.480625 tid8728 [IFO,App] Camera-1/Color - Red scale:1.08
+2017-08-01T11:09:06.481125 tid8728 [IFO,Core] Did update system state cache
+2017-08-01T11:09:06.484127 tid8728 [IFO,App] Updating GUI; config pad = true; from cache = true
+2017-08-01T11:09:06.485128 tid8728 [IFO,App] Rebuilding config group table
+2017-08-01T11:09:06.485128 tid8728 [IFO,App] Finished rebuilding config group table
+2017-08-01T11:09:07.061537 tid8728 [IFO,dev:Camera-1] Device adapter requests invalid values ( 0, 0) for property: CircularBufferFrameCount
+2017-08-01T11:09:07.066041 tid8728 [IFO,App] Finished updating GUI
+2017-08-01T11:09:21.488290 tid8728 [IFO,dev:Camera-1] Device adapter requests invalid values ( 0, 0) for property: CircularBufferFrameCount
+2017-08-01T11:09:21.490792 tid8728 [IFO,Core] Did update system state cache
+2017-08-01T11:09:21.495795 tid8728 [IFO,App] Updating GUI; config pad = true; from cache = false
+2017-08-01T11:09:21.496796 tid8728 [IFO,App] Rebuilding config group table
+2017-08-01T11:09:21.496796 tid8728 [IFO,App] Finished rebuilding config group table
+2017-08-01T11:09:21.499298 tid8728 [IFO,Core] Did update system state cache
+2017-08-01T11:09:21.504301 tid8728 [IFO,App] Finished updating GUI
+2017-08-01T11:10:17.741268 tid8728 [IFO,App] EDTHangLogger: Stopping monitoring of EDT hangs
+2017-08-01T11:10:17.963927 tid8728 [IFO,Core] Did unload all devices
+2017-08-01T11:10:17.963927 tid8728 [IFO,Core] System reset
+2017-08-01T11:10:17.995449 tid8728 [IFO,Core] Core session ended

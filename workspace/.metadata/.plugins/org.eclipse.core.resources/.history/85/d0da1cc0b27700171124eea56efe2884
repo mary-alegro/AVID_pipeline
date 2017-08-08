@@ -1,0 +1,18 @@
+package calibration;
+
+public class WBSettings {
+	
+	private String label;
+	private double R;
+	private double G;
+	private double B;
+	
+	public WBSettings(String s, double r, double g, double b) {
+		this.label = s;
+		this.R = r;
+		this.G = g;
+		this.B = b;
+	}
+	
+
+}

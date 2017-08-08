@@ -1,0 +1,577 @@
+package SlideScan;
+
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+
+import org.micromanager.Studio;
+
+import calibration.DarkFrameWindow;
+import calibration.LensInfo;
+import calibration.WBSettings;
+import mmcorej.CMMCore;
+
+public class SlideScanUI {
+
+	private JFrame frmUcsfSlideScan;
+	
+	//Plugin attributes
+	private Studio gui_;
+	private CMMCore core_;
+	private SlideScan scanCtr;
+	private boolean isColorRGB;
+	
+	
+	
+    private double[] FOV = new double[2];
+    private int[] A = new int[2];
+    private int[] B  = new int[2];
+    private int overlap = 15;
+    private Thread scanWorker; 
+    protected LensInfo lensInfo;
+    protected WBSettings WBInfo;
+    
+    
+    private JTextField textFOV_W;
+    private JTextField textFOV_H;
+    private JTextField textOverlap;
+    private JTextField textImgFolder;
+    private JTextField textPixRes;
+    private JTextField textRed;
+    private JTextField textGreen;
+    private JTextField textBlue;
+    private JLabel lblNumTiles;
+    private JComboBox comboColorMode;
+    private JComboBox comboWBPreset;
+    private JComboBox comboLens;
+    private JTextField textDarksDir;
+    private JTextField textFlatsDir;
+    private JCheckBox chkSaveRaw;
+    private JCheckBox chkSaveAutostretch;
+    private JCheckBox chkCorrectField;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					SlideScanUI window = new SlideScanUI();
+					window.frmUcsfSlideScan.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	public SlideScanUI(Studio gui) throws Exception{
+		gui_ = gui;
+        try {
+            core_ = gui_.getCMMCore();
+        } catch (Exception ex) {
+            throw new Exception("SlideScan plugin could not get MMCore");
+        }
+        //Init GUI
+		initialize();
+        initCombos();
+        setColorModeOn(true);
+        getComboWBPreset().setSelectedIndex(0);
+        getComboLens().setSelectedIndex(0);
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public SlideScanUI() {
+		initialize();
+	}
+	
+	public JFrame getFrame() {
+		return this.frmUcsfSlideScan;
+	}
+	
+	public void setControler(SlideScan ctr) {
+		scanCtr = ctr;
+	}
+	
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frmUcsfSlideScan = new JFrame();
+		frmUcsfSlideScan.setTitle("UCSF Slide Scan v0.01");
+		frmUcsfSlideScan.setBounds(100, 100, 451, 487);
+		frmUcsfSlideScan.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmUcsfSlideScan.getContentPane().setLayout(null);
+		
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(0, 36, 433, 401);
+		frmUcsfSlideScan.getContentPane().add(tabbedPane);
+		
+		JPanel panelCamLens = new JPanel();
+		tabbedPane.addTab("Camera/Lens", null, panelCamLens, null);
+		panelCamLens.setLayout(null);
+		
+		JLabel lblLensFovmm = new JLabel("Lens FOV (mm):");
+		lblLensFovmm.setBounds(68, 180, 105, 14);
+		panelCamLens.add(lblLensFovmm);
+		
+		JLabel label_1 = new JLabel("W:");
+		label_1.setBounds(183, 180, 14, 14);
+		panelCamLens.add(label_1);
+		
+		textFOV_W = new JTextField();
+		textFOV_W.setColumns(10);
+		textFOV_W.setBounds(207, 177, 67, 20);
+		panelCamLens.add(textFOV_W);
+		
+		JLabel label_2 = new JLabel("H:");
+		label_2.setBounds(284, 180, 25, 14);
+		panelCamLens.add(label_2);
+		
+		textFOV_H = new JTextField();
+		textFOV_H.setColumns(10);
+		textFOV_H.setBounds(296, 177, 67, 20);
+		panelCamLens.add(textFOV_H);
+		
+		JLabel lblPixelResolutionmm = new JLabel("Pixel resolution (mm):");
+		lblPixelResolutionmm.setBounds(68, 208, 155, 14);
+		panelCamLens.add(lblPixelResolutionmm);
+		
+		textPixRes = new JTextField();
+		textPixRes.setBounds(207, 205, 67, 20);
+		panelCamLens.add(textPixRes);
+		textPixRes.setColumns(10);
+		
+		JLabel lblColorMode = new JLabel("Color mode:");
+		lblColorMode.setBounds(68, 251, 58, 14);
+		panelCamLens.add(lblColorMode);
+		
+		JLabel lblRed = new JLabel("Red:");
+		lblRed.setBounds(24, 337, 46, 14);
+		panelCamLens.add(lblRed);
+		
+		JLabel lblGree = new JLabel("Green:");
+		lblGree.setBounds(162, 337, 46, 14);
+		panelCamLens.add(lblGree);
+		
+		textRed = new JTextField();
+		textRed.setEnabled(false);
+		textRed.setBounds(68, 334, 67, 20);
+		panelCamLens.add(textRed);
+		textRed.setColumns(10);
+		
+		textGreen = new JTextField();
+		textGreen.setEnabled(false);
+		textGreen.setBounds(207, 334, 67, 20);
+		panelCamLens.add(textGreen);
+		textGreen.setColumns(10);
+		
+		JLabel lblBlue = new JLabel("Blue:");
+		lblBlue.setBounds(303, 337, 46, 14);
+		panelCamLens.add(lblBlue);
+		
+		textBlue = new JTextField();
+		textBlue.setEnabled(false);
+		textBlue.setBounds(340, 334, 67, 20);
+		panelCamLens.add(textBlue);
+		textBlue.setColumns(10);
+		
+		JTextPane textCameraInfo = new JTextPane();
+		textCameraInfo.setBounds(10, 11, 408, 96);
+		panelCamLens.add(textCameraInfo);
+		
+		comboColorMode = new JComboBox();
+		comboColorMode.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int select = comboColorMode.getSelectedIndex();
+				if(select == 0) { //GRY
+					isColorRGB = false;
+					textRed.setEnabled(false);
+					textGreen.setEnabled(false);
+					textBlue.setEnabled(false);
+					comboWBPreset.setEnabled(false);
+					scanCtr.setColorOFF();
+				}else if(select == 1) { //RGB
+					isColorRGB = true;
+					textRed.setEnabled(true);
+					textGreen.setEnabled(true);
+					textBlue.setEnabled(true);
+					comboWBPreset.setEnabled(true);										
+					scanCtr.setColorON(WBInfo.getR(), WBInfo.getG(), WBInfo.getB());
+				}
+			}
+		});
+		comboColorMode.setModel(new DefaultComboBoxModel(new String[] {"GRY", "RGB"}));
+		comboColorMode.setBounds(207, 248, 67, 20);
+		panelCamLens.add(comboColorMode);
+		
+		comboLens = new JComboBox();
+		comboLens.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				LensInfo lens = (LensInfo)comboLens.getSelectedItem();
+				textFOV_W.setText(lens.getFOV()[0]+"");
+				textFOV_H.setText(lens.getFOV()[1]+"");
+				lensInfo = lens;
+			}
+		});
+		comboLens.setBounds(80, 129, 327, 20);
+		panelCamLens.add(comboLens);
+		
+		JLabel lblLens = new JLabel("Lens:");
+		lblLens.setBounds(24, 132, 46, 14);
+		panelCamLens.add(lblLens);
+		
+		JLabel lblPresets = new JLabel("Presets:");
+		lblPresets.setBounds(24, 297, 46, 14);
+		panelCamLens.add(lblPresets);
+		
+		comboWBPreset = new JComboBox();
+		comboWBPreset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WBSettings wb = (WBSettings)comboWBPreset.getSelectedItem();
+				textRed.setText(wb.getR()+"");
+				textGreen.setText(wb.getG()+"");
+				textBlue.setText(wb.getB()+"");
+				WBInfo = wb;
+				
+				double r = 1.0;
+				double g = 1.0;
+				double b = 1.0;
+				if(wb != null) {
+					r = wb.getR();
+					g = wb.getG();
+					b = wb.getB();
+				}
+				scanCtr.setColorON(r,g,b);
+			}
+		});
+		comboWBPreset.setBounds(80, 294, 327, 20);
+		panelCamLens.add(comboWBPreset);
+		
+		JPanel panelCalibration = new JPanel();
+		tabbedPane.addTab("Calibration", null, panelCalibration, null);
+		panelCalibration.setLayout(null);
+		
+		JLabel lblFlatfieldCorrection = new JLabel("Flat-field Correction");
+		lblFlatfieldCorrection.setBounds(10, 11, 134, 14);
+		panelCalibration.add(lblFlatfieldCorrection);
+		
+		JLabel lblNewLabel = new JLabel("Dark-frames:");
+		lblNewLabel.setBounds(10, 46, 104, 14);
+		panelCalibration.add(lblNewLabel);
+		
+		textDarksDir = new JTextField();
+		textDarksDir.setColumns(10);
+		textDarksDir.setBounds(87, 43, 254, 20);
+		panelCalibration.add(textDarksDir);
+		
+		JButton btnOpenDarkDir = new JButton("Open...");
+		btnOpenDarkDir.setBounds(351, 42, 67, 23);
+		panelCalibration.add(btnOpenDarkDir);
+		
+		JButton btnRunCompDark = new JButton("Create master dark");
+		btnRunCompDark.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnRunCompDark.setBounds(138, 74, 151, 23);
+		panelCalibration.add(btnRunCompDark);
+		
+		JLabel lblFlatframes = new JLabel("Flat-frames:");
+		lblFlatframes.setBounds(10, 112, 104, 14);
+		panelCalibration.add(lblFlatframes);
+		
+		textFlatsDir = new JTextField();
+		textFlatsDir.setColumns(10);
+		textFlatsDir.setBounds(87, 109, 254, 20);
+		panelCalibration.add(textFlatsDir);
+		
+		JButton button = new JButton("Open...");
+		button.setBounds(351, 108, 67, 23);
+		panelCalibration.add(button);
+		
+		JButton btnCreateMasterFlat = new JButton("Create master flat");
+		btnCreateMasterFlat.setBounds(138, 140, 151, 23);
+		panelCalibration.add(btnCreateMasterFlat);
+		
+		JPanel panelAcquisition = new JPanel();
+		tabbedPane.addTab("Acquisition", null, panelAcquisition, null);
+		panelAcquisition.setLayout(null);
+		
+		JLabel label_3 = new JLabel("Overlap (%):");
+		label_3.setBounds(29, 80, 67, 22);
+		panelAcquisition.add(label_3);
+		
+		textOverlap = new JTextField();
+		textOverlap.setColumns(10);
+		textOverlap.setBounds(140, 81, 54, 20);
+		panelAcquisition.add(textOverlap);
+		
+		final JLabel lblCoordsA = new JLabel("000");
+		lblCoordsA.setBounds(140, 147, 122, 14);
+		panelAcquisition.add(lblCoordsA);
+		
+		JButton btnSetA = new JButton("Set A");
+		btnSetA.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					int A[] = scanCtr.setCoordsA();
+					String pos = "X: " + A[0] + "Y: " + A[1];
+					lblCoordsA.setText(pos);
+				}catch(Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		btnSetA.setBounds(29, 113, 89, 23);
+		panelAcquisition.add(btnSetA);
+		
+		final JLabel lblCoordsB = new JLabel("000");
+		lblCoordsB.setBounds(140, 164, 122, 14);
+		panelAcquisition.add(lblCoordsB);
+		
+		JButton btnSetB = new JButton("Set B");
+		btnSetB.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					int B[] = scanCtr.setCoordsB();
+					String pos = "X: " + B[0] + "Y: " + B[1];
+					lblCoordsB.setText(pos);
+				}catch(Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		btnSetB.setBounds(140, 113, 89, 23);
+		panelAcquisition.add(btnSetB);
+		
+		JLabel label_4 = new JLabel("Upper left corner (A):");
+		label_4.setBounds(29, 147, 111, 14);
+		panelAcquisition.add(label_4);
+		
+
+		
+		JLabel label_6 = new JLabel("Lower right corner (B):");
+		label_6.setBounds(29, 164, 111, 14);
+		panelAcquisition.add(label_6);
+		
+
+		
+		JLabel label_8 = new JLabel("Estimated num. tiles:");
+		label_8.setBounds(29, 248, 122, 14);
+		panelAcquisition.add(label_8);
+		
+		lblNumTiles = new JLabel("...");
+		lblNumTiles.setBounds(146, 248, 251, 14);
+		panelAcquisition.add(lblNumTiles);
+		
+		JButton btnFindHome = new JButton("Find Home");
+		btnFindHome.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				scanCtr.getStageController().findHome();
+			}
+		});
+		btnFindHome.setBounds(230, 301, 89, 46);
+		panelAcquisition.add(btnFindHome);
+		
+		JButton btnScan = new JButton("Scan");
+		btnScan.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				double FOV[] = new double[2];
+				FOV[0] = Double.parseDouble(textFOV_W.getText());
+				FOV[1] = Double.parseDouble(textFOV_H.getText());
+				String folder = textImgFolder.getText();
+				int over = Integer.parseInt(textOverlap.getText());
+				
+//		    	double[] FOV = {18.78,15.37};
+//		    	int[] A = {-370340,486093};
+//		    	int[] B = {-271876,481792};
+//		    	int over = 15;
+//		    	scanCtr.setA(A[0],A[1]);
+//		    	scanCtr.setB(B[0],B[1]);
+//				String folder = "C:\\Users\\Maryana\\Desktop\\test_stitch\\tif2";
+		    	
+				scanCtr.acquireImages(FOV, over, folder);
+			}
+		});
+		btnScan.setBounds(10, 301, 89, 46);
+		panelAcquisition.add(btnScan);
+		
+		JButton btnCancel = new JButton("Cancel");
+		btnCancel.setBounds(329, 301, 89, 46);
+		panelAcquisition.add(btnCancel);
+		
+		JLabel lblImageFolder = new JLabel("Image folder:");
+		lblImageFolder.setBounds(10, 26, 67, 14);
+		panelAcquisition.add(lblImageFolder);
+		
+		textImgFolder = new JTextField();
+		textImgFolder.setBounds(87, 23, 254, 20);
+		panelAcquisition.add(textImgFolder);
+		textImgFolder.setColumns(10);
+		
+		JButton btnOpenImgDir = new JButton("Open...");
+		btnOpenImgDir.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setDialogTitle("Choose destination directory.");
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				if(chooser.showOpenDialog(getFrame()) == JFileChooser.APPROVE_OPTION) {
+					File folder = chooser.getSelectedFile();
+					textImgFolder.setText(folder.getPath());
+				}
+			}
+		});
+		btnOpenImgDir.setBounds(351, 22, 67, 23);
+		panelAcquisition.add(btnOpenImgDir);
+		
+		JButton btnTestShot = new JButton("Test Shot");
+		btnTestShot.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String folder = textImgFolder.getText();
+				scanCtr.shotTestImage(folder);
+			}
+		});
+		btnTestShot.setBounds(131, 301, 89, 46);
+		panelAcquisition.add(btnTestShot);
+		
+		chkSaveRaw = new JCheckBox("Save as raw");
+		chkSaveRaw.setSelected(true);
+		chkSaveRaw.setBounds(282, 80, 97, 23);
+		panelAcquisition.add(chkSaveRaw);
+		
+		chkSaveAutostretch = new JCheckBox("Save autostretch");
+		chkSaveAutostretch.setBounds(282, 113, 136, 23);
+		panelAcquisition.add(chkSaveAutostretch);
+		
+		chkCorrectField = new JCheckBox("Do flat-field correction");
+		chkCorrectField.setBounds(282, 143, 136, 23);
+		panelAcquisition.add(chkCorrectField);
+		
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.setBounds(0, 0, 433, 21);
+		frmUcsfSlideScan.getContentPane().add(menuBar);
+		
+		JMenu mnNewMenu = new JMenu("File...");
+		menuBar.add(mnNewMenu);
+		
+		JMenuItem mntmSaveAcquisition = new JMenuItem("Save project...");
+		mnNewMenu.add(mntmSaveAcquisition);
+		
+		JMenu mnTools = new JMenu("Tools");
+		menuBar.add(mnTools);
+		
+		JMenuItem mntmCreateDarkFrames = new JMenuItem("Create dark frames");
+		mntmCreateDarkFrames.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DarkFrameWindow dFrame = new DarkFrameWindow(scanCtr);	
+			}
+		});
+		mnTools.add(mntmCreateDarkFrames);
+	}
+	
+	public void setNumTiles(String str) {
+		lblNumTiles.setText(str);
+	}
+	
+	public String getDestFolder() {
+		return textImgFolder.getText();
+	}
+	
+	public boolean isColorModeOn() {
+		return isColorRGB;
+	}
+	
+	public void setColorModeOn(boolean mode) {
+		if(mode) {
+			getComboColorMode().setSelectedIndex(1);
+			isColorRGB = true;
+		}else {
+			getComboColorMode().setSelectedIndex(0);
+			isColorRGB = false;
+		}
+	}
+	
+	public void setWorker(Thread t) {
+		scanWorker = t;
+	}
+	
+	private JComboBox getComboColorMode() {
+		return comboColorMode;
+	}
+	
+	private void initCombos() {
+		WBSettings gallo2 = new WBSettings("Gallo 2", 2.35, 0.90, 1.25);
+		WBSettings gallo1 = new WBSettings("Gallo 1", 2.71, 1.00, 1.36);
+		WBSettings tau = new WBSettings("TAU 1", 2.50, 1.00, 1.66);
+		WBSettings chart = new WBSettings("Test Chart", 1.08, 1.00, 2.95);
+		getComboWBPreset().addItem(gallo1);
+		getComboWBPreset().addItem(gallo2);
+		getComboWBPreset().addItem(tau);
+		getComboWBPreset().addItem(chart);
+		
+		LensInfo lensLighbox = new LensInfo("50mm Lighbox", "Rodenstock", 88, 17.39, 15.37);	
+		getComboLens().addItem(lensLighbox);
+		
+	}
+	public JComboBox getComboWBPreset() {
+		return comboWBPreset;
+	}
+	public JComboBox getComboLens() {
+		return comboLens;
+	}
+	public JCheckBox getChkSaveRaw() {
+		return chkSaveRaw;
+	}
+	public JCheckBox getChkSaveAutostrech() {
+		return chkSaveAutostretch;
+	}
+	public JCheckBox getChkCorrectField() {
+		return chkCorrectField;
+	}
+	public boolean shouldSaveRaw() {
+		return getChkSaveRaw().isSelected();
+	}
+	public boolean shouldSaveAuto() {
+		return getChkSaveAutostrech().isSelected();
+	}
+	public boolean shouldCorrectField() {
+		return getChkCorrectField().isSelected();
+	}
+	
+	public LensInfo getLensInfo() {
+		return this.lensInfo;
+	}
+	
+	public WBSettings getWBInfo(){
+		return this.WBInfo;
+	}
+}

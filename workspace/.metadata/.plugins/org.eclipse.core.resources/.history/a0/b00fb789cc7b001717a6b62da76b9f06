@@ -1,0 +1,14 @@
+package persistacq;
+
+public class AcqParam {
+	
+	private String id;
+	private Object data;
+	
+	public AcqParam(String id, Object d) {
+		this.id = id;
+		this.data = d;
+	}
+
+	
+}

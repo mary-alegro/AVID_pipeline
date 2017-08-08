@@ -1,0 +1,123 @@
+package SlideScan;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.micromanager.MenuPlugin;
+import org.micromanager.Studio;
+import org.micromanager.data.Coords;
+import org.micromanager.data.Datastore;
+import org.micromanager.data.Image;
+import org.scijava.plugin.Plugin;
+
+import ij.IJ;
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
+
+/**
+ *
+ * @author Maryana Alegro
+ */
+@Plugin(type = MenuPlugin.class)
+public class SlideScan implements MenuPlugin {
+
+    public static String menuName = "Large-Slide Scan";
+    public static String tooltipDescription = "Controls the Large Slide Scanner";
+    Studio studio_;
+    private SlideScanUI mWindow_;
+    private StageController stageHelper;
+    private CameraController cameraHelper;
+    
+
+    @Override
+    public void setContext(Studio app) {
+        studio_ = app;
+    }
+
+    @Override
+    public String getSubMenu() {
+        return "Device Control";
+    }
+
+    @Override
+    public void onPluginSelected() {
+        try {
+
+            mWindow_ = new SlideScanUI(studio_);
+            studio_.events().registerForEvents(mWindow_);
+            stageHelper = new StageController(studio_,this);
+            mWindow_.setControler(this);
+            cameraHelper = new CameraController(studio_);
+            
+            //stageHelper.resetStage();
+            
+        } catch (Exception e) {
+            Logger.getLogger(SlideScanUI.class.getName()).log(Level.SEVERE, null, e);
+            studio_.logs().showError(e);
+        }
+        //wbForm_.setVisible(true);
+        mWindow_.getFrame().setVisible(true);
+    }
+
+
+    public StageController getSerialHelper() {
+    	return stageHelper;
+    }
+    
+    
+    @Override
+    public String getName() {
+        return menuName;
+    }
+
+    @Override
+    public String getHelpText() {
+        return "Controls the Large Slide Scanner";
+    }
+
+    @Override
+    public String getVersion() {
+        return "0.01";
+    }
+
+    @Override
+    public String getCopyright() {
+        return "(C) 2017 UCSF Grinberg Lab";
+    }
+    
+    public void acquireImages(double[] FOV, int[] A, int[] B, int overlap)  {
+    	stageHelper.runAcquisition(FOV, A, B, overlap,cameraHelper);
+//    	Thread worker = new ScanWorker("Scanworker1",  FOV, A, B, overlap);
+//    	mWindow_.setWorker(worker);
+//    	worker.start();
+    }
+    
+    public void setNumTiles(String str) {
+    	mWindow_.setNumTiles(str);
+    }
+    
+    
+    //
+    //image acquisition thread
+    //
+    private class ScanWorker extends Thread{
+        private double[] FOV;
+        private int[] A;
+        private int[] B;
+        private int overlap;    	
+    	ScanWorker(String name,double[]FOV,int[]A,int[]B,int olap){
+    		super(name);
+    		this.FOV = FOV;
+    		this.A = A;
+    		this.B = B;
+    		this.overlap = olap;
+    		
+    	}
+    	public void run() {
+    		stageHelper.runAcquisition(FOV, A, B, overlap,cameraHelper);
+    	}
+
+    }
+
+}

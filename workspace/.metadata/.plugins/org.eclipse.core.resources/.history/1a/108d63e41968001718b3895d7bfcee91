@@ -1,0 +1,82 @@
+package SlideScan;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.micromanager.MenuPlugin;
+import org.micromanager.Studio;
+import org.micromanager.data.Coords;
+import org.micromanager.data.Datastore;
+import org.micromanager.data.Image;
+import org.scijava.plugin.Plugin;
+
+import ij.IJ;
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
+
+/**
+ *
+ * @author Maryana
+ */
+@Plugin(type = MenuPlugin.class)
+public class SlideScanControler implements MenuPlugin {
+
+    public static String menuName = "Large Slide Scan";
+    public static String tooltipDescription = "Controls the Large Slide Scanner";
+    Studio studio_;
+    private SlideScanUI mWindow_;
+    private SerialHelper sHelper;
+    
+
+    @Override
+    public void setContext(Studio app) {
+        studio_ = app;
+    }
+
+    @Override
+    public String getSubMenu() {
+        return "Device Control";
+    }
+
+    @Override
+    public void onPluginSelected() {
+        try {
+
+            mWindow_ = new SlideScanUI(studio_);
+            studio_.events().registerForEvents(mWindow_);
+            sHelper = new SerialHelper(studio_);
+            
+            
+        } catch (Exception e) {
+            Logger.getLogger(SlideScanUI.class.getName()).log(Level.SEVERE, null, e);
+            studio_.logs().showError(e);
+        }
+        //wbForm_.setVisible(true);
+        mWindow_.getFrame().setVisible(true);
+    }
+
+
+    
+    
+    @Override
+    public String getName() {
+        return menuName;
+    }
+
+    @Override
+    public String getHelpText() {
+        return "Controls the Large Slide Scanner";
+    }
+
+    @Override
+    public String getVersion() {
+        return "0.01";
+    }
+
+    @Override
+    public String getCopyright() {
+        return "(C) 2017 UCSF Grinberg Lab";
+    }
+
+}

@@ -1,0 +1,32 @@
+package persistacq;
+
+import java.io.Serializable;
+
+public class AcqParam implements Serializable {
+	
+	private String id;
+	private Object data;
+	
+	public AcqParam(String id, Object d) {
+		this.id = id;
+		this.data = d;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
+
+	
+}

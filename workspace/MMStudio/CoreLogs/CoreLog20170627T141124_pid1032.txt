@@ -1,0 +1,34 @@
+2017-06-27T14:11:24.189972 tid1340 [IFO,LogManager] Enabled primary log file C:\Users\Maryana\Projects\workspace\MMStudio\CoreLogs\CoreLog20170627T141124_pid1032.txt
+2017-06-27T14:11:24.189972 tid1340 [IFO,App] EDTHangLogger: Started monitoring of EDT hangs
+                                   [       ] [heartbeat timeout = 4500 ms, hang check interval = 1000 ms]
+2017-06-27T14:11:24.189972 tid1340 [IFO,App] User: Maryana
+2017-06-27T14:11:24.189972 tid1340 [IFO,App] Host: DESKTOP-GNS4JAE
+2017-06-27T14:11:24.189972 tid1340 [IFO,App] MM Studio version: 1.4.x dev
+2017-06-27T14:11:24.189972 tid1340 [IFO,App] MMCore version 8.5.0
+2017-06-27T14:11:24.189972 tid1340 [IFO,App] Device API version 67, Module API version 10
+2017-06-27T14:11:24.189972 tid1340 [IFO,App] Operating System: Windows 8 (amd64) 6.2
+2017-06-27T14:11:24.189972 tid1340 [IFO,App] JVM: Java HotSpot(TM) 64-Bit Server VM, version 1.6.0_45, 64-bit
+2017-06-27T14:11:26.769066 tid1340 [IFO,App] Finished waiting for plugins to load
+2017-06-27T14:11:26.785640 tid1340 [IFO,Core] Did unload all devices
+2017-06-27T14:11:26.800983 tid1340 [WRN,Core:dev:Camera-1] Requested device named "Camera-1" but the actual device is named ""
+2017-06-27T14:11:26.800983 tid1340 [IFO,Core] Did load device Camera-1 from PVCAM; label = Camera-1
+2017-06-27T14:11:26.800983 tid1340 [IFO,Core] Will initialize 1 devices
+2017-06-27T14:11:26.800983 tid1340 [IFO,Core] Will initialize device Camera-1
+2017-06-27T14:11:27.011849 tid1340 [IFO,dev:Camera-1] [PVCAM] ERR: pl_get_param for PARAM_FRAME_BUFFER_SIZE ATTR_CURRENT failed, pvErr:49, pvMsg:'Camera has not been configured for acquisition (C0_ACQ_NOT_CONFIGURED)' [PVCAMUniversal.cpp(299)]
+2017-06-27T14:11:27.025859 tid1340 [IFO,dev:Camera-1] Device adapter requests invalid values ( 0, 0) for property: CircularBufferFrameCount
+2017-06-27T14:11:27.849445 tid1340 [IFO,dev:Camera-1] Device adapter requests invalid values ( 0, 0) for property: CircularBufferFrameCount
+2017-06-27T14:11:27.957522 tid1340 [IFO,Core] Did initialize device Camera-1
+2017-06-27T14:11:27.957522 tid1340 [IFO,Core] Default camera set to Camera-1
+2017-06-27T14:11:27.957522 tid1340 [IFO,Core] Finished initializing 1 devices
+2017-06-27T14:11:27.957522 tid1340 [IFO,Core] Default camera set to Camera-1
+2017-06-27T14:11:27.960524 tid1340 [IFO,Core] Did update system state cache
+2017-06-27T14:11:28.003555 tid1340 [IFO,App] Updating GUI; config pad = true; from cache = false
+2017-06-27T14:11:28.007557 tid1340 [IFO,Core] Did update system state cache
+2017-06-27T14:11:28.007557 tid1340 [IFO,App] Finished updating GUI
+2017-06-27T14:11:28.010560 tid1340 [IFO,App] Startup script file (C:\Users\Maryana\Projects\workspace\MMStudio\MMStartup.bsh) not present.
+2017-06-27T14:11:28.156663 tid1340 [IFO,App] Rebuilding config group table
+2017-06-27T14:11:28.157664 tid1340 [IFO,App] Finished rebuilding config group table
+2017-06-27T14:11:38.022679 tid8140 [IFO,App] EDTHangLogger: Stopping monitoring of EDT hangs
+2017-06-27T14:11:38.023680 tid8140 [IFO,Core] Did unload all devices
+2017-06-27T14:11:38.023680 tid8140 [IFO,Core] System reset
+2017-06-27T14:11:38.034688 tid8140 [IFO,Core] Core session ended

@@ -1,0 +1,51 @@
+package SlideScan;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.micromanager.Studio;
+
+import mmcorej.CMMCore;
+import mmcorej.CharVector;
+
+public class SerialHelper {
+	
+	private CMMCore core;
+	private Studio studio;
+	private List<String> ports = new ArrayList<String>();
+	private String port = "COM3";
+	private String cmdTerminator="\r";
+	
+	public SerialHelper(Studio gui) {
+		studio = gui;
+		core = gui.getCMMCore();
+		ports.add("COM1");
+		ports.add("COM3");
+		
+	}
+	
+	public List<String> getPorts() {
+		
+		return ports;
+	}
+	
+	public void moveRight() {
+		String cmd = "ST;JGA=60000;BGA";
+		try {
+			core.setSerialPortCommand(port, cmd, cmdTerminator);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void moveLeft() {
+		String cmd = "ST;JGA=-60000;BGA";
+		try {
+			core.setSerialPortCommand(port, cmd, cmdTerminator);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+}

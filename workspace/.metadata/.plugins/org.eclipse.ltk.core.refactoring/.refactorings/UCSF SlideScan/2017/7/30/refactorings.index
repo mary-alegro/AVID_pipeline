@@ -1,0 +1,5 @@
+1500920627502	Rename field 'RANGE_X'
+1500920647206	Rename field 'RANGE_Y'
+1501181522811	Rename method 'prepAcquisition'
+1501185451571	Rename method 'getSerialHelper'
+1501269433642	Rename local variable 'stack'

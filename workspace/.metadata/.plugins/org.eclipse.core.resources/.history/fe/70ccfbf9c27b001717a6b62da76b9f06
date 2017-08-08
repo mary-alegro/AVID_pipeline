@@ -1,0 +1,18 @@
+package SlideScan;
+
+import java.io.Serializable;
+
+import calibration.LensInfo;
+import calibration.WBSettings;
+
+public class AcqState implements Serializable{
+	
+	private WBSettings WBinfo;
+	private LensInfo lensInfo;
+	private boolean colorMode;
+	private double R;
+	private double G;
+	private double B;
+	
+
+}
