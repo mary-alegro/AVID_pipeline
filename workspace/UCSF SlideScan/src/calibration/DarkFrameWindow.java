@@ -4,9 +4,10 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
-import SlideScan.SlideScan;
 import javax.swing.JTextField;
+
+import slidescan.SlideScan;
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 

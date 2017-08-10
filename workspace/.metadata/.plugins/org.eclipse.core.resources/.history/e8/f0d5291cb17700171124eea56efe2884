@@ -1,8 +1,0 @@
-package calibration;
-
-public class LensInfo {
-	
-	private String model;
-	
-
-}

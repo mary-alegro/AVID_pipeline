@@ -1,4 +1,4 @@
-package SlideScan;
+package slidescan;
 
 import java.util.ArrayList;
 import java.util.List;

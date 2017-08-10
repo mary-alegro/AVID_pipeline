@@ -1,6 +1,15 @@
 package calibration;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.DefaultListModel;
 
 public class LensInfo implements Serializable{
 	
@@ -13,12 +22,22 @@ public class LensInfo implements Serializable{
 	private double workDist;
 	private double[] FOV = new double[2];
 	
+	public static String lensFile = "lenses.ser";
+	
 	public LensInfo(String m, String mk, double wd, double w, double h) {
 		this.model = m;
 		this.make = mk;
 		this.workDist = w;
 		this.FOV[0] = w;
 		this.FOV[1] = h;
+	}
+	
+	public LensInfo() {
+		this.model = "";
+		this.make = "";
+		this.workDist = 0;
+		this.FOV[0] = 0;
+		this.FOV[1] = 0;
 	}
 	
 	public double getPixSize(double fovw, double sw) {
@@ -83,6 +102,35 @@ public class LensInfo implements Serializable{
 			}
 		}
 		return false;
+	}
+	
+	public static void saveItems(DefaultListModel listModel, String lensFile) throws Exception {
+		List<LensInfo> lenses = new ArrayList<LensInfo>();
+		int nItems = listModel.getSize();
+		for(int i=0; i<nItems; i++) {
+			LensInfo l = (LensInfo)listModel.get(i);
+			lenses.add(l);
+		}
+		
+		//persist hashtable
+		FileOutputStream fileOut = new FileOutputStream(lensFile);
+		ObjectOutputStream out = new ObjectOutputStream(fileOut);
+		out.writeObject(lenses);
+		out.close();
+		fileOut.close();		
+	}
+	
+	public static List<LensInfo> loadItems(DefaultListModel listModel, String lensFile) throws Exception{
+		//read hashtable
+		List<LensInfo> list = null;
+		if((new File(lensFile)).exists()){	
+	        FileInputStream fileIn = new FileInputStream(lensFile);
+	        ObjectInputStream in = new ObjectInputStream(fileIn);
+	        list = (List<LensInfo>) in.readObject();
+	        in.close();
+	        fileIn.close();         
+		}        
+        return list;
 	}
 	
 }

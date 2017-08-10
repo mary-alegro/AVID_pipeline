@@ -1,4 +1,4 @@
-package SlideScan;
+package slidescan;
 
 import java.io.File;
 import java.util.List;

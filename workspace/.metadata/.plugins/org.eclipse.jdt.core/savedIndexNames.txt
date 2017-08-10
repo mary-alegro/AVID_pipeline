@@ -1,13 +1,13 @@
 INDEX VERSION 1.130+C:\Users\Maryana Alegro\Projects\LargeSlideScan\workspace\.metadata\.plugins\org.eclipse.jdt.core
-4213330522.index
-2329015883.index
-2420224983.index
-1812437159.index
 2806151389.index
-972965919.index
-1886545541.index
-3081459853.index
-2816454019.index
-9299668.index
-1270703585.index
+4213330522.index
+2420224983.index
 3503487400.index
+972965919.index
+3081459853.index
+1270703585.index
+2816454019.index
+1886545541.index
+2329015883.index
+9299668.index
+1812437159.index

@@ -30,7 +30,7 @@ public class AcqPersist {
 			for(Field f : fields) {
 				f.setAccessible(true);
 				Class type = f.getType();
-				PersistAcq param = f.getAnnotation(PersistAcq.class);
+				PersistParam param = f.getAnnotation(PersistParam.class);
 				if(param != null) {
 					String id = param.id();		
 					Object data = null;
@@ -47,7 +47,7 @@ public class AcqPersist {
 			}
 		}
 		
-		//persist list
+		//persist hashtable
 		FileOutputStream fileOut = new FileOutputStream(fileName);
 		ObjectOutputStream out = new ObjectOutputStream(fileOut);
 		out.writeObject(params);
@@ -57,38 +57,41 @@ public class AcqPersist {
 	
 	public void loadParams(String fileName, Object[] objs) throws Exception{
 		
-		//read list
+		//read hashtable
         FileInputStream fileIn = new FileInputStream(fileName);
         ObjectInputStream in = new ObjectInputStream(fileIn);
         Hashtable<String,Object> pList = (Hashtable<String,Object>) in.readObject();
         in.close();
         fileIn.close();       
         
-        for(Object o: objs) {
-			Field[] fields = o.getClass().getDeclaredFields();
-			for(Field f : fields) {
-				f.setAccessible(true);
-				Class type = f.getType();
-				PersistAcq param = f.getAnnotation(PersistAcq.class);
+        for(Object obj: objs) {
+			Field[] fields = obj.getClass().getDeclaredFields();
+			for(Field field : fields) {
+				
+				boolean isAcessible = field.isAccessible();
+				field.setAccessible(true);
+				
+				Class type = field.getType();
+				PersistParam param = field.getAnnotation(PersistParam.class);
 				if(param != null) {
+					
 					String id = param.id();		
 					Object data = pList.get(id);
+					
 					if(data != null) {
 						if(type == JTextField.class ) {
-							((JTextField)f.get(o)).setText((String)data);
+							((JTextField)field.get(obj)).setText((String)data);
 						}else if(type == JCheckBox.class) {
-							((JCheckBox)f.get(o)).setSelected((Boolean)data);
+							((JCheckBox)field.get(obj)).setSelected((Boolean)data);
 						}else if(type == LensInfo.class) {
-							LensInfo d = (LensInfo)data;
-							LensInfo orig = (LensInfo)f.get(o);
-							orig.setAll(d);
+							field.set(obj,data); //obj is the instance whose field i need to change, data is the new value
 						}else if(type == WBSettings.class) {
-							WBSettings d = (WBSettings)data;
-							WBSettings orig = (WBSettings)f.get(o);
-							orig.setAll(d);
+							field.set(obj,data);							
 						}
 					}
-				}		
+				}	
+				
+				field.setAccessible(isAcessible);
 			}
 
         }

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<item value="JavaSE-1.6" key="org.eclipse.jdt.ui.last.selected.execution.enviroment"/>
-	<item value="C:\Program Files\Micro-Manager-2.0beta_170704" key="org.eclipse.jdt.ui.lastextjar"/>
+	<item value="C:\Users\Maryana Alegro\bin\Micro-Manager-2.0beta_170704\plugins\Micro-Manager" key="org.eclipse.jdt.ui.lastextjar"/>
 	<item value="filter_imports;" key="filters_last_used"/>
 	<item value="C:\Users\Maryana\Projects\micro-manager\plugins\WhiteBalance" key="org.eclipse.jdt.ui.last.external.project"/>
 	<item value="1" key="org.eclipse.jdt.ui.last.selected.jre.kind2"/>
 	<item value="jdk1.6.0_45" key="org.eclipse.jdt.ui.last.selected.project.jre"/>
 	<section name="org.eclipse.ltk.ui.refactoring.settings">
+		<item value="false" key="renameSubpackages"/>
 		<item value="false" key="updateQualifiedNames"/>
 		<item value="*" key="patterns"/>
 		<item value="false" key="updateSimilarElements"/>

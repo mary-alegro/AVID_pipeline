@@ -10,5 +10,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ij.ImageJ"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="UCSF SlideScan"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-XX:MaxDirectMemorySize=4G"/>
-<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="C:\Program Files\Micro-Manager-2.0beta"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="C:\Users\Maryana Alegro\bin\Micro-Manager-2.0beta_170704"/>
 </launchConfiguration>

@@ -1,4 +1,4 @@
-package SlideScan;
+package slidescan;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +32,8 @@ public class SlideScan implements MenuPlugin {
     private int A[] = new int[2];
     private int B[] = new int[2];
     //private int[] WB = new int[3]; //white balance point in RGB 
+    private boolean shouldSaveRaw = true;
+    private boolean shouldSaveAuto = false;
     
 
     @Override
@@ -101,7 +103,7 @@ public class SlideScan implements MenuPlugin {
     public void acquireImages(double[] FOV, int overlap, String folder)  {
     	//String folder = mWindow_.getDestFolder();
     	//stageHelper.runAcquisition(FOV, A, B, overlap, cameraHelper, folder);
-    	Thread worker = new ScanWorker("Scanworker1",  FOV, A, B, overlap, folder);
+    	Thread worker = new ScanWorker("Scanworker1",  FOV, A, B, overlap, folder, shouldSaveRaw, shouldSaveAuto);
     	mWindow_.setWorker(worker);
     	worker.start();
     }
@@ -134,13 +136,18 @@ public class SlideScan implements MenuPlugin {
     }
     
     public void setCoordsA(int[] a) {
-    	A[0] = a[0];
-    	A[1] = a[1];	
+    	this.A[0] = a[0];
+    	this.A[1] = a[1];	
     }
     
     public void setCoordsB(int[] b) {
-    	B[0] = b[0];
-    	B[1] = b[1];
+    	this.B[0] = b[0];
+    	this.B[1] = b[1];
+    }
+    
+    public int[] getStagePosition() throws Exception{
+    	int[]pos = stageCtr.getStagePos();
+    	return pos;
     }
     
     public boolean isColorModeOn() {
@@ -163,6 +170,14 @@ public class SlideScan implements MenuPlugin {
     	}
     }    
     
+    public void setShouldSaveRaw(boolean b) {
+    	this.shouldSaveRaw = b;
+    }
+    
+    public void setShouldSaveAuto(boolean b) {
+    	this.shouldSaveAuto = b;
+    }
+    
     public void restartJoystick() {
     	try {
     		stageCtr.restartJoystick();
@@ -180,17 +195,20 @@ public class SlideScan implements MenuPlugin {
         private int[] B;
         private int overlap;    
         private String dest;
-    	ScanWorker(String name,double[]FOV,int[]A,int[]B,int olap,String destFolder){
+        private boolean sRaw;
+        private boolean sAuto;
+    	ScanWorker(String name,double[]FOV,int[]A,int[]B,int olap,String destFolder, boolean saveRaw, boolean saveAuto){
     		super(name);
     		this.FOV = FOV;
     		this.A = A;
     		this.B = B;
     		this.overlap = olap;
-    		this.dest = destFolder; 		
+    		this.dest = destFolder; 	
+    		this.sRaw = saveRaw;
+    		this.sAuto = saveAuto;
     	}
     	public void run() {
-    		stageCtr.runAcquisition(FOV, A, B, overlap,camCtr,dest,
-    				mWindow_.shouldSaveRaw(),mWindow_.shouldSaveAuto());
+    		stageCtr.runAcquisition(FOV, A, B, overlap, camCtr, dest, sRaw, sAuto);
     	}
 
     }

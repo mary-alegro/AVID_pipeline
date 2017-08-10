@@ -1,4 +1,4 @@
-package SlideScan;
+package slidescan;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
@@ -28,7 +29,7 @@ import calibration.DarkFrameWindow;
 import calibration.LensInfo;
 import calibration.WBSettings;
 import mmcorej.CMMCore;
-import persistacq.PersistAcq;
+import persistacq.PersistParam;
 import persistacq.AcqPersist;
 
 public class SlideScanUI {
@@ -40,7 +41,7 @@ public class SlideScanUI {
 	private CMMCore core_;
 	private SlideScan scanCtr;
 	
-	@PersistAcq(id="colorMode")
+	@PersistParam(id="colorMode")
 	private boolean isColorOn;
 	
 	
@@ -50,40 +51,39 @@ public class SlideScanUI {
 //    private int overlap = 15;
     private Thread scanWorker; 
     
-    @PersistAcq(id="lensInfo")
+    @PersistParam(id="lensInfo")
     protected LensInfo lensInfo;
-    @PersistAcq(id="WBInfo")
+    @PersistParam(id="WBInfo")
     protected WBSettings WBInfo;
     
     
     private JTextField textFOV_W;
     private JTextField textFOV_H;
-    @PersistAcq(id="overlap")
+    @PersistParam(id="overlap")
     private JTextField textOverlap;
-    @PersistAcq(id="imgFolder")
+    @PersistParam(id="imgFolder")
     private JTextField textImgFolder;
-    private JTextField textPixRes;
-    @PersistAcq(id="red")
+    @PersistParam(id="red")
     private JTextField textRed;
-    @PersistAcq(id="green")
+    @PersistParam(id="green")
     private JTextField textGreen;
-    @PersistAcq(id="blue")
+    @PersistParam(id="blue")
     private JTextField textBlue;
     private JLabel lblNumTiles;
     private JComboBox comboColorMode;
     private JComboBox comboWBPreset;
     private JComboBox comboLens;
-    @PersistAcq(id="saveRaw")
+    @PersistParam(id="saveRaw")
     private JCheckBox chkSaveRaw;
-    @PersistAcq(id="saveAuto")
+    @PersistParam(id="saveAuto")
     private JCheckBox chkSaveAutostretch;
-    @PersistAcq(id="AX")
+    @PersistParam(id="AX")
     private JTextField textXA;
-    @PersistAcq(id="AY")
+    @PersistParam(id="AY")
     private JTextField textYA;
-    @PersistAcq(id="BX")
+    @PersistParam(id="BX")
     private JTextField textXB;
-    @PersistAcq(id="BY")
+    @PersistParam(id="BY")
     private JTextField textYB;
 
 	/**
@@ -155,73 +155,60 @@ public class SlideScanUI {
 		panelCamLens.setLayout(null);
 		
 		JLabel lblLensFovmm = new JLabel("Lens FOV (mm):");
-		lblLensFovmm.setBounds(68, 180, 105, 14);
+		lblLensFovmm.setBounds(68, 104, 105, 14);
 		panelCamLens.add(lblLensFovmm);
 		
 		JLabel label_1 = new JLabel("W:");
-		label_1.setBounds(183, 180, 14, 14);
+		label_1.setBounds(183, 104, 14, 14);
 		panelCamLens.add(label_1);
 		
 		textFOV_W = new JTextField();
 		textFOV_W.setColumns(10);
-		textFOV_W.setBounds(207, 177, 67, 20);
+		textFOV_W.setBounds(207, 101, 67, 20);
 		panelCamLens.add(textFOV_W);
 		
 		JLabel label_2 = new JLabel("H:");
-		label_2.setBounds(284, 180, 25, 14);
+		label_2.setBounds(284, 104, 25, 14);
 		panelCamLens.add(label_2);
 		
 		textFOV_H = new JTextField();
 		textFOV_H.setColumns(10);
-		textFOV_H.setBounds(296, 177, 67, 20);
+		textFOV_H.setBounds(296, 101, 67, 20);
 		panelCamLens.add(textFOV_H);
 		
-		JLabel lblPixelResolutionmm = new JLabel("Pixel resolution (mm):");
-		lblPixelResolutionmm.setBounds(68, 208, 155, 14);
-		panelCamLens.add(lblPixelResolutionmm);
-		
-		textPixRes = new JTextField();
-		textPixRes.setBounds(207, 205, 67, 20);
-		panelCamLens.add(textPixRes);
-		textPixRes.setColumns(10);
-		
 		JLabel lblColorMode = new JLabel("Color mode:");
-		lblColorMode.setBounds(68, 251, 58, 14);
+		lblColorMode.setBounds(68, 231, 58, 14);
 		panelCamLens.add(lblColorMode);
 		
 		JLabel lblRed = new JLabel("Red:");
-		lblRed.setBounds(24, 337, 46, 14);
+		lblRed.setBounds(24, 317, 46, 14);
 		panelCamLens.add(lblRed);
 		
 		JLabel lblGree = new JLabel("Green:");
-		lblGree.setBounds(162, 337, 46, 14);
+		lblGree.setBounds(162, 317, 46, 14);
 		panelCamLens.add(lblGree);
 		
 		textRed = new JTextField();
 		textRed.setEnabled(false);
-		textRed.setBounds(68, 334, 67, 20);
+		textRed.setBounds(68, 314, 67, 20);
 		panelCamLens.add(textRed);
 		textRed.setColumns(10);
 		
 		textGreen = new JTextField();
 		textGreen.setEnabled(false);
-		textGreen.setBounds(207, 334, 67, 20);
+		textGreen.setBounds(207, 314, 67, 20);
 		panelCamLens.add(textGreen);
 		textGreen.setColumns(10);
 		
 		JLabel lblBlue = new JLabel("Blue:");
-		lblBlue.setBounds(303, 337, 46, 14);
+		lblBlue.setBounds(303, 317, 46, 14);
 		panelCamLens.add(lblBlue);
 		
 		textBlue = new JTextField();
 		textBlue.setEnabled(false);
-		textBlue.setBounds(340, 334, 67, 20);
+		textBlue.setBounds(340, 314, 67, 20);
 		panelCamLens.add(textBlue);
 		textBlue.setColumns(10);
-		
-		JTextPane textCameraInfo = new JTextPane();
-		textCameraInfo.setBounds(10, 11, 408, 96);
-		panelCamLens.add(textCameraInfo);
 		
 		comboColorMode = new JComboBox();
 		comboColorMode.addActionListener(new ActionListener() {
@@ -249,7 +236,7 @@ public class SlideScanUI {
 			}
 		});
 		comboColorMode.setModel(new DefaultComboBoxModel(new String[] {"GRY", "RGB"}));
-		comboColorMode.setBounds(207, 248, 67, 20);
+		comboColorMode.setBounds(207, 228, 67, 20);
 		panelCamLens.add(comboColorMode);
 		
 		comboLens = new JComboBox();
@@ -261,15 +248,15 @@ public class SlideScanUI {
 				lensInfo = lens;
 			}
 		});
-		comboLens.setBounds(80, 129, 327, 20);
+		comboLens.setBounds(80, 53, 327, 20);
 		panelCamLens.add(comboLens);
 		
 		JLabel lblLens = new JLabel("Lens:");
-		lblLens.setBounds(24, 132, 46, 14);
+		lblLens.setBounds(24, 56, 46, 14);
 		panelCamLens.add(lblLens);
 		
 		JLabel lblPresets = new JLabel("Presets:");
-		lblPresets.setBounds(24, 297, 46, 14);
+		lblPresets.setBounds(24, 277, 46, 14);
 		panelCamLens.add(lblPresets);
 		
 		comboWBPreset = new JComboBox();
@@ -294,7 +281,7 @@ public class SlideScanUI {
 				}
 			}
 		});
-		comboWBPreset.setBounds(80, 294, 327, 20);
+		comboWBPreset.setBounds(80, 274, 327, 20);
 		panelCamLens.add(comboWBPreset);
 		
 		JPanel panelAcquisition = new JPanel();
@@ -315,7 +302,8 @@ public class SlideScanUI {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					int A[] = scanCtr.setCoordsA();
+					//int A[] = scanCtr.setCoordsA();
+					int A[] = scanCtr.getStagePosition();
 					textXA.setText(A[0]+"");
 					textYA.setText(A[1]+"");
 				}catch(Exception ex) {
@@ -331,7 +319,8 @@ public class SlideScanUI {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					int B[] = scanCtr.setCoordsB();
+					//int B[] = scanCtr.setCoordsB();
+					int B[] = scanCtr.getStagePosition();
 					textXB.setText(B[0]+"");
 					textYB.setText(B[1]+"");
 				}catch(Exception ex) {
@@ -381,6 +370,14 @@ public class SlideScanUI {
 				FOV[1] = Double.parseDouble(textFOV_H.getText());
 				String folder = textImgFolder.getText();
 				int over = Integer.parseInt(textOverlap.getText());
+				int Ax = Integer.parseInt(textXA.getText());
+				int Ay = Integer.parseInt(textYA.getText());
+				int Bx = Integer.parseInt(textXB.getText());
+				int By = Integer.parseInt(textYB.getText());
+				scanCtr.setCoordsA(new int[]{Ax,Ay});
+				scanCtr.setCoordsB(new int[]{Bx,By});
+				scanCtr.setShouldSaveRaw(chkSaveRaw.isSelected());
+				scanCtr.setShouldSaveAuto(chkSaveAutostretch.isSelected());
 				
 //		    	double[] FOV = {18.78,15.37};
 //		    	int[] A = {-370340,486093};
@@ -568,6 +565,7 @@ public class SlideScanUI {
 					}catch(Exception ex) {
 						ex.printStackTrace();
 					}
+					
 				}
 			}
 		});
@@ -581,11 +579,21 @@ public class SlideScanUI {
 				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				if(chooser.showOpenDialog(getFrame()) == JFileChooser.APPROVE_OPTION) {
 					File fName = chooser.getSelectedFile();
+					if (fName.exists()) {
+					    int response = JOptionPane.showConfirmDialog(null, //
+					            "Do you want to replace the existing file?", //
+					            "Confirm", JOptionPane.YES_NO_OPTION, //
+					            JOptionPane.QUESTION_MESSAGE);
+					    if (response != JOptionPane.YES_OPTION) {
+					        return;
+					    } 
+					}
 					try {
 						(new AcqPersist()).saveParams(fName.getPath(), (new Object[] {getSelf()}));
 					}catch(Exception ex) {
 						ex.printStackTrace();
 					}
+					JOptionPane.showMessageDialog(getFrame(), "Acquisition parameters saved with success.");
 				}
 			}
 		});
@@ -601,6 +609,20 @@ public class SlideScanUI {
 			}
 		});
 		mnTools.add(mntmCreateDarkFrames);
+		
+		JMenuItem mntmLenses = new JMenuItem("Lenses");
+		mntmLenses.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		mnTools.add(mntmLenses);
+		
+		JMenuItem mntmWhiteBalance = new JMenuItem("White Balance");
+		mntmWhiteBalance.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		mnTools.add(mntmWhiteBalance);
 	}
 	
 	public void setNumTiles(String str) {
@@ -652,7 +674,7 @@ public class SlideScanUI {
 	
 	private void refreshCombos() {
 		if(WBInfo != null) {
-			getComboWBPreset().setSelectedItem(this.WBInfo);
+			getComboWBPreset().setSelectedItem(this.WBInfo);			
 		}
 		if(lensInfo != null) {
 			getComboLens().setSelectedItem(this.lensInfo);
@@ -660,7 +682,7 @@ public class SlideScanUI {
 		if(isColorOn) {
 			getComboColorMode().setSelectedIndex(1);
 		}else {
-			getComboColorMode().setSelectedIndex(1);
+			getComboColorMode().setSelectedIndex(0);
 		}
 	}
 	
