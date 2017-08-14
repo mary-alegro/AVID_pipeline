@@ -19,8 +19,8 @@ public class LensInfo implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private String model;
 	private String make;
-	private double workDist;
-	private double[] FOV = new double[2];
+	private double workDist; //in mm
+	private double[] FOV = new double[2]; //in mm
 	
 	public static String lensFile = "lenses.ser";
 	

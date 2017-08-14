@@ -80,6 +80,7 @@ INDEX VERSION 1.130+C:\Users\Maryana\Projects\LargeSlideScan\workspace\.metadata
 2156295732.index
 2512450826.index
 1747430771.index
+2329015883.index
 1537646525.index
 335809105.index
 2420224983.index

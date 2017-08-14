@@ -16,8 +16,8 @@ public class StageController {
 	final float ACQSPEED = 15; // 10mm/s
 	final long[] DEFAULTMAX_X = new long[] {-607200,607200}; //left to right
 	final long[] DEFAULTMAX_Y = new long[] {607200,-607200}; //to to bottom
-	long[] RANGE_X = new long[2];
-	long[] RANGE_Y = new long[2];
+	long[] LIMIT_X = new long[2];
+	long[] LIMIT_Y = new long[2];
 	
 	private CMMCore core;
 	private Studio gui;
@@ -275,11 +275,11 @@ public class StageController {
 		List<Boolean> isTile = new ArrayList<Boolean>();
 		
 		//set stage X limits
-		RANGE_X[0] = A[0]<DEFAULTMAX_X[0] ? A[0] : DEFAULTMAX_X[0];
-		RANGE_X[1] = B[0]>DEFAULTMAX_X[1] ? B[0] : DEFAULTMAX_X[1];
+		LIMIT_X[0] = A[0]<DEFAULTMAX_X[0] ? A[0] : DEFAULTMAX_X[0];
+		LIMIT_X[1] = B[0]>DEFAULTMAX_X[1] ? B[0] : DEFAULTMAX_X[1];
 		//set stage Y limits
-		RANGE_Y[0] = A[1]>DEFAULTMAX_Y[0] ? A[1] : DEFAULTMAX_Y[0];
-		RANGE_Y[1] = B[1]<DEFAULTMAX_Y[1] ? B[1] : DEFAULTMAX_Y[1];
+		LIMIT_Y[0] = A[1]>DEFAULTMAX_Y[0] ? A[1] : DEFAULTMAX_Y[0];
+		LIMIT_Y[1] = B[1]<DEFAULTMAX_Y[1] ? B[1] : DEFAULTMAX_Y[1];
 		
 		int[] ROI = new int[2];
 		ROI[0] = Math.abs(A[0]-B[0]);
@@ -308,7 +308,7 @@ public class StageController {
 				
 		for(int r = 0; r < (numTilesH+1); r++) { //iterates over rows
 			int y = A[1]-((int)tH)*r;
-			if(y > RANGE_Y[1]) {
+			if(y < LIMIT_Y[1]) { //y if out of the lower (negative) limit
 				y = B[1];
 			}
 			
@@ -316,7 +316,7 @@ public class StageController {
 			int x1_row = 0;
 			for(int c = 0; c < (numTilesW+1); c++) { 
 				int x = A[0]+((int)tW)*c;
-				if(x > RANGE_X[1]) {
+				if(x > LIMIT_X[1]) {
 					x = B[0];
 				}
 				//add points to list
@@ -350,11 +350,12 @@ public class StageController {
 		List<Integer> coordsY = (List<Integer>)coords.get(1);	
 		List<Boolean> isTile = (List<Boolean>)coords.get(2);	
 		
-		int nTiles = coordsX.size();		
-		camCtr.createDataStore();
+		int nTiles = coordsX.size();			
 		int posCount = 0;
 		int initPos = 0;
 		try {
+			//camCtr.createDataStore(destFolder);
+			camCtr.createDataStore();
 			prepForMotion();
 			
 			int[] curPos;	
@@ -378,15 +379,44 @@ public class StageController {
 				//snap image here	
 				if(isTile.get(i)) {
 					camCtr.acquireImage(posCount);
-					posCount++;
+					//camCtr.acquireImage(0);
+					
+					//System.out.println(camCtr.getNumImgs());
+					
+					//if(posCount > 0 && ((posCount % CameraController.MAX_NUMIMG_MEM) == 0 || i == (nTiles-1))) {
+					if(posCount >= CameraController.MAX_NUMIMG_MEM || i == (nTiles-2)) {
+						//save images every MAX_NUMIMG_MEM counts to save memory
+						//camCtr.freezeDataStore();
+						if(plugin.isColorModeOn()) {
+							camCtr.saveImagesRGB(destFolder, initPos, saveRaw, saveAuto);
+						}else {
+							camCtr.saveImages(destFolder, initPos);
+						}
+						//if(i != (nTiles-1)) { //not the last batch
+							//camCtr.createDataStore(); //dispose old DS and create an empty one
+						//}	
+						initPos = initPos+posCount+1;
+						posCount = 0;
+					}else {
+						posCount++;
+					}					
 				}
 			}
-			//restart joystick routine after imaging		
+			
+//			//camCtr.freezeDataStore();
+//			if(plugin.isColorModeOn()) {
+//				camCtr.saveImagesRGB(destFolder, initPos, saveRaw, saveAuto);
+//				//camCtr.saveTIFFDataStore();
+//			}else {
+//				camCtr.saveImages(destFolder, initPos);
+//			}			
+			
 		}catch(Exception e) {
 			System.out.println("ERROR: Problem moving stage.");
 			e.printStackTrace();
 		}
 		
+		//restart joystick routine after imaging	
 		try {
 			restartJoystick();
 		}catch(Exception e) {
@@ -394,12 +424,6 @@ public class StageController {
 			e.printStackTrace();
 		}
 		
-		//save images
-		if(plugin.isColorModeOn()) {
-			camCtr.saveImagesRGB(destFolder, initPos, saveRaw, saveAuto);
-		}else {
-			camCtr.saveImages(destFolder, initPos);
-		}
 		
 	}
 	

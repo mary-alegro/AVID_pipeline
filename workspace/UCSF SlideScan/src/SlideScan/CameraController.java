@@ -7,6 +7,8 @@ import org.micromanager.Studio;
 import org.micromanager.data.Coords;
 import org.micromanager.data.Datastore;
 import org.micromanager.data.Image;
+import org.micromanager.data.Metadata;
+import org.micromanager.data.Metadata.MetadataBuilder;
 import org.micromanager.display.DisplaySettings;
 import org.micromanager.display.DisplaySettings.ContrastSettings;
 import org.micromanager.display.DisplayWindow;
@@ -50,7 +52,7 @@ public class CameraController {
     private static final String AUTO_DIR = "auto";
     private static final String CORRECTED_DIR = "corrected";
     
-    public static final int MAX_NUMIMG_MEM = 300;
+    public static final int MAX_NUMIMG_MEM = 10;
     
     private String cameraLabel;
     private boolean isColorCamera = false;
@@ -59,6 +61,7 @@ public class CameraController {
 	private CMMCore core_;
 	private Studio studio_;
 	private Datastore ds = null;
+	private DisplayWindow dw = null;
 	
 	public CameraController(Studio gui) {
 		studio_ = gui;
@@ -211,33 +214,54 @@ public class CameraController {
     	}
     }
     
+    public int getNumImgs() {
+    	if(this.ds != null) {
+    		return this.ds.getNumImages();
+    	}
+    	return -1;
+    }
+    
     public void createDataStore(String dir) throws Exception{
     	if(this.ds == null) { //create new datastore
         	this.ds = studio_.data().createSinglePlaneTIFFSeriesDatastore(dir);
-        	studio_.displays().createDisplay(this.ds);        	
+        	this.dw = studio_.displays().createDisplay(this.ds);        	
     	}else { //clean old DS, create a new one - I made this to save memory
+    		this.dw.requestToClose();
     		studio_.displays().closeDisplaysFor(this.ds);
     		this.ds = studio_.data().createSinglePlaneTIFFSeriesDatastore(dir);
-        	studio_.displays().createDisplay(this.ds);
+        	this.dw = studio_.displays().createDisplay(this.ds);
     	}
     }
     
     
     public void createDataStore() {
     	if(this.ds == null) { //create new datastore
-        	this.ds = studio_.data().createRAMDatastore();
-        	studio_.displays().createDisplay(this.ds);        	
+        	this.ds = studio_.data().createRewritableRAMDatastore();
+        	//this.ds = studio_.data().createRewritableRAMDatastore();      		
+        	this.dw = studio_.displays().createDisplay(this.ds);      
+        	
     	}else { //clean old DS, create a new one - I made this to save memory
-    		studio_.displays().closeDisplaysFor(this.ds);
-        	this.ds = studio_.data().createRAMDatastore();
-        	studio_.displays().createDisplay(this.ds);
+    		//studio_.displays().closeDisplaysFor(this.ds);
+    		this.dw.requestToClose();
+    		this.dw.forceClosed();
+        	this.ds = studio_.data().createRewritableRAMDatastore();
+        	this.dw = studio_.displays().createDisplay(this.ds);
+    	}
+    }
+    
+    public void freezeDataStore() {
+    	if(this.ds != null) {
+    		this.ds.freeze();
     	}
     }
     
     public void acquireImage(int pos)  {
     	try {
-	    	Image img = snapImage();
-	    	img = img.copyAtCoords(img.getCoords().copy().stagePosition(pos).build());	    	
+	    	Image img = snapImage();	    
+	    	img = img.copyAtCoords(img.getCoords().copy().stagePosition(pos).build());	  
+	    	//img = img.copyWithMetadata(img.getMetadata().copy().positionName("position").build());
+	    	//Metadata.MetadataBuilder mBuilder = studio_.data().getMetadataBuilder();	  
+	    	//img.copyWith(img.getCoords().copy().stagePosition(pos).build(),img.getMetadata().copy().positionName("").build());
 	    	this.ds.putImage(img);	    	
 	    	System.gc();
     	}catch(Exception e) {
@@ -245,10 +269,7 @@ public class CameraController {
     	}
     }
      
-    public void saveImages(String folder, int initPos) {
-    	
-    	//this.ds.freeze();
-    	
+    public void saveImages(String folder, int initPos) {    	
     	//Save images. Here I use IJ save methods so I can change the file names.
     	Coords.CoordsBuilder coordBuilder = studio_.data().getCoordsBuilder();
     	int nImgs = ds.getNumImages();
@@ -266,6 +287,12 @@ public class CameraController {
 	    	ByteProcessor byteImage = spToSave.convertToByteProcessor(); //convert channel to 8bits
 	    	IJ.save(new ImagePlus("",(ImageProcessor)byteImage).duplicate(),fileName);
     	}	
+    }
+    
+    public void saveTIFFDataStore() {
+    	if(this.ds != null) {
+    		this.ds.save(Datastore.SaveMode.MULTIPAGE_TIFF, this.ds.getSavePath());
+    	}
     }
     
     public void saveImagesRGB(String folder, int initPos, boolean saveRaw, boolean saveAuto) {
@@ -289,7 +316,7 @@ public class CameraController {
     	for(int i=0; i<nImgs; i++) {
 
 	    	coordBuilder.channel(0);
-	    	coordBuilder.stagePosition((initPos+i));
+	    	coordBuilder.stagePosition(i);
 	    	coordBuilder.time(0);
 	    	coordBuilder.z(0);
 	    	Coords coord = coordBuilder.build();

@@ -656,18 +656,23 @@ public class SlideScanUI {
 	}
 	
 	private void initCombos() {
+		
+		WBSettings blankCanon = new WBSettings("Blank slide - Canon", 2.69, 1.00, 1.54);
 		WBSettings blank = new WBSettings("Blank slide", 2.77, 1.00, 1.49);
 		WBSettings gallo2 = new WBSettings("Gallo 2", 2.35, 0.90, 1.25);
 		WBSettings gallo1 = new WBSettings("Gallo 1", 2.71, 1.00, 1.36);
 		WBSettings tau = new WBSettings("TAU 1", 2.50, 1.00, 1.66);
 		WBSettings chart = new WBSettings("Test Chart", 1.08, 1.00, 2.95);
+		getComboWBPreset().addItem(blankCanon);
 		getComboWBPreset().addItem(blank);
 		getComboWBPreset().addItem(gallo1);
 		getComboWBPreset().addItem(gallo2);
 		getComboWBPreset().addItem(tau);
 		getComboWBPreset().addItem(chart);
 		
+		LensInfo lensCanon = new LensInfo("3X Macro", "Canon", 49, 3.709, 3.035846);
 		LensInfo lensLighbox = new LensInfo("50mm Lighbox", "Rodenstock", 88, 17.39, 15.37);	
+		getComboLens().addItem(lensCanon);
 		getComboLens().addItem(lensLighbox);
 		
 	}
