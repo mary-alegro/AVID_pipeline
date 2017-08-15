@@ -3,6 +3,8 @@ package slidescan;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.micromanager.Studio;
 
 import mmcorej.CMMCore;
@@ -18,6 +20,8 @@ public class StageController {
 	final long[] DEFAULTMAX_Y = new long[] {607200,-607200}; //to to bottom
 	long[] LIMIT_X = new long[2];
 	long[] LIMIT_Y = new long[2];
+	private int[] tileGrid = new int[2];
+	private List<List> tileCoords;
 	
 	private CMMCore core;
 	private Studio gui;
@@ -26,15 +30,11 @@ public class StageController {
 	private List<String> ports = new ArrayList<String>();
 	private String port = "COM3";
 	private String cmdTerminator="\r";
-	
-
-	
+		
 	//Stage codes
 	private String STG_ERROR = "?";
 	private String STG_HOME_OK = "HOK";
 	private String STG_PREPMO_OK = "PREPOK";
-	
-	
 	
 	public StageController(Studio gui_, SlideScan sc) {
 		gui = gui_;
@@ -101,8 +101,7 @@ public class StageController {
 	}
 	
 	public int[] getStagePos() throws Exception {
-		
-		
+
 		String strCmd = "TP" + cmdTerminator;
 		CharVector cmd = str2Charvec(strCmd);
 		core.writeToSerialPort(port, cmd);
@@ -267,6 +266,30 @@ public class StageController {
 		return str;		
 	}
 	
+	public int[] getTileGrid() {
+		return tileGrid;
+	}
+	
+	public List<String> getTileCoords(){
+		List<String> xyCoords = new ArrayList<String>();
+		if(this.tileCoords != null) {
+			List<Integer> coordsX = (List<Integer>)this.tileCoords.get(0);
+			List<Integer> coordsY = (List<Integer>)this.tileCoords.get(1);	
+			List<Boolean> isTile = (List<Boolean>)this.tileCoords.get(2);	
+			
+			int nTiles = coordsX.size();
+			for(int i = 0; i<nTiles; i++) {
+				if(isTile.get(i)) { //if it's an actual tile, not one of the "return positions"
+					int x = coordsX.get(i);
+					int y = coordsY.get(i);
+					xyCoords.add(" ("+x+", "+y+") ");
+				}
+			}
+		}
+		
+		return xyCoords;
+	}
+	
 	public List<List> computeTileCoords(double[]FOV,int[]A,int[]B,int olap) {
 		
 		List<List> coords = new ArrayList<List>();
@@ -340,12 +363,21 @@ public class StageController {
 		
 		plugin.setNumTiles("X: " + (numTilesW+1) + " Y: " + (numTilesH+1)); 
 		
+		//for metadata
+		this.tileGrid[0] = numTilesW+1; //X
+		this.tileGrid[1] = numTilesH+1;	//Y			
+		this.tileCoords = coords;
+		
 		return coords;
 	}
 	
 	public void runAcquisition(double[]FOV,int[]A,int[]B,int overlap, CameraController camCtr, String destFolder,
 			boolean saveRaw, boolean saveAuto) {
 		List<List> coords = computeTileCoords(FOV, A, B, overlap);
+		
+		//save metadata
+		plugin.saveMetadata();
+		
 		List<Integer> coordsX = (List<Integer>)coords.get(0);
 		List<Integer> coordsY = (List<Integer>)coords.get(1);	
 		List<Boolean> isTile = (List<Boolean>)coords.get(2);	
@@ -401,7 +433,7 @@ public class StageController {
 						posCount++;
 					}					
 				}
-			}
+			}			
 			
 //			//camCtr.freezeDataStore();
 //			if(plugin.isColorModeOn()) {
@@ -424,6 +456,7 @@ public class StageController {
 			e.printStackTrace();
 		}
 		
+		plugin.showEndMsg();
 		
 	}
 	

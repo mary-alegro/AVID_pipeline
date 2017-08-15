@@ -1,20 +1,19 @@
 package slidescan;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
+
 import org.micromanager.MenuPlugin;
 import org.micromanager.Studio;
-import org.micromanager.data.Coords;
-import org.micromanager.data.Datastore;
-import org.micromanager.data.Image;
 import org.scijava.plugin.Plugin;
 
 import calibration.WBSettings;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
 
 /**
  *
@@ -184,6 +183,49 @@ public class SlideScan implements MenuPlugin {
     	}catch(Exception e) {
     		e.printStackTrace();
     	}
+    }
+    
+    public void saveMetadata() {    	
+    	String outDir = mWindow_.getDestFolder();
+    	String imgDir = "Image folder: " + outDir;
+    	String overlap = "Overlap: " + mWindow_.getOverlap();
+    	String A = "A: (" + this.A[0] + ", " + this.A[1] + ")";
+    	String B = "B:  (" + this.B[0] + ", " + this.B[1] + ")";
+    	String grid = "Grid: " +  stageCtr.getTileGrid()[0] + " x " + stageCtr.getTileGrid()[1];
+    	List<String> xyCoords = stageCtr.getTileCoords();
+    	
+    	String coords;
+    	StringBuilder builder = new StringBuilder();
+    	for(String str: xyCoords) {
+    		builder.append(str).append("\n");
+    	}
+    	coords = builder.toString();
+    	
+    	String metaData = new StringBuilder().append(imgDir).append("\n")
+    						.append(overlap).append("\n")
+    						.append(A).append("\n")
+    						.append(B).append("\n")
+    						.append(grid).append("\n")
+    						.append(coords).toString();   					
+    				
+    	//save file
+    	String outFile = outDir + "\\Metadata.txt";
+    	try {
+    	    File file = new File(outFile);
+    	    if (! file.exists())
+    	        file.createNewFile();
+
+    	    FileWriter fw = new FileWriter(file.getAbsoluteFile());
+    	    BufferedWriter bw = new BufferedWriter(fw);
+    	    bw.write(metaData);
+    	    bw.close();    		
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    }
+    
+    public void showEndMsg() {
+    	JOptionPane.showMessageDialog(mWindow_.getFrame(),"Acquisition finished.");
     }
     
     //

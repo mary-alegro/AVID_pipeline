@@ -289,16 +289,7 @@ public class CameraController {
     	}	
     }
     
-    public void saveTIFFDataStore() {
-    	if(this.ds != null) {
-    		this.ds.save(Datastore.SaveMode.MULTIPAGE_TIFF, this.ds.getSavePath());
-    	}
-    }
-    
-    public void saveImagesRGB(String folder, int initPos, boolean saveRaw, boolean saveAuto) {
-    	
-    	//this.ds.freeze();    	
-    	
+    public void saveImagesRGB(String folder, int initPos, boolean saveRaw, boolean saveAuto) {    	
     	//create folders
     	String rawImgDir = "";
     	String autoImgDir = "";

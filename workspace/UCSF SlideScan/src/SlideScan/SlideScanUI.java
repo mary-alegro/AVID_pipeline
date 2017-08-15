@@ -335,14 +335,10 @@ public class SlideScanUI {
 		label_4.setBounds(7, 166, 111, 14);
 		panelAcquisition.add(label_4);
 		
-
-		
 		JLabel label_6 = new JLabel("Lower right corner (B):");
 		label_6.setBounds(7, 194, 111, 14);
-		panelAcquisition.add(label_6);
-		
+		panelAcquisition.add(label_6);		
 
-		
 		JLabel label_8 = new JLabel("Estimated num. tiles:");
 		label_8.setBounds(7, 248, 122, 14);
 		panelAcquisition.add(label_8);
@@ -433,17 +429,6 @@ public class SlideScanUI {
 		});
 		btnOpenImgDir.setBounds(351, 22, 67, 23);
 		panelAcquisition.add(btnOpenImgDir);
-		
-		JButton btnTestShot = new JButton("Test Shot");
-		btnTestShot.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				String folder = textImgFolder.getText();
-				scanCtr.shotTestImage(folder);
-			}
-		});
-		btnTestShot.setBounds(131, 301, 89, 46);
-		panelAcquisition.add(btnTestShot);
 		
 		chkSaveRaw = new JCheckBox("Save as raw");
 		chkSaveRaw.setSelected(true);
@@ -670,7 +655,8 @@ public class SlideScanUI {
 		getComboWBPreset().addItem(tau);
 		getComboWBPreset().addItem(chart);
 		
-		LensInfo lensCanon = new LensInfo("3X Macro", "Canon", 49, 3.709, 3.035846);
+		//LensInfo lensCanon = new LensInfo("3X Macro", "Canon", 49, 3.709, 3.035846);
+		LensInfo lensCanon = new LensInfo("3X Macro", "Canon", 41, 4.21599, 3.45059);
 		LensInfo lensLighbox = new LensInfo("50mm Lighbox", "Rodenstock", 88, 17.39, 15.37);	
 		getComboLens().addItem(lensCanon);
 		getComboLens().addItem(lensLighbox);
@@ -703,18 +689,18 @@ public class SlideScanUI {
 	public JCheckBox getChkSaveAutostrech() {
 		return chkSaveAutostretch;
 	}
-
 	public boolean shouldSaveRaw() {
 		return getChkSaveRaw().isSelected();
 	}
 	public boolean shouldSaveAuto() {
 		return getChkSaveAutostrech().isSelected();
 	}
-	
+	public String getOverlap() {
+		return textOverlap.getText();
+	}
 	public LensInfo getLensInfo() {
 		return this.lensInfo;
-	}
-	
+	}	
 	public WBSettings getWBInfo(){
 		return this.WBInfo;
 	}
