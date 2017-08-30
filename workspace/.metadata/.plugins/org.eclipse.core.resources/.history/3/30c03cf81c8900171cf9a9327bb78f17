@@ -210,14 +210,8 @@ public class SlideScan implements MenuPlugin {
     				
     	//save file
     	String outFile = outDir + "\\Metadata.txt";
-    	System.out.println(outFile);    	
+    	System.out.println(outFile);
     	try {
-    		
-    		File dir = new File(outDir);
-    		if(!dir.exists()) {
-    			dir.mkdir();
-    		}
-    		
     	    File file = new File(outFile);
     	    if (! file.exists())
     	        file.createNewFile();
