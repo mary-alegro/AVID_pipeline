@@ -176,7 +176,7 @@ public class CameraController {
     		core_.setExposure(90);
     		createDataStore();
     		acquireImage(0);
-    		saveImagesRGB(dir2, 0, true, false);
+    		saveImagesRGB(dir2, 0, 1,true, false);
     		
 //        	Coords.CoordsBuilder coordBuilder = studio_.data().getCoordsBuilder();
 //    	    coordBuilder.channel(0);
@@ -289,7 +289,7 @@ public class CameraController {
     	}	
     }
     
-    public void saveImagesRGB(String folder, int initPos, boolean saveRaw, boolean saveAuto) {    	
+    public void saveImagesRGB(String folder, int initPos, int totalImg, boolean saveRaw, boolean saveAuto) {    	
     	//create folders
     	String rawImgDir = "";
     	String autoImgDir = "";
@@ -305,6 +305,10 @@ public class CameraController {
     	Coords.CoordsBuilder coordBuilder = studio_.data().getCoordsBuilder();
     	int nImgs = ds.getNumImages();
     	for(int i=0; i<nImgs; i++) {
+    		
+    		if(initPos+i >= totalImg) { //check if we are not saving duplicated images
+    			break;
+    		}
 
 	    	coordBuilder.channel(0);
 	    	coordBuilder.stagePosition(i);
@@ -324,35 +328,35 @@ public class CameraController {
 	        	IJ.save(new ImagePlus("",ip2).duplicate(),fileName);
 	    	}
     		
-//    		//save histogram autostrech version 
-//	    	if(saveAuto) {	
-//	    		ImageProcessor ip = studio_.data().ij().createProcessor(img);
-//	    		ImageProcessor ip2 = (new ImagePlus("",ip)).duplicate().getProcessor();
-//	    		
-//	    		String fileName = new StringBuilder().append(autoImgDir).append("\\")
-//	    				.append("tile_").append((initPos+i))
-//	    				.append(".tif").toString();    		
-//	        	ColorProcessor cip = ip2.convertToColorProcessor();
-//	        	List<DisplayWindow> dwins = studio_.displays().getAllImageWindows();
-//	        	DisplayWindow currwin = dwins.get(0);
-//	        	DisplaySettings dsets = currwin.getDisplaySettings();
-//	        	ContrastSettings[] csets = dsets.getChannelContrastSettings();
-//	        	ContrastSettings cset = csets[0];
-//	        		
-//	        	Double[] gammas = cset.getContrastGammas();
-//	        	Integer[] maxes = cset.getContrastMaxes();
-//	        	Integer[] mins = cset.getContrastMins();
-//	        	for(int c=0; c<cip.getNChannels(); c++) {
-//	        		Double gamma = cset.getSafeContrastGamma(c, 1.0);
-//	        		Integer max = cset.getSafeContrastMax(c, maxes[c]);
-//	        		Integer min = cset.getSafeContrastMin(c, mins[c]);	
-//
-//	        		int[] lut = ImageUtils.calculateLinearLUT(min, max);
-//	        		int idx = 1 << (2 - c);
-//	        		cip.applyTable(lut, idx);
-//	        	}	 
-//	        	IJ.save(new ImagePlus("",cip).duplicate(),fileName);
-//	    	}    		
+    		//save histogram autostrech version 
+	    	if(saveAuto) {	
+	    		ImageProcessor ip = studio_.data().ij().createProcessor(img);
+	    		ImageProcessor ip2 = (new ImagePlus("",ip)).duplicate().getProcessor();
+	    		
+	    		String fileName = new StringBuilder().append(autoImgDir).append("\\")
+	    				.append("tile_").append((initPos+i))
+	    				.append(".tif").toString();    		
+	        	ColorProcessor cip = ip2.convertToColorProcessor();
+	        	List<DisplayWindow> dwins = studio_.displays().getAllImageWindows();
+	        	DisplayWindow currwin = dwins.get(0);
+	        	DisplaySettings dsets = currwin.getDisplaySettings();
+	        	ContrastSettings[] csets = dsets.getChannelContrastSettings();
+	        	ContrastSettings cset = csets[0];
+        		
+	        	Double[] gammas = cset.getContrastGammas();
+	        	Integer[] maxes = cset.getContrastMaxes();
+	        	Integer[] mins = cset.getContrastMins();
+	        	for(int c=0; c<cip.getNChannels(); c++) {
+        		Double gamma = cset.getSafeContrastGamma(c, 1.0);
+	        		Integer max = cset.getSafeContrastMax(c, maxes[c]);
+	        		Integer min = cset.getSafeContrastMin(c, mins[c]);	
+
+	        		int[] lut = ImageUtils.calculateLinearLUT(min, max);
+	        		int idx = 1 << (2 - c);
+	        		cip.applyTable(lut, idx);
+	        	}	 
+	        	IJ.save(new ImagePlus("",cip).duplicate(),fileName);
+	    	}    		
     	}	
     }
     
@@ -361,7 +365,7 @@ public class CameraController {
     	for(int f=0; f<numFrames; f++) {
     		acquireImage(f);
     	}
-    	saveImagesRGB(dir, 0, true, false);	
+    	saveImagesRGB(dir, 0, 1,true, false);	
     }
 
     private ShortProcessor debayerGreenChannel(ShortProcessor imgOrig) {

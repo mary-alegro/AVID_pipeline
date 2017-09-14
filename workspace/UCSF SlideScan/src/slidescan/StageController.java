@@ -357,9 +357,15 @@ public class StageController {
 			isTile.add(false);
 		}
 		
+		//add grid size information
+		List<Integer> gridSize = new ArrayList<Integer>();
+		gridSize.add((numTilesW+1));
+		gridSize.add((numTilesH+1));
+		
 		coords.add(coordsX);
 		coords.add(coordsY);
-		coords.add(isTile);
+		coords.add(isTile);		
+		coords.add(gridSize);
 		
 		plugin.setNumTiles("X: " + (numTilesW+1) + " Y: " + (numTilesH+1)); 
 		
@@ -381,10 +387,12 @@ public class StageController {
 		List<Integer> coordsX = (List<Integer>)coords.get(0);
 		List<Integer> coordsY = (List<Integer>)coords.get(1);	
 		List<Boolean> isTile = (List<Boolean>)coords.get(2);	
+		List<Integer> sGrid = (List<Integer>)coords.get(3);
 		
 		int nTiles = coordsX.size();			
 		int posCount = 0;
 		int initPos = 0;
+		int gridSize = sGrid.get(0)*sGrid.get(1);
 		try {
 			//camCtr.createDataStore(destFolder);
 			camCtr.createDataStore();
@@ -407,7 +415,7 @@ public class StageController {
 				
 				//move stage
 				moveToAbsPos(x,y);
-				Thread.sleep((long)(t*1.05)+800);
+				Thread.sleep((long)(t*1.05)+500);
 				//snap image here	
 				if(isTile.get(i)) {
 					camCtr.acquireImage(posCount);
@@ -420,7 +428,7 @@ public class StageController {
 						//save images every MAX_NUMIMG_MEM counts to save memory
 						//camCtr.freezeDataStore();
 						if(plugin.isColorModeOn()) {
-							camCtr.saveImagesRGB(destFolder, initPos, saveRaw, saveAuto);
+							camCtr.saveImagesRGB(destFolder, initPos, gridSize, saveRaw, saveAuto);
 						}else {
 							camCtr.saveImages(destFolder, initPos);
 						}
