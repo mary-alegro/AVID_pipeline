@@ -70,6 +70,7 @@ public class SlideScanUI {
     @PersistParam(id="blue")
     private JTextField textBlue;
     private JLabel lblNumTiles;
+    private JLabel lblAcqTime;
     private JComboBox comboColorMode;
     private JComboBox comboWBPreset;
     private JComboBox comboLens;
@@ -142,12 +143,12 @@ public class SlideScanUI {
 	private void initialize() {
 		frmUcsfSlideScan = new JFrame();
 		frmUcsfSlideScan.setTitle("UCSF Slide Scan v0.01");
-		frmUcsfSlideScan.setBounds(100, 100, 443, 477);
+		frmUcsfSlideScan.setBounds(100, 100, 508, 517);
 		frmUcsfSlideScan.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmUcsfSlideScan.getContentPane().setLayout(null);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 36, 433, 401);
+		tabbedPane.setBounds(0, 36, 490, 434);
 		frmUcsfSlideScan.getContentPane().add(tabbedPane);
 		
 		JPanel panelCamLens = new JPanel();
@@ -159,7 +160,7 @@ public class SlideScanUI {
 		panelCamLens.add(lblLensFovmm);
 		
 		JLabel label_1 = new JLabel("W:");
-		label_1.setBounds(183, 104, 14, 14);
+		label_1.setBounds(183, 104, 25, 14);
 		panelCamLens.add(label_1);
 		
 		textFOV_W = new JTextField();
@@ -168,12 +169,12 @@ public class SlideScanUI {
 		panelCamLens.add(textFOV_W);
 		
 		JLabel label_2 = new JLabel("H:");
-		label_2.setBounds(284, 104, 25, 14);
+		label_2.setBounds(319, 104, 25, 14);
 		panelCamLens.add(label_2);
 		
 		textFOV_H = new JTextField();
 		textFOV_H.setColumns(10);
-		textFOV_H.setBounds(296, 101, 67, 20);
+		textFOV_H.setBounds(344, 104, 67, 20);
 		panelCamLens.add(textFOV_H);
 		
 		JLabel lblColorMode = new JLabel("Color mode:");
@@ -256,7 +257,7 @@ public class SlideScanUI {
 		panelCamLens.add(lblLens);
 		
 		JLabel lblPresets = new JLabel("Presets:");
-		lblPresets.setBounds(24, 277, 46, 14);
+		lblPresets.setBounds(24, 277, 67, 14);
 		panelCamLens.add(lblPresets);
 		
 		comboWBPreset = new JComboBox();
@@ -289,12 +290,12 @@ public class SlideScanUI {
 		panelAcquisition.setLayout(null);
 		
 		JLabel label_3 = new JLabel("Overlap (%):");
-		label_3.setBounds(29, 80, 67, 22);
+		label_3.setBounds(29, 80, 111, 22);
 		panelAcquisition.add(label_3);
 		
 		textOverlap = new JTextField();
 		textOverlap.setColumns(10);
-		textOverlap.setBounds(140, 81, 54, 20);
+		textOverlap.setBounds(175, 81, 54, 20);
 		panelAcquisition.add(textOverlap);
 		
 		JButton btnSetA = new JButton("Set A");
@@ -354,7 +355,7 @@ public class SlideScanUI {
 				scanCtr.getStageController().findHome();
 			}
 		});
-		btnFindHome.setBounds(230, 301, 89, 46);
+		btnFindHome.setBounds(227, 345, 89, 46);
 		panelAcquisition.add(btnFindHome);
 		
 		JButton btnScan = new JButton("Scan");
@@ -386,7 +387,7 @@ public class SlideScanUI {
 				scanCtr.acquireImages(FOV, over, folder);
 			}
 		});
-		btnScan.setBounds(10, 301, 89, 46);
+		btnScan.setBounds(7, 345, 89, 46);
 		panelAcquisition.add(btnScan);
 		
 		JButton btnCancel = new JButton("Cancel");
@@ -398,7 +399,7 @@ public class SlideScanUI {
 				}
 			}
 		});
-		btnCancel.setBounds(329, 301, 89, 46);
+		btnCancel.setBounds(326, 345, 89, 46);
 		panelAcquisition.add(btnCancel);
 		
 		JLabel lblImageFolder = new JLabel("Image folder:");
@@ -529,6 +530,14 @@ public class SlideScanUI {
 		textYB.setBounds(299, 191, 118, 20);
 		panelAcquisition.add(textYB);
 		
+		JLabel lblEstimatedAcqTime = new JLabel("Estimated acq. time:");
+		lblEstimatedAcqTime.setBounds(7, 282, 122, 14);
+		panelAcquisition.add(lblEstimatedAcqTime);
+		
+		lblAcqTime = new JLabel("...");
+		lblAcqTime.setBounds(131, 281, 251, 14);
+		panelAcquisition.add(lblAcqTime);
+		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setBounds(0, 0, 433, 21);
 		frmUcsfSlideScan.getContentPane().add(menuBar);
@@ -612,6 +621,10 @@ public class SlideScanUI {
 	
 	public void setNumTiles(String str) {
 		lblNumTiles.setText(str);
+	}
+	
+	public void setAcqTime(String str) {
+		lblAcqTime.setText(str);
 	}
 	
 	public String getDestFolder() {

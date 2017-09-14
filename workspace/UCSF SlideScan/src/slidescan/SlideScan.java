@@ -118,7 +118,10 @@ public class SlideScan implements MenuPlugin {
     public void setNumTiles(String str) {
     	mWindow_.setNumTiles(str);
     }
-
+    
+    public void setAcqTime(String str) {
+    	mWindow_.setAcqTime(str);
+    }
        
     public int[] setCoordsA() throws Exception {
     	int[]pos = stageCtr.getStagePos();

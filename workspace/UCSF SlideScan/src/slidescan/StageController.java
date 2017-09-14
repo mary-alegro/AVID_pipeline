@@ -18,6 +18,7 @@ public class StageController {
 	final float ACQSPEED = 15; // 10mm/s
 	final long[] DEFAULTMAX_X = new long[] {-607200,607200}; //left to right
 	final long[] DEFAULTMAX_Y = new long[] {607200,-607200}; //to to bottom
+	final int DELAY_CONST = 500; //in ms
 	long[] LIMIT_X = new long[2];
 	long[] LIMIT_Y = new long[2];
 	private int[] tileGrid = new int[2];
@@ -367,7 +368,12 @@ public class StageController {
 		coords.add(isTile);		
 		coords.add(gridSize);
 		
+		//show grid in GUI
 		plugin.setNumTiles("X: " + (numTilesW+1) + " Y: " + (numTilesH+1)); 
+		
+		//compute estimated time and show in GUI
+		String estTime = computeEstimatedTime(coordsX, coordsY);
+		plugin.setAcqTime(estTime);
 		
 		//for metadata
 		this.tileGrid[0] = numTilesW+1; //X
@@ -392,7 +398,8 @@ public class StageController {
 		int nTiles = coordsX.size();			
 		int posCount = 0;
 		int initPos = 0;
-		int gridSize = sGrid.get(0)*sGrid.get(1);
+		int nImgs = sGrid.get(0)*sGrid.get(1);
+		int imgNum = 1;
 		try {
 			//camCtr.createDataStore(destFolder);
 			camCtr.createDataStore();
@@ -415,10 +422,13 @@ public class StageController {
 				
 				//move stage
 				moveToAbsPos(x,y);
-				Thread.sleep((long)(t*1.05)+500);
+				Thread.sleep((long)(t*1.05) + DELAY_CONST);
 				//snap image here	
 				if(isTile.get(i)) {
 					camCtr.acquireImage(posCount);
+					
+					System.out.println("Image (" + (imgNum++) + "/" + nImgs + ")" );					
+					
 					//camCtr.acquireImage(0);
 					
 					//System.out.println(camCtr.getNumImgs());
@@ -428,7 +438,7 @@ public class StageController {
 						//save images every MAX_NUMIMG_MEM counts to save memory
 						//camCtr.freezeDataStore();
 						if(plugin.isColorModeOn()) {
-							camCtr.saveImagesRGB(destFolder, initPos, gridSize, saveRaw, saveAuto);
+							camCtr.saveImagesRGB(destFolder, initPos, nImgs, saveRaw, saveAuto);
 						}else {
 							camCtr.saveImages(destFolder, initPos);
 						}
@@ -468,5 +478,34 @@ public class StageController {
 		
 	}
 	
+	private String computeEstimatedTime(List<Integer> coordsX, List<Integer> coordsY) {
+		int nTiles = coordsX.size();
+		int x = coordsX.get(0);
+		int y = coordsY.get(0);
+		float cxMM = (float)x/(float)CTSPERMM; //convert to mm
+		float cyMM = (float)y/(float)CTSPERMM;		
+		double time = 0;
+		
+		for(int i=1; i<nTiles; i++) {
+			//compute time necessary for moving stage to new pos
+			float xMM = (float)coordsX.get(i)/(float)CTSPERMM; //convert to mm
+			float yMM = (float)coordsY.get(i)/(float)CTSPERMM;
+			double d = Math.sqrt(Math.pow(xMM-cxMM,2) + Math.pow(yMM-cyMM,2)); //compute distance in mm
+			double t = (d/ACQSPEED); //compute delay	
+			t*=1000; //convert to millis
+			time += (t*1.05) + DELAY_CONST;
+			cxMM = xMM;
+			cyMM = yMM;			
+		}
+		
+		time *= 2;
+		
+		long second = ((long)time / 1000) % 60;
+		long minute = ((long)time / (1000 * 60)) % 60;
+		long hour = ((long)time / (1000 * 60 * 60)) % 24;
+
+		String strTime = String.format("%02d:%02d:%02d", hour, minute, second);
+		return strTime;
+	}
 	
 }
