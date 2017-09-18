@@ -672,8 +672,12 @@ public class SlideScanUI {
 		LensInfo lensCanon1 = new LensInfo("1X Macro", "Canon", 98.5, 12.0469, 9.8598);
 		LensInfo lensCanon3 = new LensInfo("3X Macro", "Canon", 41, 4.21599, 3.45059);
 		LensInfo lensLighbox = new LensInfo("50mm Lighbox", "Rodenstock", 88, 17.39, 15.37);	
-		LensInfo lensNavitar3x = new LensInfo("Navitar 3x", "Navitar", 11.2, 7.772, 6.3617);	
+		LensInfo lensNavitar3x = new LensInfo("Navitar 3x", "Navitar", 11.2, 7.772, 6.3617);
+		LensInfo lensNavitar4_5x = new LensInfo("Navitar 4.5x", "Navitar", 9.6, 5.1039, 4.1773);
+		LensInfo lensNavitar4_5x1_5x = new LensInfo("Navitar 4.5x 1.5X insert", "Navitar", 5.2, 3.28, 2.6866);
 		
+		getComboLens().addItem(lensNavitar4_5x1_5x);
+		getComboLens().addItem(lensNavitar4_5x);
 		getComboLens().addItem(lensNavitar3x);
 		getComboLens().addItem(lensCanon1);
 		getComboLens().addItem(lensCanon3);
