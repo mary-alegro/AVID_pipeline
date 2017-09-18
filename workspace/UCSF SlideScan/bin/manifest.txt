@@ -1,0 +1,1 @@
+Main-Class: edu.ucsf.slidescanner.plugin.SlideScan

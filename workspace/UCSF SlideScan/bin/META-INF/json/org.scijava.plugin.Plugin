@@ -1,1 +1,1 @@
-{"class":"slidescan.SlideScan","values":{"type":"org.micromanager.MenuPlugin"}}
+{"class":"edu.ucsf.slidescanner.plugin.SlideScan","values":{"type":"org.micromanager.MenuPlugin"}}
