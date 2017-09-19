@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.wb.internal.core.model.util.ExposeComponentSupport$ExposeDialog">
-		<item value="672" key="x"/>
-		<item value="525" key="width"/>
+		<item value="3031" key="x"/>
+		<item value="613" key="width"/>
 		<item value="379" key="y"/>
-		<item value="281" key="height"/>
+		<item value="300" key="height"/>
 	</section>
 </section>

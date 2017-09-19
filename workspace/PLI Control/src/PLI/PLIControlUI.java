@@ -41,7 +41,8 @@ public class PLIControlUI {
 	//Plugin attributes
 	private Studio gui_;
 	private CMMCore core_;
-	private PLIControl controler;
+	private PLIControl plugin;
+	private JTextArea textOutput;
 	
 
 	/**
@@ -82,7 +83,7 @@ public class PLIControlUI {
 	}
 	
 	public void setControler(PLIControl ctr) {
-		this.controler = ctr;
+		this.plugin = ctr;
 	}
 	
 	public JFrame getFrame() {
@@ -123,21 +124,21 @@ public class PLIControlUI {
 	private void initialize() {
 		frmPliControlV = new JFrame();
 		frmPliControlV.setTitle("PLI Control v0.1");
-		frmPliControlV.setBounds(100, 100, 439, 583);
+		frmPliControlV.setBounds(100, 100, 583, 683);
 		frmPliControlV.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmPliControlV.getContentPane().setLayout(null);
 		
 		JLabel lblDestinationFolder = new JLabel("Destination folder:");
-		lblDestinationFolder.setBounds(10, 11, 141, 14);
+		lblDestinationFolder.setBounds(10, 11, 196, 14);
 		frmPliControlV.getContentPane().add(lblDestinationFolder);
 		
 		textDestFolder = new JTextField();
-		textDestFolder.setBounds(10, 36, 306, 20);
+		textDestFolder.setBounds(10, 36, 385, 20);
 		frmPliControlV.getContentPane().add(textDestFolder);
 		textDestFolder.setColumns(10);
 		
 		textSlice = new JFormattedTextField();
-		textSlice.setBounds(61, 161, 110, 20);
+		textSlice.setBounds(148, 161, 110, 20);
 		frmPliControlV.getContentPane().add(textSlice);
 		
 		JButton btnChooseDest = new JButton("Choose...");
@@ -157,28 +158,28 @@ public class PLIControlUI {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnChooseDest.setBounds(326, 35, 87, 23);
+		btnChooseDest.setBounds(407, 35, 129, 23);
 		frmPliControlV.getContentPane().add(btnChooseDest);
 		
 		JLabel lblFilePrefix = new JLabel("File prefix:");
-		lblFilePrefix.setBounds(10, 67, 99, 14);
+		lblFilePrefix.setBounds(10, 67, 161, 14);
 		frmPliControlV.getContentPane().add(lblFilePrefix);
 		
 		textFilePrefix = new JTextField();
-		textFilePrefix.setBounds(10, 92, 403, 20);
+		textFilePrefix.setBounds(10, 92, 526, 20);
 		frmPliControlV.getContentPane().add(textFilePrefix);
 		textFilePrefix.setColumns(10);
 		
 		JLabel lblSliceNum = new JLabel("Slice #:");
-		lblSliceNum.setBounds(10, 164, 46, 14);
+		lblSliceNum.setBounds(10, 164, 89, 14);
 		frmPliControlV.getContentPane().add(lblSliceNum);
 		
 		JLabel lblNewLabel = new JLabel("Angle count:");
-		lblNewLabel.setBounds(235, 164, 66, 14);
+		lblNewLabel.setBounds(279, 164, 140, 14);
 		frmPliControlV.getContentPane().add(lblNewLabel);
 		
-		final JTextArea textOutput = new JTextArea();
-		textOutput.setBounds(10, 211, 403, 257);
+		textOutput = new JTextArea();
+		textOutput.setBounds(10, 202, 526, 270);
 		frmPliControlV.getContentPane().add(textOutput);
 		
 		JButton btnRun = new JButton("Run");
@@ -195,9 +196,9 @@ public class PLIControlUI {
 					JOptionPane.showMessageDialog(frmPliControlV, "You must type the file prefix.");
 					return;
 				}
-				String curText = textOutput.getText();
-				textOutput.setText(curText + "Acquire image!" + System.getProperty("line.separator"));
-				controler.acquireImages(18);
+				//String curText = textOutput.getText();
+				//textOutput.setText(curText + "Acquire image!" + System.getProperty("line.separator"));
+				plugin.runAcquisition(plugin.NUM_ANGLES);				
 			}
 		});
 		btnRun.setBounds(10, 496, 89, 37);
@@ -207,7 +208,7 @@ public class PLIControlUI {
 		btnHome.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				textOutput.setText("");
+				plugin.goHome();
 			}
 		});
 		btnHome.addActionListener(new ActionListener() {
@@ -218,30 +219,24 @@ public class PLIControlUI {
 		frmPliControlV.getContentPane().add(btnHome);
 		
 		JSeparator separator = new JSeparator();
-		separator.setBounds(10, 198, 403, 2);
+		separator.setBounds(10, 202, 526, -2);
 		frmPliControlV.getContentPane().add(separator);
-		
-		JSeparator separator_1 = new JSeparator();
-		separator_1.setBounds(10, 479, 403, 2);
-		frmPliControlV.getContentPane().add(separator_1);
 
 		textAngleCount = new JFormattedTextField();
-		textAngleCount.setBounds(314, 161, 99, 20);
+		textAngleCount.setBounds(437, 161, 99, 20);
 		frmPliControlV.getContentPane().add(textAngleCount);
-		
-		JButton btnTestShot = new JButton("Test Shot");
-		btnTestShot.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				controler.doTestShot();
-			}
-		});
-		btnTestShot.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		btnTestShot.setBounds(324, 496, 89, 37);
-		frmPliControlV.getContentPane().add(btnTestShot);
 
+	}
+	public JTextArea getTextOutput() {
+		return textOutput;
+	}
+	public JFormattedTextField getTextSlice() {
+		return textSlice;
+	}
+	public JTextField getTextFilePrefix() {
+		return textFilePrefix;
+	}
+	public JTextField getTextDestFolder() {
+		return textDestFolder;
 	}
 }

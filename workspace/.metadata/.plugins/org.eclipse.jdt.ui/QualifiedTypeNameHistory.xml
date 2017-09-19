@@ -58,4 +58,6 @@
 <fullyQualifiedTypeName name="javax.swing.ListModel"/>
 <fullyQualifiedTypeName name="javax.swing.DefaultListModel"/>
 <fullyQualifiedTypeName name="calibration.LensInfo"/>
+<fullyQualifiedTypeName name="PLI.PLIControl"/>
+<fullyQualifiedTypeName name="PLI.PolarimeterController"/>
 </qualifiedTypeNameHistroy>
