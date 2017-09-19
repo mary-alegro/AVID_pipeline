@@ -1,13 +1,13 @@
 #include <Bounce2.h>
 #include <math.h>
 
-char ACK_INIT[] = "001";
-char ACK_ROT[] = "002";
-char ACK_HOME[] = "003";
-char ACK_MAX[] = "004";
-char ACK_RESET[] = "005";
-char ACK_LEFT[] = "006";
-char ACK_RIGHT[] = "007";
+char ACK_INIT[] = "**##001";
+char ACK_ROT[] = "**##002";
+char ACK_HOME[] = "**##003";
+char ACK_MAX[] = "**##004";
+char ACK_RESET[] = "**##005";
+char ACK_LEFT[] = "**##006";
+char ACK_RIGHT[] = "**##007";
 
 int CMD_ROT = 0;
 int CMD_HOME = 2;
@@ -57,7 +57,7 @@ void setup() {
   
   Serial.begin(9600);           // set up Serial library at 9600 bps
   Serial.println("**IC initialized!"); 
-  Serial.println("001");
+  Serial.println(ACK_INIT);
 }
 
 void loop() {

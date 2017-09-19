@@ -10,6 +10,7 @@ import org.micromanager.data.Datastore;
 import org.micromanager.data.Image;
 import org.scijava.plugin.Plugin;
 
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -65,28 +66,33 @@ public class PLIControl implements MenuPlugin {
     }
     
     //run PLI acquisition
-    public void runAcquisition(int nAngles)  {
-    	try {	    	
-	    	//camCtr.createDataStore();	    	
-	    	//Acquire images.
-	    	for(int ang=0; ang<nAngles; ang++) {
-	    		//camCtr.snapImage();
-	    		polCtr.doRotation();
-	    	}	    	
-	    	//Save images. Here I use IJ save methods so I can change the file names.
-	    	String folder = mWindow_.getDestFolder();
-	    	int sliceNum = mWindow_.getSlice();
-	    	String prefix = mWindow_.getPrefix();
-	    	//camCtr.saveImages(sliceNum, folder, prefix);
-	    	
-    	}catch(Exception e) {
-    		e.printStackTrace();
-    	}
+//    public void runAcquisition(int nAngles)  {
+//    	try {	    	
+//	    	//camCtr.createDataStore();	    	
+//	    	//Acquire images.
+//	    	for(int ang=0; ang<nAngles; ang++) {
+//	    		//camCtr.snapImage();
+//	    		polCtr.doRotation();
+//	    	}	    	
+//	    	//Save images. Here I use IJ save methods so I can change the file names.
+//	    	String folder = mWindow_.getDestFolder();
+//	    	int sliceNum = mWindow_.getSlice();
+//	    	String prefix = mWindow_.getPrefix();
+//	    	//camCtr.saveImages(sliceNum, folder, prefix);
+//	    	
+//    	}catch(Exception e) {
+//    		e.printStackTrace();
+//    	}
+//    }
+    
+    public void runAcquisition(int nAngles) {
+    	Thread worker = new PolWorker("Polworker1");
+    	worker.start();
     }
     
     public void addTextOutput(String txt) {
     	String oldTxt = mWindow_.getTextOutput().getText();
-    	String newTxt = oldTxt + "\n" + txt;
+    	String newTxt = oldTxt +"\n"+ txt;
     	mWindow_.getTextOutput().setText(newTxt);    	
     }
     
@@ -112,7 +118,45 @@ public class PLIControl implements MenuPlugin {
 
     @Override
     public String getCopyright() {
-        return "(C) 2017 UCSF Grinberg Lab";
+        return "(C) 2017 Maryana Alegro - UCSF Grinberg Lab";
+    }
+        
+    
+    //
+    //edu.ucsf.slidescanner.image acquisition thread
+    //
+    private class PolWorker extends Thread{
+    	
+    	PolWorker(String name){
+    		super(name);
+    	}
+    	
+        //run PLI acquisition
+        private void runAcquisition(int nAngles)  {
+        	try {	    	
+    	    	//camCtr.createDataStore();	    	
+    	    	//Acquire images.
+    	    	for(int ang=0; ang<nAngles; ang++) {
+    	    		//camCtr.snapImage();
+    	    		polCtr.doRotation();
+    	    	}	    	
+    	    	//Save images. Here I use IJ save methods so I can change the file names.
+    	    	String folder = mWindow_.getDestFolder();
+    	    	int sliceNum = mWindow_.getSlice();
+    	    	String prefix = mWindow_.getPrefix();
+    	    	//camCtr.saveImages(sliceNum, folder, prefix);
+    	    	
+        	}catch(Exception e) {
+        		e.printStackTrace();
+        	}
+        }
+    	
+    	public void run() {
+    		runAcquisition(PLIControl.NUM_ANGLES);
+    	}
+
     }
 
 }
+
+

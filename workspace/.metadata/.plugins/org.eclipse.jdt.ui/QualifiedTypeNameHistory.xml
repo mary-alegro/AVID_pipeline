@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="org.micromanager.api.ScriptInterface"/>
 <fullyQualifiedTypeName name="mmcorej.CharVector"/>
 <fullyQualifiedTypeName name="SlideScan.CameraHelper"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
@@ -60,4 +59,5 @@
 <fullyQualifiedTypeName name="calibration.LensInfo"/>
 <fullyQualifiedTypeName name="PLI.PLIControl"/>
 <fullyQualifiedTypeName name="PLI.PolarimeterController"/>
+<fullyQualifiedTypeName name="javax.swing.text.DefaultCaret"/>
 </qualifiedTypeNameHistroy>

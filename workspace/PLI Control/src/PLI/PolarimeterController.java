@@ -18,7 +18,8 @@ public class PolarimeterController {
     private final String ACK_RESET = "005";
     private final String ACK_LEFT = "006";
     private final String ACK_RIGHT = "007";
-    private final String ACK_STATUS = "**";
+    private final String ACK_LOG = "**";
+    private final String ACK_STATUS = "##";
 
     private final String CMD_ROT = "0";
     private final String CMD_HOME = "2";
@@ -44,26 +45,36 @@ public class PolarimeterController {
 			
 			//read microcontroler msgs
 			String ans = "";			
-			long startTime = System.nanoTime();				
-			do {
+			long startTime = System.nanoTime();		
+			long estTime = 0;
+			boolean doRead = true;
+			
+			while(estTime < TIMEOUT && doRead) {
 				ans = getBoardMsg();	
-				long estTime = System.nanoTime() - startTime;
-				if(estTime >= TIMEOUT ){
-					System.out.println("ERROR: Stage timed out while running rotate routine.");
-					break;
-				}					
-				if(ans.startsWith(ACK_STATUS)) {
-					
-					String log = ans.replace(ACK_STATUS, "");
-					plugin.addTextOutput(log);
-				}else if(ans == ACK_ROT) {
-					plugin.addTextOutput("Rotation executed");
-					System.out.println("Rotation executed");
-				}else if(ans == ACK_MAX) {
-					plugin.addTextOutput("Maximum reached");
-					System.out.println("Maximum reached");
+				System.out.println(ans);
+				estTime = System.nanoTime() - startTime;
+				
+				String tokens[] = ans.split("(\\*\\*)");
+				for(String token : tokens) {
+					if(token.startsWith(ACK_STATUS)) {
+						String status = token.replace(ACK_STATUS, "");
+						if(status.equals(ACK_ROT)) { //rotation complete
+							System.out.println("Rotation completed");
+							doRead = false;
+							break;
+						}else if(status.equals(ACK_MAX)) {
+							System.out.println("Maximum angle reached");
+							doRead = false;
+							break;
+						}
+					}else {
+						plugin.addTextOutput(token);
+					}
 				}
-			}while(!ans.equals(ACK_ROT) && !ans.equals(ACK_MAX));			
+			}
+			if(estTime >= TIMEOUT ){
+				System.out.println("ERROR: Stage timed out while running rotate routine.");
+			}				
 	
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -78,22 +89,33 @@ public class PolarimeterController {
 			
 			//read microcontroler msgs
 			String ans = "";			
-			long startTime = System.nanoTime();				
-			do {
+			long startTime = System.nanoTime();		
+			long estTime = 0;
+			boolean doRead = true;
+			
+			while(estTime < TIMEOUT && doRead) {
 				ans = getBoardMsg();	
-				long estTime = System.nanoTime() - startTime;
-				if(estTime >= TIMEOUT ){
-					System.out.println("ERROR: Stage timed out while running go home routine.");
-					break;
-				}					
-				if(ans.startsWith(ACK_STATUS)) {
-					String log = ans.replace(ACK_STATUS, "");
-					plugin.addTextOutput(log);
-				}else if(ans == ACK_HOME) {
-					plugin.addTextOutput("Filter position reset");
-					System.out.println("Filter position reset");
+				System.out.println(ans);
+				estTime = System.nanoTime() - startTime;
+				
+				String tokens[] = ans.split("(\\*\\*)");
+				for(String token : tokens) {
+					if(token.startsWith(ACK_STATUS)) {
+						String status = token.replace(ACK_STATUS, "");
+						if(status.equals(ACK_HOME)) { //rotation complete
+							System.out.println("Filters position reset");
+							doRead = false;
+							break;
+						}
+					}else {
+						plugin.addTextOutput(token);
+					}
 				}
-			}while(!ans.equals(ACK_HOME));			
+			}
+			if(estTime >= TIMEOUT ){
+				System.out.println("ERROR: Stage timed out while running rotate routine.");
+			}						
+	
 	
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -101,6 +123,7 @@ public class PolarimeterController {
 	}
 	
 	public String getBoardMsg() throws Exception {
+		Thread.sleep(200);
 		CharVector ans = core.readFromSerialPort(port);
 		String str = charVec2Str(ans);
 		return str;

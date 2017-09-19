@@ -6,8 +6,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.text.NumberFormat;
-import java.util.Formatter;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -15,10 +13,11 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.text.NumberFormatter;
+import javax.swing.text.DefaultCaret;
 
 import org.micromanager.Studio;
 
@@ -124,7 +123,7 @@ public class PLIControlUI {
 	private void initialize() {
 		frmPliControlV = new JFrame();
 		frmPliControlV.setTitle("PLI Control v0.1");
-		frmPliControlV.setBounds(100, 100, 583, 683);
+		frmPliControlV.setBounds(100, 100, 596, 630);
 		frmPliControlV.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmPliControlV.getContentPane().setLayout(null);
 		
@@ -133,7 +132,7 @@ public class PLIControlUI {
 		frmPliControlV.getContentPane().add(lblDestinationFolder);
 		
 		textDestFolder = new JTextField();
-		textDestFolder.setBounds(10, 36, 385, 20);
+		textDestFolder.setBounds(10, 36, 389, 20);
 		frmPliControlV.getContentPane().add(textDestFolder);
 		textDestFolder.setColumns(10);
 		
@@ -158,7 +157,7 @@ public class PLIControlUI {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnChooseDest.setBounds(407, 35, 129, 23);
+		btnChooseDest.setBounds(420, 35, 129, 23);
 		frmPliControlV.getContentPane().add(btnChooseDest);
 		
 		JLabel lblFilePrefix = new JLabel("File prefix:");
@@ -166,7 +165,7 @@ public class PLIControlUI {
 		frmPliControlV.getContentPane().add(lblFilePrefix);
 		
 		textFilePrefix = new JTextField();
-		textFilePrefix.setBounds(10, 92, 526, 20);
+		textFilePrefix.setBounds(10, 92, 539, 20);
 		frmPliControlV.getContentPane().add(textFilePrefix);
 		textFilePrefix.setColumns(10);
 		
@@ -177,10 +176,6 @@ public class PLIControlUI {
 		JLabel lblNewLabel = new JLabel("Angle count:");
 		lblNewLabel.setBounds(279, 164, 140, 14);
 		frmPliControlV.getContentPane().add(lblNewLabel);
-		
-		textOutput = new JTextArea();
-		textOutput.setBounds(10, 202, 526, 270);
-		frmPliControlV.getContentPane().add(textOutput);
 		
 		JButton btnRun = new JButton("Run");
 		btnRun.addMouseListener(new MouseAdapter() {
@@ -223,8 +218,17 @@ public class PLIControlUI {
 		frmPliControlV.getContentPane().add(separator);
 
 		textAngleCount = new JFormattedTextField();
-		textAngleCount.setBounds(437, 161, 99, 20);
+		textAngleCount.setBounds(437, 161, 112, 20);
 		frmPliControlV.getContentPane().add(textAngleCount);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(20, 208, 537, 264);
+		frmPliControlV.getContentPane().add(scrollPane);
+		
+		textOutput = new JTextArea();
+		DefaultCaret caret = (DefaultCaret)textOutput.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		scrollPane.setViewportView(textOutput);
 
 	}
 	public JTextArea getTextOutput() {
