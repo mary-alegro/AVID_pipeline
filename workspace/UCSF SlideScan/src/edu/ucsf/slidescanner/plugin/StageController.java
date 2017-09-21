@@ -18,7 +18,7 @@ public class StageController {
 	final float ACQSPEED = 15; // 10mm/s
 	final long[] DEFAULTMAX_X = new long[] {-607200,607200}; //left to right
 	final long[] DEFAULTMAX_Y = new long[] {607200,-607200}; //to to bottom
-	final int DELAY_CONST = 600; //in ms
+	final int DELAY_CONST = 800; //in ms
 	long[] LIMIT_X = new long[2];
 	long[] LIMIT_Y = new long[2];
 	private int[] tileGrid = new int[2];
