@@ -25,20 +25,26 @@ int num = -1;
 int listAngs[] = {10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170};
 float currCic = 0;
 float doneCic = 0;
-const float MAX_CIC = 28854; // computed using polynomial
+const float MAX_CIC = 28700; // num. cics to reach 360 degrees, computed using the polynomial
 int ind = 0;
 
 //debounces switch signal
 Bounce bouncer_l = Bounce();
 Bounce bouncer_r = Bounce();
 
-
-
-// 3rd degree polynomial coeffs (pa = 0)
+// 3rd degree polynomial coeffs 
+// f(y) = pa*Ang^3 + pb*Ang^2 + pc*Ang + pd
+const float pa = 0;
 const float pb = -0.0018;
 const float pc = 80.2894;
 const float pd = 8.4442;
 
+//computer using the jupyter notebook
+//[ -1.53356329e-05   6.86476535e-03   7.95952621e+01  -1.28410674e+02]
+//const float pa = -1.53356329e-05;
+//const float pb = 6.86476535e-03;
+//const float pc = 7.95952621e+01;
+//const float pd = -1.28410674e+02;
 
 void setup() {
   digitalWrite(RESET,HIGH);
@@ -128,7 +134,7 @@ void loop() {
       }
       float ang = (float)listAngs[ind];
       //compute num. duty cicles using the polynomial 
-      float currCic = (pb*(ang*ang)) + (pc*ang) + pd;
+      float currCic = (pa*(ang*ang*ang)) + (pb*(ang*ang)) + (pc*ang) + pd;
       float nCic1 = currCic - doneCic;
       int nCic = ceil(nCic1);
       
@@ -168,7 +174,7 @@ void rotate(int nC){
 }
 
 void goHome(){
-  int nCic = (MAX_CIC - doneCic) - 53;
+  int nCic = (MAX_CIC - doneCic) + 90;
 
   Serial.println("Going home.");
   Serial.println(" ");

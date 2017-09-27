@@ -27,6 +27,8 @@ public class PolarimeterController {
     private final String CMD_LEFT = "3";
     private final String CMD_RIGHT = "4";	
     
+    private boolean max_reached = false;
+    
     
     private String port = "COM3";
     final long TIMEOUT = (long)3e10; //30secs in nanosecs
@@ -65,6 +67,7 @@ public class PolarimeterController {
 						}else if(status.equals(ACK_MAX)) {
 							System.out.println("Maximum angle reached");
 							doRead = false;
+							this.max_reached = true;
 							break;
 						}
 					}else {
@@ -104,6 +107,7 @@ public class PolarimeterController {
 						String status = token.replace(ACK_STATUS, "");
 						if(status.equals(ACK_HOME)) { //rotation complete
 							System.out.println("Filters position reset");
+							this.max_reached = false;
 							doRead = false;
 							break;
 						}
@@ -120,6 +124,10 @@ public class PolarimeterController {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean isMaxReached() {
+		return this.max_reached;
 	}
 	
 	public String getBoardMsg() throws Exception {

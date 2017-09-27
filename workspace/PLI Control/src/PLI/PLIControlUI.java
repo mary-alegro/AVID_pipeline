@@ -34,7 +34,6 @@ public class PLIControlUI {
 	private JTextField textDestFolder;
 	private JTextField textFilePrefix;
 	private JFormattedTextField textSlice;
-	private JFormattedTextField textAngleCount;
 
 	
 	//Plugin attributes
@@ -98,7 +97,6 @@ public class PLIControlUI {
 	}
 	
 	public void setAngle(String s) {
-		textAngleCount.setText(s);
 	}
 	
 	public int getSlice() {
@@ -107,11 +105,11 @@ public class PLIControlUI {
 		return num;
 	}
 	
-	public int getAngle() {
-		String str = textAngleCount.getText();
-		int num = Integer.parseInt(str);
-		return num;
-	}
+//	public int getAngle() {
+//		String str = textAngleCount.getText();
+//		int num = Integer.parseInt(str);
+//		return num;
+//	}
 	
 	public String getPrefix() {
 		return textFilePrefix.getText();
@@ -173,10 +171,6 @@ public class PLIControlUI {
 		lblSliceNum.setBounds(10, 164, 89, 14);
 		frmPliControlV.getContentPane().add(lblSliceNum);
 		
-		JLabel lblNewLabel = new JLabel("Angle count:");
-		lblNewLabel.setBounds(279, 164, 140, 14);
-		frmPliControlV.getContentPane().add(lblNewLabel);
-		
 		JButton btnRun = new JButton("Run");
 		btnRun.addMouseListener(new MouseAdapter() {
 			@Override
@@ -216,10 +210,6 @@ public class PLIControlUI {
 		JSeparator separator = new JSeparator();
 		separator.setBounds(10, 202, 526, -2);
 		frmPliControlV.getContentPane().add(separator);
-
-		textAngleCount = new JFormattedTextField();
-		textAngleCount.setBounds(437, 161, 112, 20);
-		frmPliControlV.getContentPane().add(textAngleCount);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(20, 208, 537, 264);

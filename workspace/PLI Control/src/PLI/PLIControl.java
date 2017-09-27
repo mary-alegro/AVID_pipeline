@@ -30,6 +30,8 @@ public class PLIControl implements MenuPlugin {
     private CameraController camCtr;
     private PolarimeterController polCtr;
     public static final int NUM_ANGLES = 18;
+    
+    private boolean max_reached = false;
 
     @Override
     public void setContext(Studio app) {
@@ -99,6 +101,7 @@ public class PLIControl implements MenuPlugin {
     //send filters to home position
     public void goHome() {
     	polCtr.goHome();
+    	max_reached = false;
     }
     
     @Override
@@ -133,18 +136,29 @@ public class PLIControl implements MenuPlugin {
     	
         //run PLI acquisition
         private void runAcquisition(int nAngles)  {
+        	
+        	if(max_reached) {
+        		addTextOutput("You must reset filter positions.");
+        		return;
+        	}
+        	
         	try {	    	
-    	    	//camCtr.createDataStore();	    	
+    	    	camCtr.createDataStore();	    	
     	    	//Acquire images.
-    	    	for(int ang=0; ang<nAngles; ang++) {
-    	    		//camCtr.snapImage();
+    	    	for(int ang=0; ang<nAngles-1; ang++) { 
+    	    		Thread.sleep(200);
+    	    		camCtr.snapImage(ang);	
     	    		polCtr.doRotation();
-    	    	}	    	
+    	    	}	    
+    	    	
     	    	//Save images. Here I use IJ save methods so I can change the file names.
-    	    	String folder = mWindow_.getDestFolder();
-    	    	int sliceNum = mWindow_.getSlice();
-    	    	String prefix = mWindow_.getPrefix();
-    	    	//camCtr.saveImages(sliceNum, folder, prefix);
+    	    	if(!max_reached) {
+	    	    	String folder = mWindow_.getDestFolder();
+	    	    	int sliceNum = mWindow_.getSlice();
+	    	    	String prefix = mWindow_.getPrefix();
+	    	    	camCtr.saveImages(sliceNum, folder, prefix);
+    	    	}
+    	    	max_reached = true;
     	    	
         	}catch(Exception e) {
         		e.printStackTrace();
