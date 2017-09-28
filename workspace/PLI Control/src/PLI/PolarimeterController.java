@@ -30,7 +30,7 @@ public class PolarimeterController {
     private boolean max_reached = false;
     
     
-    private String port = "COM3";
+    private String port = "COM4";
     final long TIMEOUT = (long)3e10; //30secs in nanosecs
     
 	public PolarimeterController(Studio gui_, PLIControl pl) {
