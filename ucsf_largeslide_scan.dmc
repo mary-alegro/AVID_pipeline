@@ -1,0 +1,666 @@
+'#######################################
+'Program 28019
+
+'Description: Config, Joystick, Homing
+
+'For: UCSF
+
+'For Controller:
+'DMC-4123-BOX4(TRES4,MO)-D3020(HALLF)
+
+'Hardware Configuration:
+'A: CXY bottom axis
+'B: CXY top axis
+'Analog: Joystick Interface
+
+
+
+'---------------------------------------
+'REVISIONS
+'Rev A - 2017-06-30 - JG - Released for Production
+'---------------------------------------
+'#######################################
+
+
+'**************************************
+#AUTO
+'Description: Program which runs at power-up.
+'Thread: 0
+'**************************************
+
+'DEBUG TRACE ON/OFF (1/0)
+TR0
+
+'wait for hardware to initialize
+WT500
+
+'SETUP CONFIGURATION PARAMETERS
+JS#CFG
+
+'Turn Motors On
+SHAB
+
+'EXECUTE JOYSTICK ROUTINE
+XQ#RUNJOY,4
+'
+
+EN
+'END #AUTO
+'***************************************
+
+
+
+
+
+
+
+
+
+
+
+
+'**************************************************************
+#RUNJOY
+'Title: JOYSTICK PROGRAM
+'Desc: Infinite Loop to monitor joystick
+'Thread: 4
+'**************************************************************
+
+'Stop any current motion
+STAB
+
+'Wait for stop to complete
+AMAB
+
+
+'#######################
+'Program Config
+
+CTSPMMX=8000
+CTSPMMY=8000
+CTSPMMZ=8000
+CTSPDGT=819200/360
+
+'MAXIMUM SPEED (MM/S)
+SPMAXX=25
+SPMAXY=25
+SPMAXZ=3.5
+'MAXIMUM SPEED (DEG/S)
+SPMAXT=3;'was 100
+
+'SLOW SPEED FACTOR (0.0 -> 1.0) (percent of SPMAX)
+SLOWFACT = 0.05
+
+'FULL ANALOG RANGE (VOLTS)
+'Measure at full deflection
+'of joystick by using MG@AN[1]
+ANRAX=(10.0)-(-10.0)
+ANRAY=(10.0)-(-10.0)
+ANRAZ=(8.0)-(-8.0)
+ANRAT=(10.0)-(-10.0)
+
+'DEADBAND THRESHHOLD (VOLTS) [ABS]
+DEDBANDX = 1.5
+DEDBANDY = 1.5
+DEDBANDZ = 1.0
+DEDBANDT = 1.5
+
+'Assign Motion Axes to Joystick Axes
+'joytick = motion
+~a="A"
+~b="B"
+~c="D"
+~d="C"
+
+'End Program Config
+'##########################
+
+'Initialize Speed
+JG 0,0
+
+'Initialize Acc/Dec
+AC~a=500*CTSPMMX
+AC~b=500*CTSPMMY
+'AC~c=100*CTSPMMZ
+'AC~d=800*CTSPDGT
+
+DC~a=500*CTSPMMX
+DC~b=500*CTSPMMY
+'DC~c=300*CTSPMMZ
+'DC~d=800*CTSPDGT
+
+
+'**************************************************************
+'Beginning of infinite loop
+'to monitor joystick voltages
+#JOYLOOP
+
+'Sample Joystick Inputs
+'multiply by -1 to invert
+VOLTX=@AN[1]
+VOLTY=@AN[2]
+VOLTZ=@AN[3]
+VOLTT=@AN[4]
+VOLTSPD=@AN[7]
+PRESENT=@AN[8]
+
+
+'CHECK THAT JOYSTICK IS PLUGGED IN
+IF(PRESENT < 4.0)
+  'NO JOYSTICK PRESENT
+  'SET SPEEDS TO 0
+  JG 0,0
+  JP#JOYLOOP
+ENDIF
+
+'DISABLE THETA AXIS
+VOLTZ=0
+VOLTT=0
+
+
+
+
+'----------------------
+#CalcX
+IF(@ABS[VOLTX] < DEDBANDX)
+  'JOYSTICK IN DEADBAND
+  JG~a=0
+ELSE
+  'Subtract deadband
+  IF(VOLTX > 0)
+    VOLTX = VOLTX - DEDBANDX
+  ELSE
+    VOLTX = VOLTX + DEDBANDX
+  ENDIF
+
+  IF(VOLTSPD < 2.5)
+    'MULTIPLY BY SLOW SPEED FACTOR
+    'MG"SLOW SPEED A"
+    JG~a=(VOLTX/(ANRAX/2))*SLOWFACT*SPMAXX*CTSPMMX
+  ELSE
+    'FULL SPEED
+    'MG"FULL SPEED A"
+    JG~a=(VOLTX/(ANRAX/2))*SPMAXX*CTSPMMX
+  ENDIF
+
+  'If stuck in a limit switch
+  IF((_LF~a=0) & (_LR~a=0))
+     'EITHER LIMIT SWITCH ERROR
+     'OR INTERLOCK PCB 25551 HAS DISABLED
+     'IN EITHER CASE DO NOT BEGIN MOTION
+ 
+     'DO NOTHING
+     MG"AXIS ~a DISABLED"
+  ELSE
+    IF(_LF~a=0)
+      IF(VOLTX<0)
+        BG~a
+      ENDIF
+    ELSE
+      IF(_LR~a=0)
+        IF(VOLTX>0)
+          BG~a
+        ENDIF
+      ELSE
+        IF((_TS~a&128)/128=0)
+          'If the motor is stopped, begin motion
+          BG~a
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+ENDIF
+'---------------------
+'end #CalcX
+
+
+'----------------------
+#CalcY
+IF(@ABS[VOLTY] < DEDBANDY)
+  'JOYSTICK IN DEADBAND
+  JG~b=0
+ELSE
+  'Subtract deadband
+  IF(VOLTY > 0)
+    VOLTY = VOLTY - DEDBANDY
+  ELSE
+    VOLTY = VOLTY + DEDBANDY
+  ENDIF
+
+  IF(VOLTSPD < 2.5)
+    'MULTIPLY BY SLOW SPEED FACTOR
+    'MG"SLOW SPEED Y"
+    JG~b=(VOLTY/(ANRAY/2))*SLOWFACT*SPMAXY*CTSPMMY
+  ELSE
+    'FULL SPEED
+    'MG"FULL SPEED A"
+    JG~b=(VOLTY/(ANRAY/2))*SPMAXY*CTSPMMY
+  ENDIF
+
+  'If stuck in a limit switch
+  IF((_LF~b=0) & (_LR~b=0))
+     'EITHER LIMIT SWITCH ERROR
+     'OR INTERLOCK PCB 25551 HAS DISABLED
+     'IN EITHER CASE DO NOT BEGIN MOTION
+ 
+     'DO NOTHING
+     MG"AXIS ~b DISABLED"
+  ELSE
+    IF(_LF~b=0)
+      IF(VOLTY<0)
+        BG~b
+      ENDIF
+    ELSE
+      IF(_LR~b=0)
+        IF(VOLTY>0)
+          BG~b
+        ENDIF
+      ELSE
+        IF((_TS~b&128)/128=0)
+          'If the motor is stopped, begin motion
+          BG~b
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+ENDIF
+'---------------------
+'end #CalcY
+
+
+'----------------------
+#CalcZ
+IF(@ABS[VOLTZ] < DEDBANDZ)
+  'JOYSTICK IN DEADBAND
+  JG~c=0
+ELSE
+  'Subtract deadband
+  IF(VOLTZ > 0)
+    VOLTZ = VOLTZ - DEDBANDZ
+  ELSE
+    VOLTZ = VOLTZ + DEDBANDZ
+  ENDIF
+
+  IF(VOLTSPD < 2.5)
+    'MULTIPLY BY SLOW SPEED FACTOR
+    'MG"SLOW SPEED Y"
+    JG~c=(VOLTZ/(ANRAZ/2))*SLOWFACT*SPMAXZ*CTSPMMZ
+  ELSE
+    'FULL SPEED
+    'MG"FULL SPEED Z"
+    JG~c=(VOLTZ/(ANRAZ/2))*SPMAXZ*CTSPMMZ
+  ENDIF
+
+  'If stuck in a limit switch
+  IF((_LF~c=0) & (_LR~c=0))
+     'EITHER LIMIT SWITCH ERROR
+     'OR INTERLOCK PCB 25551 HAS DISABLED
+     'IN EITHER CASE DO NOT BEGIN MOTION
+ 
+     'DO NOTHING
+     MG"AXIS ~c DISABLED"
+  ELSE
+    IF(_LF~c=0)
+      IF(VOLTZ<0)
+        BG~c
+      ENDIF
+    ELSE
+      IF(_LR~c=0)
+        IF(VOLTZ>0)
+          BG~c
+        ENDIF
+      ELSE
+        IF((_TS~c&128)/128=0)
+          'If the motor is stopped, begin motion
+          BG~c
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+ENDIF
+'---------------------
+'end #CalcZ
+
+
+'----------------------
+#CalcT
+IF(@ABS[VOLTT] < DEDBANDT)
+  'JOYSTICK IN DEADBAND
+  JG~d=0
+ELSE
+  'Subtract deadband
+  IF(VOLTT > 0)
+    VOLTT = VOLTT - DEDBANDT
+  ELSE
+    VOLTT = VOLTT + DEDBANDT
+  ENDIF
+
+  IF(VOLTSPD < 2.5)
+    'MULTIPLY BY SLOW SPEED FACTOR
+    'MG"SLOW SPEED Y"
+    JG~d=(VOLTT/(ANRAT/2))*SLOWFACT*SPMAXT*CTSPDGT
+  ELSE
+    'FULL SPEED
+    'MG"FULL SPEED Z"
+    JG~d=(VOLTT/(ANRAT/2))*SPMAXT*CTSPDGT
+  ENDIF
+
+  IF((_TS~d&128)/128=0)
+    'If the motor is stopped, begin motion
+    BG~d
+  ENDIF
+      
+ENDIF
+'---------------------
+'end #CalcZ
+
+
+'loop infinitely
+JP#JOYLOOP
+'End of Joystick Program
+'***************************************************
+
+
+
+
+
+
+
+
+
+
+'***************************************************
+#HOMEALL
+'HOME ALL AXES AT ONCE
+'***************************************************
+
+'KILL JOYSTICK THREAD
+HX4
+
+'STOP MOTION
+STAB
+AMAB
+
+'VARIABLE INITIALIZATION
+HOMXY=0
+HOMROT=0
+HOMZ=0
+HOMEDONE=0
+'MG" "
+'MG "Begin Home All Routine"
+
+'EXECUTE HOME PROGRAMS
+XQ#HOMEXY,1
+'XQ#HOMEROT,2
+'XQ#HOMEZ,3
+
+
+
+'WATCHDOG TIMER
+HOMETO= TIME
+#HOMLOOP
+'Timeout after 3 1/2 minutes
+IF (TIME>(HOMETO+210000))
+  HX1
+  ST
+  MG "Home All Routine Time Out"
+  JP#HOMEEND
+ENDIF
+'JP#HOMLOOP,((HOMXY&HOMROT&HOMZ) <> 1)
+JP#HOMLOOP,((HOMXY) <> 1)
+'MG "All Axes Homed"
+#HOMEEND
+
+XQ#RUNJOY,4
+EN
+'END HOMEALL
+'***************************************************
+
+
+
+
+
+
+
+'***************************************************
+#HOMEXY
+'Program Configuration
+'***************************************************
+'
+'Conversion Factor (encoder counts / mm)
+CTSPERMM=CTSPMMA
+'
+'Total Travel of the stage (mm)
+STGTRVL=150
+'
+'Speed to Home at (mm/s)
+HOMSP=10
+'
+
+HOMEDONE=(HOMEDONE&12)
+'***************************************************
+'Main Program to Home an XY stage
+'***************************************************
+'
+
+STXY
+AMXY
+SHXY
+
+LD0,0
+'MG" "
+'MG"Begin XY Homing Routine"
+'Save the current sp/ac/dc
+XACTEMP=_ACA
+XDCTEMP=_DCA
+XSPTEMP=_SPA
+YACTEMP=_ACB
+YDCTEMP=_DCB
+YSPTEMP=_SPB
+'
+'Set speeds and accelerations appropriate for homing
+AC400*CTSPERMM,400*CTSPERMM
+DC400*CTSPERMM,400*CTSPERMM
+SD600*CTSPERMM,600*CTSPERMM
+SPHOMSP*CTSPERMM,HOMSP*CTSPERMM
+HV0.5*CTSPERMM,0.5*CTSPERMM
+
+'Be sure that the stage is in the negative quadrant to start
+IF(_LRA=1)
+  IPA=-STGTRVL*CTSPERMM/2
+ENDIF
+
+IF(_LRB=1)
+  IPB=-STGTRVL*CTSPERMM/2
+ENDIF
+
+AMXY
+
+
+'Arm the controller to decelerate to a stop when 
+'a change on the home input is detected
+FEXY
+BGXY
+AMXY
+
+
+IP -2*CTSPERMM, -2*CTSPERMM
+AMXY
+
+'Slow to 1/10th speed for the second phase to get
+'a more accurate home location
+SP 0.5*CTSPERMM, 0.5*CTSPERMM
+DC 600*CTSPERMM, 600*CTSPERMM
+FEXY
+BGXY
+AMXY
+'
+
+'WAIT FOR FOLLOWING ERROR TO SETTLE
+WT 500
+
+'SET CURRENT POSITION TO 0
+DP 0, 0
+
+'
+'Reset the speeds back to the original
+ACA=XACTEMP
+DCA=XDCTEMP
+SPA=XSPTEMP
+ACB=YACTEMP
+DCB=YDCTEMP
+SPB=YSPTEMP
+'
+HOMXY=1
+HOMEDONE=(HOMEDONE|3)
+'MG"Homing Routine XY Complete"
+MG"HOK"
+
+EN
+'END #HOMEXY
+'***************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+'**************************************************************
+#CFG
+'Title: Controller Configuration
+'Thread: 0
+'**************************************************************
+
+'Conversion Factors
+CTSPMMA=8000
+CTSPMMB=8000
+CTSPDGC=819200/360
+CTSPMMD=8000
+
+
+'Initialize variables
+HOMEDONE=0
+
+
+'Stop current move (if any)
+'Wait for all axes to stop
+STAB
+AMAB
+'Motors must be off in order to set AG
+MO
+'WAIT FOR BRAKE TO SHUT OFF
+WT 1000
+
+TM 1000.0000
+MT 1.0, 1.0
+CE 0, 0
+AG 1, 1
+OF 0.0000, 0.0000
+AU 0.0, 0.0
+LD 0, 0
+CN 1.0000, -1.0000, -1.0000
+
+BW 0, 0
+FL 2147483647, 2147483647
+BL -2147483648, -2147483648
+
+'Tuning Setup
+KP 20.00, 20.00
+KI  1.0,   1.0
+KD 40.00, 40.00
+
+FA 0, 0
+FV 0, 0
+IL 9.9982, 9.9982
+PL 0.0000, 0.0000
+NB 0.5, 0.5
+NF 0, 0
+
+'Safety Limits
+OE 1, 1
+TK 0.0000, 0.0000
+TL 4.0000, 4.0000
+ER 8000, 8000
+
+'Motion Settings
+AC 500*CTSPMMA, 500*CTSPMMB
+DC 500*CTSPMMA, 500*CTSPMMB
+SP  10*CTSPMMA,  10*CTSPMMA
+SD 600*CTSPMMA, 600*CTSPMMB
+HV 4000, 4000
+LC 0, 0
+YA 2, 2
+
+
+'MG"CFG EN"
+EN
+'End #CFG
+'**********************************************
+
+
+
+
+'**********************************************
+' Maryana's edits
+' UCSF Large Slide Scan code
+'**********************************************
+#UCHOME
+MAXPOS=80000
+MAXNEG=-80000
+ST
+STAB
+AMAB
+SHAB
+IF(_LRA=1)
+  JGA=MAXNEG
+  BGA
+ENDIF
+IF(_LRB=1) 
+  JGB=MAXNEG
+  BGB
+ENDIF
+MCAB
+JG MAXPOS,MAXPOS
+FEAB
+BGAB
+MCAB
+DP 0,0
+MG"HOK"
+XQ#RUNJOY,4
+EN
+
+#SM
+MG"ABC"
+EN
+
+#STOPALL
+HX
+ST
+EN
+
+#PREPMO
+STAB
+AMAB
+AC 500*CTSPMMA, 500*CTSPMMB
+DC 500*CTSPMMA, 500*CTSPMMB
+SP  15*CTSPMMA,  15*CTSPMMA
+MG"PREPOK"
+EN
+
+'**************************************
+#UCRESET
+TR0
+WT500
+JS#CFG
+SHAB
+XQ#RUNJOY,4
+EN
+
+
+
