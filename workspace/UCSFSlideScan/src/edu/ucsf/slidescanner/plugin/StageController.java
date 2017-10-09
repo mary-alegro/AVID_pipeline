@@ -18,7 +18,7 @@ public class StageController {
 	final float ACQSPEED = 15; // 10mm/s
 	final long[] DEFAULTMAX_X = new long[] {-607200,607200}; //left to right
 	final long[] DEFAULTMAX_Y = new long[] {607200,-607200}; //to to bottom
-	final int DELAY_CONST = 800; //in ms
+	final int DELAY_CONST = 400; //in ms
 	long[] LIMIT_X = new long[2];
 	long[] LIMIT_Y = new long[2];
 	private int[] tileGrid = new int[2];
@@ -34,8 +34,10 @@ public class StageController {
 		
 	//Stage codes
 	private String STG_ERROR = "?";
+	private String STG_OK = ":";
 	private String STG_HOME_OK = "HOK";
 	private String STG_PREPMO_OK = "PREPOK";
+	private String STG_MOVE_OK = "MOVOK";
 	
 	public StageController(Studio gui_, SlideScan sc) {
 		gui = gui_;
@@ -158,6 +160,7 @@ public class StageController {
 		CharVector cmd = str2Charvec(strCmd);
 		core.writeToSerialPort(port, cmd);
 		String ans = getStageMsg();
+		System.out.println(ans);
 		if(ans.equals(STG_ERROR)) {
 			System.out.println("ERROR: There was and error restarting the joystick routine");
 			throw new Exception("ERROR: There was and error restarting the joystick routine");
@@ -215,30 +218,72 @@ public class StageController {
 		moveToAbsPos(pos);
 	}
 	
+//	public void moveToAbsPos(int[] pos) throws Exception {
+//		String strCmd = "PA " + pos[0] + "," + pos[1] + cmdTerminator;
+//		CharVector cmd = str2Charvec(strCmd);
+//		core.writeToSerialPort(port, cmd);
+//		String ans = getStageMsg();
+//		System.out.println(ans);
+//		if(ans.contains(STG_ERROR)) {
+//			String error = getStageError();
+//			System.out.println("ERROR: There was and error moving the stage: set XY");
+//			System.out.println(error);
+//			throw new Exception("ERROR: There was and error moving the stage: set XY");
+//		}else {
+//			strCmd = "BG"  + cmdTerminator;
+//			cmd = str2Charvec(strCmd);
+//			core.writeToSerialPort(port, cmd);
+//			ans = getStageMsg();
+//			System.out.println(ans);
+//			if(ans.contains(STG_ERROR)) {
+//				String error = getStageError();
+//				System.out.println("ERROR: There was and error moving the stage: moving");
+//				System.out.println(error);
+//				throw new Exception("ERROR: There was and error moving the stage: moving");
+//			}
+//		}
+//	}
+	
 	public void moveToAbsPos(int[] pos) throws Exception {
-		String strCmd = "PA " + pos[0] + "," + pos[1] + cmdTerminator;
+		
+		//set pos_x in stage
+		String strCmd = "pos_x=" + pos[0] + cmdTerminator;
 		CharVector cmd = str2Charvec(strCmd);
 		core.writeToSerialPort(port, cmd);
 		String ans = getStageMsg();
-		System.out.println(ans);
-		if(ans.contains(STG_ERROR)) {
-			String error = getStageError();
-			System.out.println("ERROR: There was and error moving the stage: set XY");
-			System.out.println(error);
-			throw new Exception("ERROR: There was and error moving the stage: set XY");
-		}else {
-			strCmd = "BG"  + cmdTerminator;
+		System.out.println(ans);		
+		if(ans.contains(STG_OK)) { //set 1st variable OK
+			
+			//set pos_y in stage
+			strCmd = "pos_y=" + pos[1] + cmdTerminator;
 			cmd = str2Charvec(strCmd);
 			core.writeToSerialPort(port, cmd);
 			ans = getStageMsg();
 			System.out.println(ans);
-			if(ans.contains(STG_ERROR)) {
-				String error = getStageError();
-				System.out.println("ERROR: There was and error moving the stage: moving");
-				System.out.println(error);
-				throw new Exception("ERROR: There was and error moving the stage: moving");
+			if(ans.contains(STG_OK)) { //set 2nd variable OK
+				
+				//send move command
+				strCmd = "XQ#MOV2POS" + cmdTerminator;
+				cmd = str2Charvec(strCmd);
+				core.writeToSerialPort(port, cmd);
+				ans = getStageMsg();
+				System.out.println(ans);
+				long startTime = System.nanoTime();				
+				while(!ans.contains(STG_MOVE_OK)) { //busy wait to make sure program doesn't run while stage is moving
+					ans = getStageMsg();
+					System.out.println(ans);
+					long estTime = System.nanoTime() - startTime;
+					if(estTime >= TIMEOUT ){
+						System.out.println("ERROR: Stage timed out while running move2pos routine.");
+						throw new Exception("ERROR: Stage timed out while running move2pos motion routine.");
+					}
+				}
+			}else {
+				throw new Exception("ERROR: There was and error setting Y position");
 			}
-		}
+		}else {
+			throw new Exception("ERROR: There was and error setting X position");
+		}		
 	}
 	
 	public CharVector str2Charvec(String str) {
@@ -421,8 +466,10 @@ public class StageController {
 				t*=1000; //convert to millis
 				
 				//move stage
+				//prepForMotion();
 				moveToAbsPos(x,y);
-				Thread.sleep((long)(t*1.05) + DELAY_CONST);
+				//Thread.sleep((long)(t*1.05) + DELAY_CONST);
+				Thread.sleep(DELAY_CONST); 
 				//snap edu.ucsf.slidescanner.image here	
 				if(isTile.get(i)) {
 					camCtr.acquireImage(posCount);
