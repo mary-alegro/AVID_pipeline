@@ -32,8 +32,8 @@ public class LensManagerWindow {
 	private JList listLenses;
 	private DefaultListModel listModel;
 	
-	private LensInfo newLens;
-	private String lensFile = LensInfo.lensFile;
+	private LensConfig newLens;
+	private String lensFile = LensConfig.lensFile;
 
 	/**
 	 * Launch the application.
@@ -58,9 +58,9 @@ public class LensManagerWindow {
 		initialize();
 		listModel = new DefaultListModel();
 		try {
-			List<LensInfo> listLens = LensInfo.loadItems(listModel,lensFile);				
+			List<LensConfig> listLens = LensConfig.loadItems(listModel,lensFile);				
 			if(listLens != null) {
-				for(LensInfo lens : listLens) {
+				for(LensConfig lens : listLens) {
 					listModel.addElement(lens);
 				}
 			}
@@ -106,7 +106,7 @@ public class LensManagerWindow {
 		JButton btnEdit = new JButton("Edit");
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				newLens = (LensInfo)listLenses.getSelectedValue();
+				newLens = (LensConfig)listLenses.getSelectedValue();
 				if(newLens == null) {
 					return;
 				}
@@ -182,7 +182,7 @@ public class LensManagerWindow {
 		JButton btnAdd = new JButton("+");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				newLens = new LensInfo();
+				newLens = new LensConfig();
 				textBrand.setEnabled(true);
 				textModel.setEnabled(true);
 				textFOV_X.setEnabled(true);
@@ -216,7 +216,7 @@ public class LensManagerWindow {
 		JButton btnRemove = new JButton("-");
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				LensInfo select = (LensInfo)listLenses.getSelectedValue();
+				LensConfig select = (LensConfig)listLenses.getSelectedValue();
 				if(select == null) {
 					return;
 				}
@@ -225,7 +225,7 @@ public class LensManagerWindow {
 				int response = JOptionPane.showConfirmDialog(getFrame(), "Are you sure you want to delete this lens?");
 			    if (response == JOptionPane.YES_OPTION) {
 			    	try {
-			    		LensInfo.saveItems(listModel,lensFile);	
+			    		LensConfig.saveItems(listModel,lensFile);	
 			    	}catch(Exception ex) {
 			    		ex.printStackTrace();
 			    	}
@@ -251,7 +251,7 @@ public class LensManagerWindow {
 					listLenses.updateUI();
 					
 					try {
-						LensInfo.saveItems(listModel,lensFile);						
+						LensConfig.saveItems(listModel,lensFile);						
 						JOptionPane.showMessageDialog(getFrame(),"New lens was added with success");
 						newLens = null;
 					}catch(Exception ex) {

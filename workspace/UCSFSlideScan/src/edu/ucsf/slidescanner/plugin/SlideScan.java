@@ -14,6 +14,7 @@ import org.micromanager.Studio;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SciJavaPlugin;
 
+import edu.ucsf.slidescanner.calibration.LensConfig;
 import edu.ucsf.slidescanner.calibration.WBSettings;
 
 /**
@@ -34,6 +35,7 @@ public class SlideScan implements MenuPlugin, SciJavaPlugin {
     //private int[] WB = new int[3]; //white balance point in RGB 
     private boolean shouldSaveRaw = true;
     private boolean shouldSaveAuto = false;
+    private LensConfig currLensCfg;
     
 
     @Override
@@ -50,12 +52,11 @@ public class SlideScan implements MenuPlugin, SciJavaPlugin {
     @Override
     public void onPluginSelected() {
         try {
-
-            mWindow_ = new SlideScanUI(studio_);
-            studio_.events().registerForEvents(mWindow_);
-            stageCtr = new StageController(studio_,this);
-            mWindow_.setControler(this);
-            camCtr = new CameraController(studio_);
+        	camCtr = new CameraController(studio_);
+        	stageCtr = new StageController(studio_,this);        	
+            mWindow_ = new SlideScanUI(studio_, this);
+            studio_.events().registerForEvents(mWindow_);            
+            mWindow_.setControler(this);            
             if(mWindow_.isColorModeOn()) {
             	WBSettings wb = mWindow_.getWBInfo();
             	if(wb != null) {
@@ -75,11 +76,9 @@ public class SlideScan implements MenuPlugin, SciJavaPlugin {
         mWindow_.getFrame().setVisible(true);
     }
 
-
     public StageController getStageController() {
     	return stageCtr;
-    }
-    
+    }    
     
     @Override
     public String getName() {
@@ -190,13 +189,26 @@ public class SlideScan implements MenuPlugin, SciJavaPlugin {
     	}
     }
     
+    public void setCurrLensCfg(LensConfig lens) {
+    	this.currLensCfg = lens;    
+    	camCtr.setSensorROI(this.currLensCfg);
+    }
+    
+    public LensConfig getCurreLensCfg() {
+    	return this.currLensCfg;
+    }
+    
     public void saveMetadata() {    	
     	String outDir = mWindow_.getDestFolder();
-    	String imgDir = "Image folder: " + outDir;
+    	String imgDir = "Folder: " + outDir;
+    	String sensorSize = "Sensor: (" + this.currLensCfg.getSensorCfg().W() + "," 
+    					+ this.currLensCfg.getSensorCfg().H() + ")";
+    	String pixSize = "Pixel: " + this.currLensCfg.getPixSize();
+    	String pixSizeCts = "Pixel_cts: " + this.currLensCfg.getPixSizeCts();
     	String overlap = "Overlap: " + mWindow_.getOverlap();
     	String A = "A: (" + this.A[0] + ", " + this.A[1] + ")";
     	String B = "B:  (" + this.B[0] + ", " + this.B[1] + ")";
-    	String grid = "Grid: " +  stageCtr.getTileGrid()[0] + " x " + stageCtr.getTileGrid()[1];
+    	String grid = "Grid: (" +  stageCtr.getTileGrid()[0] + ", " + stageCtr.getTileGrid()[1] + ")";
     	List<String> xyCoords = stageCtr.getTileCoords();
     	
     	String coords;
@@ -212,15 +224,16 @@ public class SlideScan implements MenuPlugin, SciJavaPlugin {
 //    	for(String str: xyCoords) {
 //    		builder.append(str).append("\n");
 //    	}
-    	coords = builder.toString();
-    	
+    	coords = builder.toString();    	
     	String metaData = new StringBuilder().append(imgDir).append("\n")
+    						.append(sensorSize).append("\n")
+    						.append(pixSize).append("\n")
+    						.append(pixSizeCts).append("\n")
     						.append(overlap).append("\n")
     						.append(A).append("\n")
     						.append(B).append("\n")
     						.append(grid).append("\n")
-    						.append(coords).toString();   					
-    				
+    						.append(coords).toString();   	    				
     	//save file
     	String outFile = outDir + "\\Metadata.txt";
     	System.out.println(outFile);    	

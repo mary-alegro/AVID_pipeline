@@ -12,7 +12,7 @@ import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
-import edu.ucsf.slidescanner.calibration.LensInfo;
+import edu.ucsf.slidescanner.calibration.LensConfig;
 import edu.ucsf.slidescanner.calibration.WBSettings;
 
 
@@ -83,7 +83,7 @@ public class AcqPersist {
 							((JTextField)field.get(obj)).setText((String)data);
 						}else if(type == JCheckBox.class) {
 							((JCheckBox)field.get(obj)).setSelected((Boolean)data);
-						}else if(type == LensInfo.class) {
+						}else if(type == LensConfig.class) {
 							field.set(obj,data); //obj is the instance whose field i need to change, data is the new value
 						}else if(type == WBSettings.class) {
 							field.set(obj,data);							

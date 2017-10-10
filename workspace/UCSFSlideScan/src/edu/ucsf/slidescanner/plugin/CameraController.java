@@ -12,6 +12,7 @@ import org.micromanager.data.Metadata.MetadataBuilder;
 import org.micromanager.display.DisplaySettings;
 import org.micromanager.display.DisplaySettings.ContrastSettings;
 
+import edu.ucsf.slidescanner.calibration.LensConfig;
 import edu.ucsf.slidescanner.image.ImageUtils;
 
 import org.micromanager.display.DisplayWindow;
@@ -49,12 +50,17 @@ public class CameraController {
     private static final String PROP_BLUE_SCALE = "Color - Blue scale"; 
     private static final String PROP_PIXELTYPE = "PixelType";
     private static final String PROP_COLOR = "Color";
+    private static final String PROP_XDIM = "X-dimension";
+    private static final String PROP_YDIM = "Y-dimension";
     
     private static final String RAW_DIR = "raw";
     private static final String AUTO_DIR = "auto";
     private static final String CORRECTED_DIR = "corrected";
     
     public static final int MAX_NUMIMG_MEM = 10;
+    
+    public static final int[] STD_SENSOR_SIZE = {2688,2200};
+    public static final int[] STD_SENSOR_ORIG = {0,0};
     
     private String cameraLabel;
     private boolean isColorCamera = false;
@@ -68,7 +74,7 @@ public class CameraController {
 	public CameraController(Studio gui) {
 		studio_ = gui;
 		core_ = studio_.core();
-		initCameraSettings();
+		initCameraSettings();		
 	}
 	
 	public void initCameraSettings() {
@@ -94,7 +100,26 @@ public class CameraController {
 	        }
 		}	
 	}
-    
+	
+	public void setSensorROI(LensConfig lens) {		
+		try {
+			int[] currSize = new int[2];
+			currSize[0] = (int)Math.round(core_.getROI().getWidth());	
+			currSize[1] = (int)Math.round(core_.getROI().getHeight());
+			if(lens.getSensorCfg().W() != currSize[0] || lens.getSensorCfg().H() != currSize[1]) {			
+				int x = lens.getSensorCfg().oX();
+				int y = lens.getSensorCfg().oY();
+				int xSize = lens.getSensorCfg().W();
+				int ySize = lens.getSensorCfg().H();
+			    studio_.live().setSuspended(true);
+				core_.setROI(x, y, xSize, ySize);
+			    studio_.app().refreshGUI();
+			    studio_.live().setSuspended(false);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}    
    
     private String getCFAPattern() {
         String cfaPattern;
@@ -118,6 +143,22 @@ public class CameraController {
         }
 
         return isColor;
+    }
+    
+    public int[] getSensorSize() {
+    	int[] dims = null; //X=cols,Y=rows
+        try {
+            String x = core_.getProperty(cameraLabel, PROP_XDIM);     
+            String y = core_.getProperty(cameraLabel, PROP_YDIM); 
+            
+            dims = new int[2];
+            dims[0] = Integer.parseInt(x); //cols
+            dims[1] = Integer.parseInt(y); //rows
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+        }
+        
+        return dims;
     }
     
     public void initColorMode(double rs, double gs, double bs) throws Exception{

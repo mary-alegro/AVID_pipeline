@@ -14,7 +14,7 @@ public class StageController {
 	
 	//Stage constants
 	final long TIMEOUT = (long)3e10; //30secs in nanosecs
-	final int CTSPERMM = 8000; // 1mm = 8000counts
+	public static final int CTSPERMM = 8000; // 1mm = 8000counts
 	final float ACQSPEED = 15; // 10mm/s
 	final long[] DEFAULTMAX_X = new long[] {-607200,607200}; //left to right
 	final long[] DEFAULTMAX_Y = new long[] {607200,-607200}; //to to bottom
@@ -28,29 +28,28 @@ public class StageController {
 	private Studio gui;
 	private SlideScan plugin;
 	//private Studio studio;
-	private List<String> ports = new ArrayList<String>();
+	//private List<String> ports = new ArrayList<String>();
 	private String port = "COM3";
 	private String cmdTerminator="\r";
 		
 	//Stage codes
 	private String STG_ERROR = "?";
 	private String STG_OK = ":";
-	private String STG_HOME_OK = "HOK";
-	private String STG_PREPMO_OK = "PREPOK";
-	private String STG_MOVE_OK = "MOVOK";
+	private String STG_HOME_OK = "H";
+	private String STG_PREPMO_OK = "P";
+	private String STG_MOVE_OK = "M";
 	
 	public StageController(Studio gui_, SlideScan sc) {
 		gui = gui_;
 		core = gui_.getCMMCore();
-		ports.add("COM1");
-		ports.add("COM3");
+		//ports.add("COM1");
+		//ports.add("COM3");
 		plugin = sc;
 	}
 	
-	public List<String> getPorts() {
-		
-		return ports;
-	}
+//	public List<String> getPorts() {	
+//		return ports;
+//	}
 		
 	public void findHome() {
 		
@@ -85,8 +84,8 @@ public class StageController {
 	}
 	
 	public String getStageMsg() throws Exception {
-		Thread.sleep(200);
-		CharVector ans = core.readFromSerialPort(port);
+		Thread.sleep(300);
+		CharVector ans = core.readFromSerialPort(port);		
 		String str = charVec2Str(ans);
 		return str;
 	}
@@ -467,9 +466,10 @@ public class StageController {
 				
 				//move stage
 				//prepForMotion();
-				moveToAbsPos(x,y);
+				Thread.sleep(DELAY_CONST/2);
+				moveToAbsPos(x,y);				
 				//Thread.sleep((long)(t*1.05) + DELAY_CONST);
-				Thread.sleep(DELAY_CONST); 
+				Thread.sleep(DELAY_CONST/2); 
 				//snap edu.ucsf.slidescanner.image here	
 				if(isTile.get(i)) {
 					camCtr.acquireImage(posCount);

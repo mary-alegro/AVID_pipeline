@@ -26,7 +26,8 @@ import javax.swing.JTextPane;
 import org.micromanager.Studio;
 
 import edu.ucsf.slidescanner.calibration.DarkFrameWindow;
-import edu.ucsf.slidescanner.calibration.LensInfo;
+import edu.ucsf.slidescanner.calibration.LensConfig;
+import edu.ucsf.slidescanner.calibration.SensorConfig;
 import edu.ucsf.slidescanner.calibration.WBSettings;
 import edu.ucsf.slidescanner.persistacq.AcqPersist;
 import edu.ucsf.slidescanner.persistacq.PersistParam;
@@ -39,7 +40,7 @@ public class SlideScanUI {
 	//Plugin attributes
 	private Studio gui_;
 	private CMMCore core_;
-	private SlideScan scanCtr;
+	private SlideScan plugin_;
 	
 	@PersistParam(id="colorMode")
 	private boolean isColorOn;
@@ -51,8 +52,8 @@ public class SlideScanUI {
 //    private int overlap = 15;
     private Thread scanWorker; 
     
-    @PersistParam(id="lensInfo")
-    protected LensInfo lensInfo;
+    @PersistParam(id="lensConfig")
+    protected LensConfig lensConfig;
     @PersistParam(id="WBInfo")
     protected WBSettings WBInfo;
     
@@ -103,8 +104,9 @@ public class SlideScanUI {
 		});
 	}
 	
-	public SlideScanUI(Studio gui) throws Exception{
+	public SlideScanUI(Studio gui, SlideScan sScan) throws Exception{
 		gui_ = gui;
+		plugin_= sScan;
         try {
             core_ = gui_.getCMMCore();
         } catch (Exception ex) {
@@ -116,6 +118,7 @@ public class SlideScanUI {
         setColorModeOn(true);
         getComboWBPreset().setSelectedIndex(0);
         getComboLens().setSelectedIndex(0);
+        
 	}
 
 	/**
@@ -130,7 +133,7 @@ public class SlideScanUI {
 	}
 	
 	public void setControler(SlideScan ctr) {
-		scanCtr = ctr;
+		plugin_ = ctr;
 	}
 	
 	private SlideScanUI getSelf() {
@@ -164,6 +167,7 @@ public class SlideScanUI {
 		panelCamLens.add(label_1);
 		
 		textFOV_W = new JTextField();
+		textFOV_W.setEditable(false);
 		textFOV_W.setColumns(10);
 		textFOV_W.setBounds(207, 101, 67, 20);
 		panelCamLens.add(textFOV_W);
@@ -173,6 +177,7 @@ public class SlideScanUI {
 		panelCamLens.add(label_2);
 		
 		textFOV_H = new JTextField();
+		textFOV_H.setEditable(false);
 		textFOV_H.setColumns(10);
 		textFOV_H.setBounds(344, 104, 67, 20);
 		panelCamLens.add(textFOV_H);
@@ -221,8 +226,8 @@ public class SlideScanUI {
 					textGreen.setEnabled(false);
 					textBlue.setEnabled(false);
 					comboWBPreset.setEnabled(false);
-					if(scanCtr != null) {
-						scanCtr.setColorOFF();
+					if(plugin_ != null) {
+						plugin_.setColorOFF();
 					}
 				}else if(select == 1) { //RGB
 					isColorOn = true;
@@ -230,8 +235,8 @@ public class SlideScanUI {
 					textGreen.setEnabled(true);
 					textBlue.setEnabled(true);
 					comboWBPreset.setEnabled(true);	
-					if(scanCtr != null) {
-						scanCtr.setColorON(WBInfo.getR(), WBInfo.getG(), WBInfo.getB());
+					if(plugin_ != null) {
+						plugin_.setColorON(WBInfo.getR(), WBInfo.getG(), WBInfo.getB());
 					}
 				}
 			}
@@ -243,11 +248,14 @@ public class SlideScanUI {
 		comboLens = new JComboBox();
 		comboLens.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				LensInfo lens = (LensInfo)comboLens.getSelectedItem();
+				LensConfig lens = (LensConfig)comboLens.getSelectedItem();
 				textFOV_W.setText(lens.getFOV()[0]+"");
 				textFOV_H.setText(lens.getFOV()[1]+"");
-				lensInfo = lens;
+				lensConfig = lens;				
+				plugin_.setCurrLensCfg(lensConfig);
+				
 			}
+				
 		});
 		comboLens.setBounds(80, 53, 327, 20);
 		panelCamLens.add(comboLens);
@@ -277,8 +285,8 @@ public class SlideScanUI {
 					g = wb.getG();
 					b = wb.getB();
 				}
-				if(scanCtr != null) {
-					scanCtr.setColorON(r,g,b);
+				if(plugin_ != null) {
+					plugin_.setColorON(r,g,b);
 				}
 			}
 		});
@@ -303,8 +311,8 @@ public class SlideScanUI {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					//int A[] = scanCtr.setCoordsA();
-					int A[] = scanCtr.getStagePosition();
+					//int A[] = plugin_.setCoordsA();
+					int A[] = plugin_.getStagePosition();
 					textXA.setText(A[0]+"");
 					textYA.setText(A[1]+"");
 				}catch(Exception ex) {
@@ -320,8 +328,8 @@ public class SlideScanUI {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					//int B[] = scanCtr.setCoordsB();
-					int B[] = scanCtr.getStagePosition();
+					//int B[] = plugin_.setCoordsB();
+					int B[] = plugin_.getStagePosition();
 					textXB.setText(B[0]+"");
 					textYB.setText(B[1]+"");
 				}catch(Exception ex) {
@@ -352,7 +360,7 @@ public class SlideScanUI {
 		btnFindHome.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				scanCtr.getStageController().findHome();
+				plugin_.getStageController().findHome();
 			}
 		});
 		btnFindHome.setBounds(227, 345, 89, 46);
@@ -363,28 +371,30 @@ public class SlideScanUI {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				double FOV[] = new double[2];
-				FOV[0] = Double.parseDouble(textFOV_W.getText());
-				FOV[1] = Double.parseDouble(textFOV_H.getText());
+				//FOV[0] = Double.parseDouble(textFOV_W.getText());
+				//FOV[1] = Double.parseDouble(textFOV_H.getText());
+				FOV[0] = lensConfig.getFOV()[0];
+				FOV[1] = lensConfig.getFOV()[1];
 				String folder = textImgFolder.getText();
 				int over = Integer.parseInt(textOverlap.getText());
 				int Ax = Integer.parseInt(textXA.getText());
 				int Ay = Integer.parseInt(textYA.getText());
 				int Bx = Integer.parseInt(textXB.getText());
 				int By = Integer.parseInt(textYB.getText());
-				scanCtr.setCoordsA(new int[]{Ax,Ay});
-				scanCtr.setCoordsB(new int[]{Bx,By});
-				scanCtr.setShouldSaveRaw(chkSaveRaw.isSelected());
-				scanCtr.setShouldSaveAuto(chkSaveAutostretch.isSelected());
+				plugin_.setCoordsA(new int[]{Ax,Ay});
+				plugin_.setCoordsB(new int[]{Bx,By});
+				plugin_.setShouldSaveRaw(chkSaveRaw.isSelected());
+				plugin_.setShouldSaveAuto(chkSaveAutostretch.isSelected());
 				
 //		    	double[] FOV = {18.78,15.37};
 //		    	int[] A = {-370340,486093};
 //		    	int[] B = {-271876,481792};
 //		    	int over = 15;
-//		    	scanCtr.setA(A[0],A[1]);
-//		    	scanCtr.setB(B[0],B[1]);
+//		    	plugin_.setA(A[0],A[1]);
+//		    	plugin_.setB(B[0],B[1]);
 //				String folder = "C:\\Users\\Maryana\\Desktop\\test_stitch\\tif2";
 		    	
-				scanCtr.acquireImages(FOV, over, folder);
+				plugin_.acquireImages(FOV, over, folder);
 			}
 		});
 		btnScan.setBounds(7, 345, 89, 46);
@@ -395,7 +405,7 @@ public class SlideScanUI {
 			public void actionPerformed(ActionEvent e) {
 				if(scanWorker != null) {
 					scanWorker.interrupt();
-					scanCtr.restartJoystick();
+					plugin_.restartJoystick();
 				}
 			}
 		});
@@ -456,7 +466,7 @@ public class SlideScanUI {
 				if(!textYA.getText().isEmpty()) {
 					ya = Integer.parseInt(textYA.getText());
 				}
-				scanCtr.setCoordsA(new int[] {xa,ya});
+				plugin_.setCoordsA(new int[] {xa,ya});
 			}
 			
 		});
@@ -479,7 +489,7 @@ public class SlideScanUI {
 				if(!textYA.getText().isEmpty()) {
 					ya = Integer.parseInt(textYA.getText());
 				}
-				scanCtr.setCoordsA(new int[] {xa,ya});
+				plugin_.setCoordsA(new int[] {xa,ya});
 			}
 		});
 		textYA.setColumns(10);
@@ -501,7 +511,7 @@ public class SlideScanUI {
 				if(!textYB.getText().isEmpty()) {
 					yb = Integer.parseInt(textYB.getText());
 				}
-				scanCtr.setCoordsB(new int[] {xb,yb});
+				plugin_.setCoordsB(new int[] {xb,yb});
 			}
 		});
 		textXB.setColumns(10);
@@ -523,7 +533,7 @@ public class SlideScanUI {
 				if(!textYB.getText().isEmpty()) {
 					yb = Integer.parseInt(textYB.getText());
 				}
-				scanCtr.setCoordsB(new int[] {xb,yb});
+				plugin_.setCoordsB(new int[] {xb,yb});
 			}
 		});
 		textYB.setColumns(10);
@@ -599,7 +609,7 @@ public class SlideScanUI {
 		JMenuItem mntmCreateDarkFrames = new JMenuItem("Create dark frames");
 		mntmCreateDarkFrames.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DarkFrameWindow dFrame = new DarkFrameWindow(scanCtr);	
+				DarkFrameWindow dFrame = new DarkFrameWindow(plugin_);	
 			}
 		});
 		mnTools.add(mntmCreateDarkFrames);
@@ -668,20 +678,25 @@ public class SlideScanUI {
 		getComboWBPreset().addItem(tau);
 		getComboWBPreset().addItem(chart);
 		
-		//LensInfo lensCanon = new LensInfo("3X Macro", "Canon", 49, 3.709, 3.035846);
-		LensInfo lensCanon1 = new LensInfo("1X Macro", "Canon", 98.5, 12.0469, 9.8598);
-		LensInfo lensCanon3 = new LensInfo("3X Macro", "Canon", 41, 4.21599, 3.45059);
-		LensInfo lensLighbox = new LensInfo("50mm Lighbox", "Rodenstock", 88, 17.39, 15.37);	
-		LensInfo lensNavitar3x = new LensInfo("Navitar 3x", "Navitar", 11.2, 7.772, 6.3617);
-		LensInfo lensNavitar4_5x = new LensInfo("Navitar 4.5x", "Navitar", 9.6, 5.1039, 4.1773);
-		LensInfo lensNavitar4_5x1_5x = new LensInfo("Navitar 4.5x 1.5X insert", "Navitar", 5.2, 3.28, 2.6866);
+		//LensConfig lensCanon = new LensConfig("3X Macro", "Canon", 49, 3.709, 3.035846);
+//		LensConfig lensCanon1 = new LensConfig("1X Macro", "Canon", 98.5, 12.0469, 9.8598);
+//		LensConfig lensCanon3 = new LensConfig("3X Macro", "Canon", 41, 4.21599, 3.45059);
+//		LensConfig lensLighbox = new LensConfig("50mm Lighbox", "Rodenstock", 88, 17.39, 15.37);	
+//		LensConfig lensNavitar3x = new LensConfig("Navitar 3x", "Navitar", 11.2, 7.772, 6.3617);
+//		LensConfig lensNavitar4_5x = new LensConfig("Navitar 4.5x", "Navitar", 9.6, 5.1039, 4.1773);
+		LensConfig lensNavitar4_5x1_5x = new LensConfig("Navitar 4.5x 1.5X insert", "Navitar", 5.2, 1.22121);
+		LensConfig lensNavitar4_5x1_5x_ROI = new LensConfig("Navitar 4.5/1.5 2/3in", "Navitar", 5.2, 1.22121);
+		SensorConfig sc = new SensorConfig(1920, 1460, 383, 369); // 2/3" sensor dims 
+		lensNavitar4_5x1_5x_ROI.setSensorCfg(sc);
 		
+//		
 		getComboLens().addItem(lensNavitar4_5x1_5x);
-		getComboLens().addItem(lensNavitar4_5x);
-		getComboLens().addItem(lensNavitar3x);
-		getComboLens().addItem(lensCanon1);
-		getComboLens().addItem(lensCanon3);
-		getComboLens().addItem(lensLighbox);
+		getComboLens().addItem(lensNavitar4_5x1_5x_ROI);
+//		getComboLens().addItem(lensNavitar4_5x);
+//		getComboLens().addItem(lensNavitar3x);
+//		getComboLens().addItem(lensCanon1);
+//		getComboLens().addItem(lensCanon3);
+//		getComboLens().addItem(lensLighbox);
 		
 	}
 	
@@ -689,8 +704,8 @@ public class SlideScanUI {
 		if(WBInfo != null) {
 			getComboWBPreset().setSelectedItem(this.WBInfo);			
 		}
-		if(lensInfo != null) {
-			getComboLens().setSelectedItem(this.lensInfo);
+		if(lensConfig != null) {
+			getComboLens().setSelectedItem(this.lensConfig);
 		}
 		if(isColorOn) {
 			getComboColorMode().setSelectedIndex(1);
@@ -720,8 +735,8 @@ public class SlideScanUI {
 	public String getOverlap() {
 		return textOverlap.getText();
 	}
-	public LensInfo getLensInfo() {
-		return this.lensInfo;
+	public LensConfig getLensInfo() {
+		return this.lensConfig;
 	}	
 	public WBSettings getWBInfo(){
 		return this.WBInfo;

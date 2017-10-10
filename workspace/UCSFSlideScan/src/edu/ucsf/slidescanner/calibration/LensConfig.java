@@ -11,7 +11,10 @@ import java.util.List;
 
 import javax.swing.DefaultListModel;
 
-public class LensInfo implements Serializable{
+import edu.ucsf.slidescanner.plugin.CameraController;
+import edu.ucsf.slidescanner.plugin.StageController;
+
+public class LensConfig implements Serializable{
 	
 	/**
 	 * 
@@ -21,35 +24,69 @@ public class LensInfo implements Serializable{
 	private String make;
 	private double workDist; //in mm
 	private double[] FOV = new double[2]; //in mm
+	private double pixSize; //pixel size in um
+	private double pixSizeCts; //pixel size in scanner counts
+	private SensorConfig sensorCfg;
 	
 	public static String lensFile = "lenses.ser";
 	
-	public LensInfo(String m, String mk, double wd, double w, double h) {
+	public LensConfig(String m, String mk, double wd, double ps) {
 		this.model = m;
 		this.make = mk;
-		this.workDist = w;
-		this.FOV[0] = w;
-		this.FOV[1] = h;
+		this.workDist = wd;
+		//this.FOV[0] = w;
+		//this.FOV[1] = h;
+		this.pixSize = ps;	//in um
+		this.pixSizeCts = um2mm(pixSize) * StageController.CTSPERMM;
+		this.sensorCfg = SensorConfig.getStandardSensor();
+		
+		//set FOV based on standard sensor dimensions
+		this.FOV[0] = sensorCfg.W()*um2mm(pixSize); 
+		this.FOV[1] = sensorCfg.H()*um2mm(pixSize); 		
 	}
 	
-	public LensInfo() {
+	public LensConfig() {
 		this.model = "";
 		this.make = "";
 		this.workDist = 0;
 		this.FOV[0] = 0;
 		this.FOV[1] = 0;
-	}
+		this.pixSize = 1;	
+		this.pixSizeCts = um2mm(pixSize) * StageController.CTSPERMM;
+		this.sensorCfg = SensorConfig.getStandardSensor();
+	}	
 	
-	public double getPixSize(double fovw, double sw) {
-		return (fovw/sw);
-	}
-	
-	public double[] getFOV(double pix, double sw, double sh) {
-		double w = sw*pix;
-		double h = sh*pix;	
-		return (new double[] {w,h});	
+	public void setSensorCfg(SensorConfig s) {
+		this.sensorCfg = s;
+		
+		this.FOV[0] = this.sensorCfg.W()*um2mm(pixSize); 
+		this.FOV[1] = this.sensorCfg.H()*um2mm(pixSize);
 	}
 
+	public SensorConfig getSensorCfg() {
+		return this.sensorCfg;
+	}
+	
+	public void setPixSize(double s) {
+		this.pixSize = s;		
+		//update FOV and pixSizeCnt
+		this.pixSizeCts = um2mm(pixSize) * StageController.CTSPERMM;
+		this.FOV[0] = sensorCfg.W()*um2mm(pixSize); 
+		this.FOV[1] = sensorCfg.H()*um2mm(pixSize);  	
+	}
+	
+	public double getPixSize() {
+		return this.pixSize;
+	}
+	
+	public void setPixSizeCts(double c) {
+		this.pixSizeCts = c;
+	}
+	
+	public double getPixSizeCts() {
+		return this.pixSizeCts;
+	}
+	
 	public String getModel() {
 		return model;
 	}
@@ -82,12 +119,26 @@ public class LensInfo implements Serializable{
 		FOV = fOV;
 	}
 	
-	public void setAll(LensInfo l) {
+	public void setAll(LensConfig l) {
 		this.model = l.getModel();
 		this.make = l.getMake();
 		this.workDist = l.getWorkDist();
 		this.FOV[0] = l.getFOV()[0];
 		this.FOV[1] = l.getFOV()[1];
+		this.pixSize = l.getPixSize();		
+		this.sensorCfg = l.getSensorCfg();
+		this.pixSizeCts = l.getPixSizeCts();
+	}
+	
+	private double um2mm(double n) {
+		if(n == 0) {
+			return n;
+		}
+		return (n/1000);
+	}
+	
+	private double mm2um(double n) {
+		return n*1000;
 	}
 	
 	public String toString() {
@@ -95,8 +146,8 @@ public class LensInfo implements Serializable{
 	}
 	
 	public boolean equals(Object o) {
-		if(o instanceof LensInfo) {
-			LensInfo l = (LensInfo)o;
+		if(o instanceof LensConfig) {
+			LensConfig l = (LensConfig)o;
 			if(this.workDist == l.getWorkDist() && this.FOV[0] == l.getFOV()[0] && this.FOV[1] == l.getFOV()[1]) {
 				return true;
 			}
@@ -105,10 +156,10 @@ public class LensInfo implements Serializable{
 	}
 	
 	public static void saveItems(DefaultListModel listModel, String lensFile) throws Exception {
-		List<LensInfo> lenses = new ArrayList<LensInfo>();
+		List<LensConfig> lenses = new ArrayList<LensConfig>();
 		int nItems = listModel.getSize();
 		for(int i=0; i<nItems; i++) {
-			LensInfo l = (LensInfo)listModel.get(i);
+			LensConfig l = (LensConfig)listModel.get(i);
 			lenses.add(l);
 		}
 		
@@ -120,13 +171,13 @@ public class LensInfo implements Serializable{
 		fileOut.close();		
 	}
 	
-	public static List<LensInfo> loadItems(DefaultListModel listModel, String lensFile) throws Exception{
+	public static List<LensConfig> loadItems(DefaultListModel listModel, String lensFile) throws Exception{
 		//read hashtable
-		List<LensInfo> list = null;
+		List<LensConfig> list = null;
 		if((new File(lensFile)).exists()){	
 	        FileInputStream fileIn = new FileInputStream(lensFile);
 	        ObjectInputStream in = new ObjectInputStream(fileIn);
-	        list = (List<LensInfo>) in.readObject();
+	        list = (List<LensConfig>) in.readObject();
 	        in.close();
 	        fileIn.close();         
 		}        
