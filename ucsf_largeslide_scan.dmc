@@ -514,7 +514,7 @@ SPB=YSPTEMP
 HOMXY=1
 HOMEDONE=(HOMEDONE|3)
 'MG"Homing Routine XY Complete"
-MG"HOK"
+MG"H"
 
 EN
 'END #HOMEXY
@@ -631,7 +631,7 @@ FEAB
 BGAB
 MCAB
 DP 0,0
-MG"HOK"
+MG"H"
 XQ#RUNJOY,4
 EN
 
@@ -650,7 +650,14 @@ AMAB
 AC 500*CTSPMMA, 500*CTSPMMB
 DC 500*CTSPMMA, 500*CTSPMMB
 SP  15*CTSPMMA,  15*CTSPMMA
-MG"PREPOK"
+MG"P"
+EN
+
+#MOV2POS
+PApos_x,pos_y
+BG
+AMAB
+MG"M"
 EN
 
 '**************************************
