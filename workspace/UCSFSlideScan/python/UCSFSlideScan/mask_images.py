@@ -1,18 +1,11 @@
 import glob
 import matplotlib.pyplot as plt
-import matplotlib
 import numpy as np
-import re
 import skimage.io as io
-from skimage import color
-from skimage import exposure as exp
-from skimage import filters as filt
-from skimage import morphology as morph
 import mahotas as mht
 import os
-from skimage import img_as_float, img_as_ubyte
-from skimage import transform as xform
 import ntpath
+import sys
 
 
 MASK_VAL = 255
@@ -70,9 +63,19 @@ def apply_masks(imgtiles,masktiles,outtiles):
 
 
 def main():
-    maskdir = '/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/tiles_mask'
-    imgdir = '/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/tiles'
-    outdir = '/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/tiles_seg'
+
+    if len(sys.argv) != 4:
+        print('Usage: smask_images <img tiles folder> <mask tiles folder> <segmented tiles folder>')
+        print('Example: seg_background /AVID/AV13/AT100#440/tiles AVID/AV13/AT100#440/tiles_mask AVID/AV13/AT100#440/tiles_seg')
+        exit()
+
+    imgdir = str(sys.argv[1])
+    maskdir = str(sys.argv[2])
+    outdir = str(sys.argv[3])
+
+    #maskdir = '/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/tiles_mask'
+    #imgdir = '/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/tiles'
+    #outdir = '/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/tiles_seg'
 
     apply_masks(imgdir,maskdir,outdir)
 

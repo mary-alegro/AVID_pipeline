@@ -5,7 +5,7 @@ import numpy as np
 import re
 import skimage.io as io
 from skimage import color
-from skimage import exposure as exp
+from skimage imt exposure as exp
 import mahotas
 import os
 from skimage import img_as_float, img_as_ubyte
@@ -15,8 +15,8 @@ from skimage import transform as xform
 
 
 #img_path = "/home/maryana/storage/Posdoc/AVID/AV13/crop_TAU_AT100#440.tif"
-img_path = "/Users/maryana/Posdoc/AVID/AV13/crop_TAU_AT100#440.tif"
-img_path2 = "/Users/maryana/Posdoc/AVID/AV13/res_10.tif"
+img_path = "/home/maryana/storage/Posdoc/AVID/AV13/AT100#440/tiles_seg/AT100#440_67.tif"
+#img_path2 = "/Users/maryana/Posdoc/AVID/AV13/res_10.tif"
 img = io.imread(img_path)
 #R = img[...,0]
 #G = img[...,1]
@@ -33,39 +33,34 @@ img = io.imread(img_path)
 
 #pix_mm = 819 #1mm = 819pixels
 
-
 lab = color.rgb2lab(img)
 L = lab[...,0]
 A = lab[...,1]
 BB = lab[...,2]
 
 #TAU
-sL = np.concatenate((L[825:835,1315:1325].flatten(),L[595:605,1355:1365].flatten(),L[920:930,1385:1395].flatten()))
-sA = np.concatenate((A[825:835,1315:1325].flatten(),A[595:605,1355:1365].flatten(),A[920:930,1385:1395].flatten()))
-sB = np.concatenate((BB[825:835,1315:1325].flatten(),BB[595:605,1355:1365].flatten(),BB[920:930,1385:1395].flatten()))
+#sL = np.concatenate((L[825:835,1315:1325].flatten(),L[595:605,1355:1365].flatten(),L[920:930,1385:1395].flatten()))
+#sA = np.concatenate((A[825:835,1315:1325].flatten(),A[595:605,1355:1365].flatten(),A[920:930,1385:1395].flatten()))
+#sB = np.concatenate((BB[825:835,1315:1325].flatten(),BB[595:605,1355:1365].flatten(),BB[920:930,1385:1395].flatten()))
+sL = np.concatenate((L[2046:2056,2494:2504].flatten(),L[1930:1940,2747:2757].flatten(),L[2214:2224,2872:2882].flatten()))
+sA = np.concatenate((A[2046:2056,2494:2504].flatten(),A[1930:1940,2747:2757].flatten(),A[2214:2224,2872:2882].flatten()))
+sB = np.concatenate((BB[2046:2056,2494:2504].flatten(),BB[1930:1940,2747:2757].flatten(),BB[2214:2224,2872:2882].flatten()))
 mL = np.mean(sL)
 mA = np.mean(sA)
 mB = np.mean(sB)
 
-img2 = io.imread(img_path2)
-img2_shape = np.array([img2.shape[0],img2.shape[1]])
-lab2 = color.rgb2lab(img2)
-L2 = lab2[...,0]
-A2 = lab2[...,1]
-BB2 = lab2[...,2]
-meanL = mL*np.ones(img2_shape)
-meanA = mA*np.ones(img2_shape)
-meanB = mB*np.ones(img2_shape)
+img_shape = np.array([img.shape[0],img.shape[1]])
+meanL = mL*np.ones(img_shape)
+meanA = mA*np.ones(img_shape)
+meanB = mB*np.ones(img_shape)
 
 # meanL = mL*np.ones(L.shape)
 # meanA = mA*np.ones(A.shape)
 # meanB = mB*np.ones(B.shape)
 
-
-
-dL = L2 - meanL
-dA = A2 - meanA
-dB = BB2 - meanB
+dL = L - meanL
+dA = A - meanA
+dB = BB - meanB
 dEf = np.sqrt(dL**2 + dA**2 + dB**2)
 dEf = (dEf - dEf.min())/(dEf.max() - dEf.min())
 plt.imshow(dEf)
