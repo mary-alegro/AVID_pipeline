@@ -28,8 +28,17 @@ def seg_background(img,outname):
     io.imsave(outname,mask3.astype('ubyte'))
 
 def main():
-    imgname = "/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/res_10.tif"
-    outname = "/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/mask_res_10.tif"
+
+    if len(sys.argv) != 3:
+        print('Usage: seg_background <rescaled histo> <mask>')
+        print('Example: seg_background /Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/res_10.tif /Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/mask_res_10.tif')
+        exit()
+
+    imgname = str(sys.argv[1]) #abs path to where the images are
+    outname = int(sys.argv[2]) #row size
+
+    #imgname = "/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/res_10.tif"
+    #outname = "/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/mask_res_10.tif"
     img = io.imread(imgname)
     seg_background(img,outname)
     print('Mask successfully saved.')
