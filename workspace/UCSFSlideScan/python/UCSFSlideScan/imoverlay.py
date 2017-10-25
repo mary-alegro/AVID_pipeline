@@ -15,13 +15,13 @@ def imoverlay(img,mask,color=[1,1,1]):
     img = img_as_ubyte(img)
 
     if img.ndim == 3: #image is RGB
-        R = img[...,0]
-        G = img[...,1]
-        B = img[...,2]
+        R = img[...,0].copy()
+        G = img[...,1].copy()
+        B = img[...,2].copy()
     else:
-        R = img
-        G = img
-        B = img
+        R = img.copy()
+        G = img.copy()
+        B = img.copy()
 
     R[mask] = 255*color[0]
     G[mask] = 255*color[1]
