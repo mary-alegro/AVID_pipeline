@@ -6,16 +6,19 @@ import re
 import skimage.io as io
 from skimage import color
 import skimage.exposure as exp
-import mahotas
+import mahotas as mht
 import os
 from skimage import img_as_float, img_as_ubyte
 from skimage import transform as xform
+import skimage.filters as filt
+import skimage.morphology as morph
 
 #matplotlib.use('TkAgg')
 
 
 #img_path = "/home/maryana/storage/Posdoc/AVID/AV13/crop_TAU_AT100#440.tif"
-img_path = "/home/maryana/storage/Posdoc/AVID/AV13/AT100#440/tiles_seg/AT100#440_67.tif"
+#img_path = "/home/maryana/storage/Posdoc/AVID/AV13/AT100#440/tiles_seg/AT100#440_67.tif"
+img_path = "/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/tiles/AT100#440_61.tif"
 #img_path2 = "/Users/maryana/Posdoc/AVID/AV13/res_10.tif"
 img = io.imread(img_path)
 #R = img[...,0]
@@ -62,7 +65,18 @@ dA = A - meanA
 dB = BB - meanB
 dEf = np.sqrt(dL**2 + dA**2 + dB**2)
 dEf = (dEf - dEf.min())/(dEf.max() - dEf.min())
-plt.imshow(dEf)
+
+dEf = dEf*255
+dEf_ub = dEf.astype('ubyte')
+
+se = morph.disk(3)
+map1 = mht.open(dEf_ub,se)
+map2 = mht.close(map1,se)
+map = filt.median(map2)
+mask = map<60
+plt.imshow(mask)
+
+#plt.imshow(dEf)
 #
 # #BG
 # sL = np.concatenate((L[210:220,2460:2470].flatten(),L[1395:1405,2330:2340].flatten(),L[155:165,270:280].flatten()))
