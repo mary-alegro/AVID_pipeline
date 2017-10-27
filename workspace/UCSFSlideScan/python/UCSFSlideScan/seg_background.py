@@ -3,9 +3,7 @@ import skimage.io as io
 from skimage import color
 from skimage import filters as filt
 from skimage import morphology as morph
-import mahotas
-
-
+import mahotas as mht
 
 
 def seg_background(img,outname):
@@ -17,9 +15,11 @@ def seg_background(img,outname):
     level = filt.threshold_triangle(B)
     mask = B>level
     se = morph.disk(5)
-    mask2 = mahotas.open(mask,se)
-    mask3 = mask2*255
-    io.imsave(outname,mask3.astype('ubyte'))
+    mask2 = mht.open(mask,se)
+    se2 = morph.disk(25)
+    mask3 = mht.erode(mask2,se2)
+    mask4 = mask3*255
+    io.imsave(outname,mask4.astype('ubyte'))
 
 def main():
 
