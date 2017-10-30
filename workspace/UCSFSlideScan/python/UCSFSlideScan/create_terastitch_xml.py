@@ -5,7 +5,7 @@ import numpy as np
 import re
 
 
-def create_xml(in_file,out_file):
+def create_xml(in_file,out_file,imgs_dir):
 
     folder = ''
     sensorW = ''
@@ -34,7 +34,11 @@ def create_xml(in_file,out_file):
                 if 'Folder:' in line:
                     idx = line.find(' ')
                     size = len(line)
-                    folder = line[idx + 1:size]
+
+                    if imgs_dir == '':
+                        folder = line[idx + 1:size]
+                    else:
+                        folder = imgs_dir #ignores the original folder in Metadata.txt
 
                     folder_xml = ET.SubElement(root_xml, 'stacks_dir', attrib={'value': folder})
 
@@ -75,7 +79,7 @@ def create_xml(in_file,out_file):
             nTilesX = int(nTilesX)
             nTilesY = int(nTilesY)
 
-            #our scanner's coordinate origin is in the FOV top left corner, while TeraStich's origin is in the bottom left corner
+            #Our scanner's coordinate origin is in the FOV top left corner, while TeraStich's origin is in the bottom left corner
             #we need to read all line into a vector and invert the rows positions, otherwise TeraStitch won't read our XMLs
             #obs: rows MUST appear in the righ order in the XML file otherwise the TereStitch will merge then in incorrect order
             #one must be careful to reverse the rows without reversing the columns, which are in the right order
@@ -194,17 +198,21 @@ def get_tile_ind(line):
     return num1
 
 def main():
-    if len(sys.argv) != 3:
-        print('Usage: create_terastitch_xml <meta_data_file> <xml_file>')
+    if len(sys.argv) < 3:
+        print('Usage: create_terastitch_xml <meta_data_file> <xml_file> <imgs_dir>')
         exit()
-
-    in_file = str(sys.argv[1])  # abs path to where the images are
-    out_file = str(sys.argv[2])
+    elif len(sys.argv) >= 3:
+        in_file = str(sys.argv[1])  # abs path to where the images are
+        out_file = str(sys.argv[2])
+        imgs_dir = ''
+        if len(sys.argv) == 4:
+            imgs_dir = str(sys.argv[3])
 
     print('Input: ' + in_file)
     print('Output: ' + out_file)
+    print('Images dir: ' + imgs_dir)
 
-    create_xml(in_file,out_file)
+    create_xml(in_file,out_file,imgs_dir)
 
 
 

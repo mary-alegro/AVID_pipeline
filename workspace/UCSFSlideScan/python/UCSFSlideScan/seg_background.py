@@ -4,6 +4,8 @@ from skimage import color
 from skimage import filters as filt
 from skimage import morphology as morph
 import mahotas as mht
+import numpy as np
+#import matplotlib.pyplot as plt
 
 
 def seg_background(img,outname):
@@ -12,6 +14,7 @@ def seg_background(img,outname):
 
     lab = color.rgb2lab(img)
     B = lab[...,2]
+    B = np.fabs(B)
     level = filt.threshold_triangle(B)
     mask = B>level
     se = morph.disk(5)
