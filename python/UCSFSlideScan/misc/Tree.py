@@ -8,7 +8,7 @@ Used for generating XML metadata
 
 from lxml import etree as ET
 from collections import deque
-import xmljson
+#import xmljson
 import json
 
 
@@ -47,10 +47,10 @@ class Tree(object):
         return ET.tostring(xml_tree, pretty_print=True, xml_declaration=True, encoding='UTF-8')
 
 
-    def export_json(self):
-        xml_tree = self.export_xml_tree()
-        js = json.dumps(xmljson.badgerfish.data(xml_tree))
-        return js
+    # def export_json(self):
+    #     xml_tree = self.export_xml_tree()
+    #     js = json.dumps(xmljson.badgerfish.data(xml_tree))
+    #     return js
 
 
 

@@ -4,15 +4,12 @@ import sys
 import fnmatch
 import skimage.io as io
 import tifffile
-from XMLUtils import XMLUtils
+from misc.XMLUtils import XMLUtils
 
 #
 # This script is supposed to run on the cluster
 # Script for automatically tiling the full resolution histology images, using Image Magick
 
-
-#subprocess.check_call(['sqsub', '-np', sys.argv[1], '/path/to/executable'],
-#                      env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
 
 PIX_1MM = 819 #1mm= 819 pixels
 PIX_5MM = 4095 #5mm = 4095 pixels
@@ -23,6 +20,8 @@ def get_img_info(root_dir):
     for root, dir, files in os.walk(root_dir):
         if fnmatch.fnmatch(root,'*/RES(*'): #it's inside /RES*
             for fn in fnmatch.filter(files,'*_*_*.tif'): #get only full resolution images
+                if fn.find('res10') == 0: #skip res10 images
+                    continue
                 file_name = os.path.join(root,fn)
                 tiff = tifffile.TiffFile(file_name) #load tiff header only
                 size = tiff.series[0].shape
@@ -35,21 +34,6 @@ def get_img_info(root_dir):
 
     return file_list
 
-# def compute_tile_sizes(file_dic):
-#     for k in file_dic.keys():
-#         dic = file_dic[k]
-#         size = dic['size']
-#         rows = size[0]
-#         cols = size[1]
-#
-#         #compute tile grid.
-#         #note that there's always a rounding problem since image size are hardly ever multiples of PIX_5MM
-#         nB_rows = rows/PIX_5MM #num. of 5mm high blocks along the 'row' dimension
-#         nB_cols = cols/PIX_5MM #num. of 5mm wide blocks along the 'columns' dimension
-#
-#         dic['tile_grid'] = [nB_rows,nB_cols]
-#         file_dic[k] = dic
-#         #return file_dic
 
 def save_metadata(img_name,info_dic,log_file):
 
@@ -58,8 +42,7 @@ def save_metadata(img_name,info_dic,log_file):
     s = info_dic['size']
     img_info = {'name':'Image', 'attrib':{'rows':str(s[0]), 'cols':str(s[0]), 'file':img_name, 'home':info_dic['home'], 'children':[tile_info]}}
 
-    xmlUtil = XMLUtils()
-    xmlUtil.dict2xmlfile(img_info,log_file)
+    XMLUtils.dict2xmlfile(img_info,log_file)
 
 
 
@@ -72,7 +55,7 @@ def tile_images(root_dir):
 
     #export Image Magick env variables
     os.environ['MAGICK_TMPDIR'] = TMP_DIR
-    os.environ['MAGICK_MEMORY_LIMIT'] = '16Gb'
+    os.environ['MAGICK_MEMORY_LIMIT'] = '64Gb'
 
     #get file information and tiling grid size
     file_dic = get_img_info(root_dir)
@@ -89,28 +72,34 @@ def tile_images(root_dir):
             os.mkdir(tiles_dir, 0777)
 
 
-
         str_tile = '{}x{}@'.format(tile_grid[1],tile_grid[0]) #image magick works with COLSxROWS format
         str_tname = 'tile_%04d.tif' #tile file name pattern
         str_tname = os.path.join(tiles_dir,str_tname)
 
-        #run system process
-        subprocess.check_call(['convert', '-crop', str_tile, '+repage', '+adjoin', fi, str_tname], env=dict(os.environ))
+
+        log_out_name = os.path.join(home_dir,'stdout_log.txt')
+        log_err_name = os.path.join(home_dir,'stderr_log.txt')
+        log_out = open(log_out_name,'wb+')
+        log_err = open(log_err_name,'wb+')
+        # run system process
+
+        print("Tiling file {}".format(fi))
+        status = subprocess.call(['convert', '-crop', str_tile, '+repage', '+adjoin', fi, str_tname], env=dict(os.environ), stderr=log_err, stdout=log_out)
 
         #save metadata (used by export_heatmap_metadata.py)
-        save_metadata(fi,fdic,os.path.join(tiles_dir,'tiling_info.xml'))
-
-
+        meta_file = os.path.join(tiles_dir,'tiling_info.xml')
+        save_metadata(fi,fdic,meta_file)
 
 
 def main():
-    # if len(sys.argv) != 2:
-    #     print('Usage: tile_images_cluster.py <root_dir>')
-    #     exit()
-    #
-    # root_dir = str(sys.argv[1])  # abs path to where the images are
+    if len(sys.argv) != 2:
+        print('Usage: tile_images_cluster.py <root_dir>')
+        exit()
 
-    root_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100/full_res'
+    root_dir = str(sys.argv[1])  # abs path to where the images are
+
+    #root_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100/full_res'
+    #root_dir= '/Users/maryana/Posdoc/AVID/AV13/TEMP'
 
     tile_images(root_dir)
 

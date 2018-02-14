@@ -5,7 +5,8 @@ from Tree import Tree
 
 class XMLUtils(object):
 
-    def parse_dict(self,dics,parent=None):
+    @staticmethod
+    def parse_dict(dics,parent=None):
         # dics is always and array with 1 or more dictionaries. There head must always have 1 single dict.
 
         node = None
@@ -15,7 +16,7 @@ class XMLUtils(object):
             dic = dics[d] #get obj from array
             node = Node(dic['name'])
 
-            print(dic['name'])
+            #print(dic['name'])
 
             if not parent is None:  # add curr node to parents children list
                 parent.add_child(node)
@@ -27,27 +28,26 @@ class XMLUtils(object):
             for key in att.keys():
                 if key == 'children':
                     arr_dic = att[key]
-                    self.parse_dict(arr_dic,node)
+                    XMLUtils.parse_dict(arr_dic,node)
                 else:
                     node_dic[key] = att[key] #it's a leave node
                     node.add_data(node_dic)
 
         return node
 
-
-
-    def dict2xml(self,dic):
+    @staticmethod
+    def dict2xml(dic):
         if type(dic) != list:
             dic = [dic]
-        head = self.parse_dict(dic)
+        head = XMLUtils.parse_dict(dic)
         tree = Tree(head)
         return tree.export_xml_string()
 
-
-    def dict2xmlfile(self,dic,xml_file):
+    @staticmethod
+    def dict2xmlfile(dic,xml_file):
         if type(dic) != list:
             dic = [dic]
-        head = self.parse_dict(dic)
+        head = XMLUtils.parse_dict(dic)
         tree = Tree(head)
         with open(xml_file, 'w+') as out:
             out.write(tree.export_xml_string())
@@ -82,8 +82,8 @@ def main():
 
     dics = [a]
 
-    xmlUtils = XMLUtils()
-    str_xml = xmlUtils.dict2xml(dics)
+    #xmlUtils = XMLUtils()
+    str_xml = XMLUtils.dict2xml(dics)
     print(str_xml)
 
 
