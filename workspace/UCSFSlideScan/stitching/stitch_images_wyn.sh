@@ -11,6 +11,7 @@ ROOT_DIR=$1
 SLICE_NAME=$2
 RAW_DIR=$ROOT_DIR'/raw'
 OUT_DIR=$ROOT_DIR'/output'
+TMP_DIR=$OUT_DIR'/magick_tmp'
 
 #echo $ROOT_DIR
 #echo $RAW_DIR
@@ -20,6 +21,11 @@ if [ -d "$OUT_DIR" ]; then
 	rm -rf "$OUT_DIR"
 fi
 mkdir "$OUT_DIR"
+
+if [ -d "$TMP_DIR" ]; then
+        rm -rf "$TMP_DIR"
+fi
+
 
 cd $RAW_DIR
 echo $PWD
@@ -51,3 +57,28 @@ touch $ROOT_DIR'/place'
 echo 'Merge'
 time teraconverter -s="xml_merging.xml" -d="$OUT_DIR" --sfmt="TIFF (unstitched, 3D)" --dfmt="TIFF (series, 2D)" --libtiff_bigtiff --noprogressbar
 touch $ROOT_DIR'/merge'
+
+#use Image Magick to create 10% res image
+
+f=`ls $OUT_DIR'/'`
+
+if [ -z "$f" ]
+then
+	echo 'Image not created. Nothing to do.'
+else
+	echo 'Resizing image.'
+
+	mkdir "$TMP_DIR"
+
+	export MAGICK_TMPDIR=$TMP_DIR
+	export MAGICK_MEMORY_LIMIT=64Gb
+
+	IMG_DIR=$OUT_DIR'/'$f
+	IMG_DIR_ESC="$(echo "$IMG_DIR" | sed -e 's/[()&]/\\&/g')"
+	cd $IMG_DIR
+	IMG=`ls *.tif`
+	IMG_OUT='res10_'$IMG
+
+	convert -resize "10%" $IMG $IMG_OUT
+	rm -rf "$TMP_DIR"
+fi
