@@ -14,25 +14,45 @@ from misc.XMLUtils import XMLUtils
 PIX_1MM = 819 #1mm= 819 pixels
 PIX_5MM = 4095 #5mm = 4095 pixels
 
-def get_img_info(root_dir):
-    file_list = {}
+def get_mask_info(root_dir):
+    file_list = dict()
 
     for root, dir, files in os.walk(root_dir):
         if fnmatch.fnmatch(root,'*/RES(*'): #it's inside /RES*
-            for fn in fnmatch.filter(files,'*_*_*.tif'): #get only full resolution images
+            for fn in fnmatch.filter(files,'*_*_*.tif'): #find full resolution images
                 if fn.find('res10') == 0: #skip res10 images
                     continue
                 file_name = os.path.join(root,fn)
                 tiff = tifffile.TiffFile(file_name) #load tiff header only
                 size = tiff.series[0].shape
-                # compute tile grid.
-                # note that there's always a rounding problem since image size are hardly ever multiples of PIX_5MM
+                del tiff
                 nB_rows = size[0] / PIX_5MM  # num. of 5mm high blocks along the 'row' dimension
                 nB_cols = size[1] / PIX_5MM  # num. of 5mm wide blocks along the 'columns' dimension
-                file_list[file_name] = {'home':root, 'size':size, 'tile_grid':[nB_rows, nB_cols]}
-                del tiff
+
+                #get masks folder
+                path_list = root.split(os.sep)
+                nW = len(path_list)
+                mask_dir = ''
+                for d in range(nW-2):
+                    mask_dir+=path_list[d]+os.sep
+                mask_dir = os.path.join(mask_dir,'mask/final_mask')
+
+                #check if exists
+                if os.path.exists(mask_dir):
+                    #find mask file name
+                    mask_file = ''
+                    for root, dir, files in os.walk(root_dir):
+                        for fm in fnmatch.filter(files, '*mask.tif'):  # there should be only one mask file
+                            mask_file = os.path.join(root,fm)
+
+                    if mask_file != '':
+                        file_list[mask_file] = {'home':root, 'full_size':size, 'tile_grid':[nB_rows, nB_cols]}
+
+                else:
+                    continue
 
     return file_list
+
 
 
 def save_metadata(img_name,info_dic,log_file):
@@ -46,8 +66,7 @@ def save_metadata(img_name,info_dic,log_file):
 
 
 
-def tile_images(root_dir):
-
+def process_masks(root_dir):
 
 
     #create Image Magick tmp directory
@@ -60,7 +79,7 @@ def tile_images(root_dir):
     os.environ['MAGICK_MEMORY_LIMIT'] = '64Gb'
 
     #get file information and tiling grid size
-    file_dic = get_img_info(root_dir)
+    file_dic = get_mask_info(root_dir)
 
     for fi in file_dic.keys():
 
@@ -69,7 +88,7 @@ def tile_images(root_dir):
         tile_grid = fdic['tile_grid']
 
         # Check if file was already processed. If so, skip it.
-        if os.path.exists(os.path.join(home_dir, 'tiles/tiling_info.xml')):
+        if os.path.exists(os.path.join(home_dir, 'mask/final_mask/tiling_info.xml')):
             print('File {} has already been tiled. Nothing to do.'.format(fi))
             continue
 
@@ -108,7 +127,7 @@ def main():
     #root_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100/full_res'
     #root_dir= '/Users/maryana/Posdoc/AVID/AV13/TEMP'
 
-    tile_images(root_dir)
+    process_masks(root_dir)
 
 
 
