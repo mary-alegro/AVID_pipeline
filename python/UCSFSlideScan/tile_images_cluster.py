@@ -57,7 +57,7 @@ def tile_images(root_dir):
 
     #export Image Magick env variables
     os.environ['MAGICK_TMPDIR'] = TMP_DIR
-    os.environ['MAGICK_MEMORY_LIMIT'] = '64Gb'
+    os.environ['MAGICK_MEMORY_LIMIT'] = '24Gb'
 
     #get file information and tiling grid size
     file_dic = get_img_info(root_dir)

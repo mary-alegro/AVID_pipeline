@@ -75,7 +75,7 @@ def process_masks(root_dir):
         os.mkdir(TMP_DIR,0777)
     #export Image Magick env variables
     os.environ['MAGICK_TMPDIR'] = TMP_DIR
-    os.environ['MAGICK_MEMORY_LIMIT'] = '64Gb'
+    os.environ['MAGICK_MEMORY_LIMIT'] = '24Gb'
 
     #get file information and tiling grid size
     file_dic = get_mask_info(root_dir)
