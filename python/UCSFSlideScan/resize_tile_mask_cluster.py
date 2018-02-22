@@ -61,7 +61,7 @@ def save_metadata(img_name,info_dic,log_file):
     tiles = info_dic['tile_grid']
     tile_info = {'name':'Tiles','attrib':{'grid_rows':str(tiles[0]),'grid_cols':str(tiles[1])}}
     s = info_dic['full_size']
-    img_info = {'name':'Image', 'attrib':{'rows':str(s[0]), 'cols':str(s[0]), 'file':img_name, 'home':info_dic['home'], 'children':[tile_info]}}
+    img_info = {'name':'Image', 'attrib':{'rows':str(s[0]), 'cols':str(s[1]), 'file':img_name, 'home':info_dic['home'], 'children':[tile_info]}}
 
     XMLUtils.dict2xmlfile(img_info,log_file)
 
@@ -108,6 +108,7 @@ def process_masks(root_dir):
 
         filename = os.path.splitext(os.path.basename(fi))[0]
         str_rname = os.path.join(home_dir,filename+'_full_res.tif')
+        str_rname = 'TIFF64' + str_rname #save as BigTiff
 
         # run resize system process
         print("Resizing file {}".format(fi))
