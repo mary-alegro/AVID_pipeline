@@ -6,6 +6,10 @@ import numpy as np
 import sys
 import glob
 import matplotlib.pyplot as plt
+import tifffile
+
+
+PIX_MM = 819
 
 def sub2ind(size,r,c):
     ind = r*size[1]+c
@@ -42,21 +46,36 @@ def create_adj_dic(grid_shape):
     return tiles_dic
 
 
-def create_xml_metadata(tile_dir, rows, cols, nblocks_tile, file_pt = 'tile_{:04d}.tif', pix_mm = 819):
-    grid_shape = np.array([rows,cols])
+def create_xml_metadata(tile_dir, grid_rows, grid_cols, img_rows, img_cols, nblocks_tile, file_pt = 'tile_{:04d}.tif', file_pt_mask = 'tile_{:04d}_mask.tif', pix_mm=PIX_MM):
+    grid_shape = np.array([grid_rows,grid_cols])
     tiles_dic = create_adj_dic(grid_shape)
 
-    root_xml = ET.Element('Tiles', attrib={'rows': str(rows), 'cols': str(cols), 'pix_mm': str(pix_mm), 'nblocks_tile': str(nblocks_tile), 'root_dir':tile_dir})
-
+    root_xml = ET.Element('Tiles', attrib={'grid_rows': str(grid_rows), 'grid_cols': str(grid_cols),
+                                           'img_rows': str(img_rows), 'img_cols': str(img_cols),
+                                           'pix_mm': str(pix_mm), 'nblocks_tile': str(nblocks_tile),
+                                           'root_dir': tile_dir})
     keys = tiles_dic.keys()
     for tile_num in keys:
-
         #load current image
         img_name = file_pt.format(tile_num)
+        img_name_alt = file_pt_mask.format(tile_num)
         img_path = os.path.join(tile_dir,img_name)
-        img = io.imread(img_path)
+        img_path_alt = os.path.join(tile_dir,img_name_alt)
 
-        tile_xml = ET.SubElement(root_xml, 'Tile', attrib={'name':img_name, 'rows':str(img.shape[0]), 'cols':str(img.shape[1])})
+        try:
+            img = tifffile.TiffFile(img_path)
+            is_mask = 0
+        except:
+            try:
+                img = tifffile.TiffFile(img_path_alt)
+                img_name = img_name_alt
+                is_mask = 1
+            except:
+                print('Warning: Tile {} not found. Skipping it.'.format(tile_num))
+                continue
+
+        img_shape = img.series[0].shape
+        tile_xml = ET.SubElement(root_xml, 'Tile', attrib={'is_mask':str(is_mask), 'name':img_name, 'rows':str(img_shape[0]), 'cols':str(img_shape[1])})
 
         nbors = tiles_dic[tile_num] #Neighbors are always in N,S,E,W order
         #get north:
@@ -84,23 +103,63 @@ def create_xml_metadata(tile_dir, rows, cols, nblocks_tile, file_pt = 'tile_{:04
     xml_tree = ET.ElementTree(root_xml)
     return xml_tree
 
+def find_xml_file(case_dir):
+    xml_file = ''
+    for root, dir, files in os.walk(case_dir):
+        if fnmatch.fnmatch(root,'*/RES(*'): #it's inside /RES*
+            tmp_path = os.path.join(root,'tiles/tiling_info.xml')
+            if os.path.exists(tmp_path):
+                xml_file = tmp_path
+                break
+
+    return xml_file
+
+def get_info_xml(xml_file):
+    xml_tree = ET.parse(xml_file)
+
+    image_node = xml_tree.xpath('//Image')[0]
+    img_rows = int(image_node.attrib['rows'])
+    img_cols = int(image_node.attrib['cols'])
+    tiles_node = xml_tree.xpath('//Tiles')[0]
+    # orig_rows = int(tiles_node.attrib['rows'])
+    # orig_cols = int(tiles_node.attrib['cols'])
+    pix_mm = int(tiles_node.attrib['pix_mm'])
+    nblocks = int(tiles_node.attrib['nblocks_tile'])
+    grid_cols = int(tiles_node.attrib['grid_cols'])
+    grid_rows = int(tiles_node.attrib['grid_rows'])
+
+    return grid_rows,grid_cols,nblocks,pix_mm,img_rows,img_cols
+
 
 def main():
 
+    #The program will extract the information from the tiling_info.xml that should be inside
+    #<CASE_DIR>/output/RES(???x???)/tiles, if file doesn't exist it will quit
+
+    if len(sys.argv) != 2:
+        print('Usage: export_heatmap_metadata.py <case_dir>')
+        exit()
+
+    #case_dir='/home/maryana/storage/Posdoc/AVID/AV13/AT100/full_res/resize_mary/AT100#648'
+    case_dir = str(sys.argv[1])  # abs path to where the images are
+    xml_file = os.path.join(case_dir,'heat_map/TAU_seg_tiles/tiles_metadata.xml')
+    tiles_dir = os.path.join(case_dir,'heat_map/TAU_seg_tiles/')
+
+    #get info from tiling metadata
+    tiling_meta_xml = find_xml_file(case_dir)
+    grid_rows, grid_cols, nblocks, pix_mm, img_rows, img_cols = get_info_xml(tiling_meta_xml)
+
     print('Exporting tiles metadata...')
+    #tile_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/TAU_seg_tiles'
+    #xml_file = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/TAU_seg_tiles/tiles_metadata.xml'
+    #nblocks = 5
+    #cols = 20
+    #rows = 9
 
-    tile_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/TAU_seg_tiles'
-    xml_file = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/TAU_seg_tiles/tiles_metadata.xml'
-    nblocks = 5
-    cols = 20
-    rows = 9
-    xml_tree = create_xml_metadata(tile_dir, rows, cols, nblocks)
-
+    xml_tree = create_xml_metadata(tiles_dir, grid_rows, grid_cols, img_rows, img_cols, nblocks)
     print(ET.tostring(xml_tree, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
-
     with open(xml_file, 'w+') as out:
         out.write(ET.tostring(xml_tree, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
-
     print('Metadata saved in {}'.format(xml_file))
 
 if __name__ == '__main__':

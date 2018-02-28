@@ -124,7 +124,7 @@ pass
 #        [168, 173, 169, ..., 135, 135, 135]], dtype=uint8)
 # plt.imshow(nmap3)
 # Traceback (most recent call last):
-#   File "/home/maryana/.local/lib/python2.7/site-packages/IPython/core/interactiveshell.py", line 2881, in run_code
+#   File "/home/maryana/.local/util/python2.7/site-packages/IPython/core/interactiveshell.py", line 2881, in run_code
 #     exec(code_obj, self.user_global_ns, self.user_ns)
 #   File "<ipython-input-9-2efe36013d11>", line 1, in <module>
 #     plt.imshow(nmap3)
