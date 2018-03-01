@@ -131,36 +131,52 @@ def get_info_xml(xml_file):
     return grid_rows,grid_cols,nblocks,pix_mm,img_rows,img_cols
 
 
-def main():
+def export_metadata(case_dir):
+    xml_file = os.path.join(case_dir, 'heat_map/TAU_seg_tiles/tiles_metadata.xml')
+    tiles_dir = os.path.join(case_dir, 'heat_map/TAU_seg_tiles/')
 
-    #The program will extract the information from the tiling_info.xml that should be inside
-    #<CASE_DIR>/output/RES(???x???)/tiles, if file doesn't exist it will quit
-
-    if len(sys.argv) != 2:
-        print('Usage: export_heatmap_metadata.py <case_dir>')
-        exit()
-
-    #case_dir='/home/maryana/storage/Posdoc/AVID/AV13/AT100/full_res/resize_mary/AT100#648'
-    case_dir = str(sys.argv[1])  # abs path to where the images are
-    xml_file = os.path.join(case_dir,'heat_map/TAU_seg_tiles/tiles_metadata.xml')
-    tiles_dir = os.path.join(case_dir,'heat_map/TAU_seg_tiles/')
-
-    #get info from tiling metadata
+    # get info from tiling metadata
     tiling_meta_xml = find_xml_file(case_dir)
     grid_rows, grid_cols, nblocks, pix_mm, img_rows, img_cols = get_info_xml(tiling_meta_xml)
 
     print('Exporting tiles metadata...')
-    #tile_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/TAU_seg_tiles'
-    #xml_file = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/TAU_seg_tiles/tiles_metadata.xml'
-    #nblocks = 5
-    #cols = 20
-    #rows = 9
-
     xml_tree = create_xml_metadata(tiles_dir, grid_rows, grid_cols, img_rows, img_cols, nblocks)
     print(ET.tostring(xml_tree, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
     with open(xml_file, 'w+') as out:
         out.write(ET.tostring(xml_tree, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
     print('Metadata saved in {}'.format(xml_file))
+
+
+
+
+def main():
+    #The program will extract the information from the tiling_info.xml that should be inside
+    #<CASE_DIR>/output/RES(???x???)/tiles, if file doesn't exist it will quit
+    if len(sys.argv) != 2:
+        print('Usage: export_heatmap_metadata.py <case_dir>')
+        exit()
+    #case_dir='/home/maryana/storage/Posdoc/AVID/AV13/AT100/full_res/resize_mary/AT100#648'
+    case_dir = str(sys.argv[1])  # abs path to where the images are
+    export_metadata(case_dir)
+    # xml_file = os.path.join(case_dir,'heat_map/TAU_seg_tiles/tiles_metadata.xml')
+    # tiles_dir = os.path.join(case_dir,'heat_map/TAU_seg_tiles/')
+    #
+    # #get info from tiling metadata
+    # tiling_meta_xml = find_xml_file(case_dir)
+    # grid_rows, grid_cols, nblocks, pix_mm, img_rows, img_cols = get_info_xml(tiling_meta_xml)
+    #
+    # print('Exporting tiles metadata...')
+    # #tile_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/TAU_seg_tiles'
+    # #xml_file = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/TAU_seg_tiles/tiles_metadata.xml'
+    # #nblocks = 5
+    # #cols = 20
+    # #rows = 9
+    #
+    # xml_tree = create_xml_metadata(tiles_dir, grid_rows, grid_cols, img_rows, img_cols, nblocks)
+    # print(ET.tostring(xml_tree, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
+    # with open(xml_file, 'w+') as out:
+    #     out.write(ET.tostring(xml_tree, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
+    # print('Metadata saved in {}'.format(xml_file))
 
 if __name__ == '__main__':
     main()
