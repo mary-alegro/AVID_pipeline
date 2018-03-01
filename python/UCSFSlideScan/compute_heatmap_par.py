@@ -13,7 +13,7 @@ import tifffile
 NPIX_MM = 819 #num. pixels in 1mm
 NBLOCK_TILE = 5 #tiles are 5x5 grid with 1mm^2 each
 MAX_VALUE = 65535 #16bits
-N_WORKERS = 2
+N_WORKERS = 4
 
 def get_num_white(block):
     # num. non zeros in the blue channel
