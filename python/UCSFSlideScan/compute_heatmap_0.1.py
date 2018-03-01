@@ -13,7 +13,7 @@ import tifffile
 NPIX_MM = 819 #num. pixels in 1mm
 NBLOCK_TILE = 5 #tiles are 5x5 grid with 1mm^2 each
 MAX_VALUE = 65535 #16bits
-N_WORKERS = 4
+N_WORKERS = 2
 
 def get_num_white(block):
     # num. non zeros in the blue channel
@@ -28,36 +28,36 @@ def get_num_pix_tissue(img): #assumes RGB image
     return nnz_b
 
 
-def heatmap_worker(root_dir, hm_dir, nblocks_tile, pix_mm, file_bundle, min_max):
+def heatmap_worker(tiles_dir,seg_dir, hm_dir, nblocks_tile, pix_mm, file_bundle, min_max):
 
-    #proc = mp.current_process()
-    #pid = proc.pid
-    pid= 0
+    proc = mp.current_process()
+    pid = proc.pid
+    #pid= 0
 
     NPIX_BLOCK = int(round(pix_mm*0.1))
     min_val_tissue = 0
     max_val_tissue = 0
 
-
     for img_name in file_bundle:
-        img_path = os.path.join(root_dir,img_name)
-        img = io.imread(img_path)
-        histo_per_tissue = np.zeros(img.shape[0:2])
-
-        if img_name.find('_mask.tif') == -1: #not a mask, it means file is background. so, save empty file.
+        if img_name.find('_mask.tif') == -1: #not a mask, it's a background tile. so, save empty file.
+            tile_name = img_name[0:-4]+'.tif'
+            tile_path = os.path.join(tiles_dir,tile_name)
+            img = io.imread(tile_path)
             histo_per_tissue = np.zeros(img.shape[0:2])
-            hm2_name = os.path.join(hm_dir, img_name[0:-9] + '_hm_pertissue.npy')
+            hm2_name = os.path.join(hm_dir, img_name[0:-4] + '_hm_pertissue.npy')
             np.save(hm2_name, histo_per_tissue)
             print('{}: File {} saved.'.format(pid, hm2_name))
             continue
 
+        #load tile (I need the original tile to count the number of tissue pixels)
+        tile_name = img_name[0:-9]+'.tif'
+        tile_path = os.path.join(tiles_dir,tile_name)
+        img = io.imread(tile_path)
+        #load segmentation
+        mask_path = os.path.join(seg_dir, img_name)
+        mask = io.imread(mask_path)
 
-        mask_path = img_path
-        mask = img
-
-        #mask_name = img_name[0:-4]+'_mask.tif'
-        #mask_path = os.path.join(root_dir,'masks',mask_name)
-        #histo_per_tile = np.zeros(img.shape[0:2])
+        histo_per_tissue = np.zeros(img.shape[0:2])
 
         if os.path.isfile(mask_path): #run image processing routine if mask exists
             #mask = io.imread(mask_path)
@@ -84,14 +84,17 @@ def heatmap_worker(root_dir, hm_dir, nblocks_tile, pix_mm, file_bundle, min_max)
                     block_img = img[bg_row:end_row,bg_col:end_col,:]
 
                     nonzero_pix_mask = get_num_white(block_mask) #get number of non-zero pixels in mask
-                    total_pix_block = rows*cols #total number of pixel in image block
+                    #total_pix_block = rows*cols #total number of pixel in image block
                     npix_tissue_block = get_num_pix_tissue(block_img)
 
-                    percent_total = float(nonzero_pix_mask)/float(total_pix_block)
+                    #percent_total = float(nonzero_pix_mask)/float(total_pix_block)
                     percent_tissue = 0.0 if npix_tissue_block == 0 else (float(nonzero_pix_mask)/float(npix_tissue_block))
+                    percent_tissue_100 = percent_tissue*100
+                    if percent_tissue_100 > 100.00:
+                        percent_tissue_100 = 100.0 # this can happen in some situations where the mask is bigger than the tissue are. this usually happens when segmenting background (like sharpie marks)
 
                     #histo_per_tile[bg_row:end_row,bg_col:end_col] = percent_total*100
-                    histo_per_tissue[bg_row:end_row,bg_col:end_col] = percent_tissue*100
+                    histo_per_tissue[bg_row:end_row,bg_col:end_col] = percent_tissue_100
 
                     # histo_per_tile_16[bg_row:end_row,bg_col:end_col] = percent_total*100
                     # histo_per_tissue_16[bg_row:end_row,bg_col:end_col] = percent_tissue*100
@@ -102,43 +105,47 @@ def heatmap_worker(root_dir, hm_dir, nblocks_tile, pix_mm, file_bundle, min_max)
                 bg_col = 0
 
         #get min and max values for the entire slice, per amount of tissue
-        if histo_per_tissue.min() < min_val_tissue:
-            min_val_tissue = histo_per_tissue.min()
-        if histo_per_tissue.max() > max_val_tissue:
-            max_val_tissue = histo_per_tissue.max()
+        histo_per_tissue_min = histo_per_tissue.min()
+        histo_per_tissue_max = histo_per_tissue.max()
 
-        hm2_name = os.path.join(hm_dir,img_name[0:-4]+'_hm_pertissue.npy')
+        if histo_per_tissue_min < min_val_tissue:
+            min_val_tissue = histo_per_tissue_min
+        if histo_per_tissue_max > max_val_tissue:
+            max_val_tissue = histo_per_tissue_max
+
+        hm2_name = os.path.join(hm_dir,img_name[0:-9]+'_hm_pertissue.npy')
         np.save(hm2_name,histo_per_tissue)
-        print('{}: File {} saved.'.format(pid,hm2_name))
-        min_max[pid] = (min_val_tissue, max_val_tissue)
+        print('{}: File {} saved. Min: {} Max:{}'.format(pid,hm2_name,histo_per_tissue_min,histo_per_tissue_max))
+
+    min_max[pid] = (min_val_tissue, max_val_tissue)
 
 
-def compute_heatmap(root_dir, hm_dir, tiles_dic, nblocks_tile, pix_mm):
+def compute_heatmap(tiles_dir,seg_dir, hm_dir, tiles_dic, nblocks_tile, pix_mm):
 
     all_files = tiles_dic.keys()
-    min_max = {}
+    #min_max = {}
 
-    # nFiles = len(all_files)
-    # nf_block = int(np.ceil(float(nFiles)/N_WORKERS))
-    #
-    # start_idx = 0
-    # workers = []
-    # min_max = mp.Manager().dict()
-    # for i in xrange(N_WORKERS):
-    #     end_idx = start_idx+nf_block
-    #     if (end_idx > nFiles) or (i == (N_WORKERS + 1) and end_idx < nFiles):
-    #         end_idx = nFiles
-    #
-    #     file_bundle = all_files[start_idx:end_idx]
-    #     start_idx = end_idx
-    #     p = mp.Process(target=heatmap_worker, args=(root_dir, hm_dir, nblocks_tile, pix_mm,file_bundle, min_max))
-    #     workers.append(p)
-    #     p.start()
-    #
-    # for worker in workers:
-    #     worker.join()
+    nFiles = len(all_files)
+    nf_block = int(np.ceil(float(nFiles)/N_WORKERS))
 
-    heatmap_worker(root_dir, hm_dir, nblocks_tile, pix_mm, all_files, min_max)
+    start_idx = 0
+    workers = []
+    min_max = mp.Manager().dict()
+    for i in xrange(N_WORKERS):
+        end_idx = start_idx+nf_block
+        if (end_idx > nFiles) or (i == (N_WORKERS + 1) and end_idx < nFiles):
+            end_idx = nFiles
+
+        file_bundle = all_files[start_idx:end_idx]
+        start_idx = end_idx
+        p = mp.Process(target=heatmap_worker, args=(tiles_dir,seg_dir, hm_dir, nblocks_tile, pix_mm,file_bundle, min_max))
+        workers.append(p)
+        p.start()
+
+    for worker in workers:
+        worker.join()
+
+    #heatmap_worker(tiles_dir,seg_dir, hm_dir, nblocks_tile, pix_mm, all_files, min_max)
 
     #get minimum and maximum percentage values
     min_val_tissue = 0
@@ -281,7 +288,8 @@ def exec_compute_heatmap(case_dir,xml_file):
         os.mkdir(hm_dir)
 
     #tiles folder
-    tiles_dir = os.path.join(case_dir,'heat_map/TAU_seg_tiles')
+    tiles_dir = os.path.join(case_dir,'heat_map/seg_tiles')
+    seg_dir = os.path.join(case_dir,'heat_map/TAU_seg_tiles')
 
     xml_tree = ET.parse(xml_file)
     tiles_node = xml_tree.xpath('//Tiles')[0]
@@ -292,7 +300,7 @@ def exec_compute_heatmap(case_dir,xml_file):
 
     tiles_dic = create_adj_dic(xml_tree)
 
-    min_val_t,max_val_t = compute_heatmap(tiles_dir, hm_dir, tiles_dic, nblocks, pix_mm)
+    min_val_t,max_val_t = compute_heatmap(tiles_dir,seg_dir, hm_dir, tiles_dic, nblocks, pix_mm)
     print('Min value per tissue {}/Max value per tissue {}.'.format(str(min_val_t),str(max_val_t)))
 
 

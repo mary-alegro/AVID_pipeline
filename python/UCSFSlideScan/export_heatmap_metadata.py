@@ -46,7 +46,7 @@ def create_adj_dic(grid_shape):
     return tiles_dic
 
 
-def create_xml_metadata(tile_dir, grid_rows, grid_cols, img_rows, img_cols, nblocks_tile, file_pt = 'tile_{:04d}.tif', file_pt_mask = 'tile_{:04d}_mask.tif', pix_mm=PIX_MM):
+def create_xml_metadata(tile_dir, seg_dir, grid_rows, grid_cols, img_rows, img_cols, nblocks_tile, file_pt = 'tile_{:04d}.tif', file_pt_mask = 'tile_{:04d}_mask.tif', pix_mm=PIX_MM):
     grid_shape = np.array([grid_rows,grid_cols])
     tiles_dic = create_adj_dic(grid_shape)
 
@@ -57,19 +57,19 @@ def create_xml_metadata(tile_dir, grid_rows, grid_cols, img_rows, img_cols, nblo
     keys = tiles_dic.keys()
     for tile_num in keys:
         #load current image
-        img_name = file_pt.format(tile_num)
-        img_name_alt = file_pt_mask.format(tile_num)
-        img_path = os.path.join(tile_dir,img_name)
-        img_path_alt = os.path.join(tile_dir,img_name_alt)
+        img_name = file_pt.format(tile_num) #tile
+        img_path = os.path.join(tile_dir, img_name)
+        mask_name = file_pt_mask.format(tile_num) #segmented tile
+        mask_path = os.path.join(seg_dir,mask_name)
 
         try:
-            img = tifffile.TiffFile(img_path)
-            is_mask = 0
+            img = tifffile.TiffFile(mask_path) #mask exists
+            is_mask = 1
+            img_name = mask_name
         except:
             try:
-                img = tifffile.TiffFile(img_path_alt)
-                img_name = img_name_alt
-                is_mask = 1
+                img = tifffile.TiffFile(img_path)
+                is_mask = 0
             except:
                 print('Warning: Tile {} not found. Skipping it.'.format(tile_num))
                 continue
@@ -133,14 +133,15 @@ def get_info_xml(xml_file):
 
 def export_metadata(case_dir):
     xml_file = os.path.join(case_dir, 'heat_map/TAU_seg_tiles/tiles_metadata.xml')
-    tiles_dir = os.path.join(case_dir, 'heat_map/TAU_seg_tiles/')
+    tiles_dir = os.path.join(case_dir, 'heat_map/seg_tiles/')
+    seg_dir = os.path.join(case_dir, 'heat_map/TAU_seg_tiles/')
 
     # get info from tiling metadata
     tiling_meta_xml = find_xml_file(case_dir)
     grid_rows, grid_cols, nblocks, pix_mm, img_rows, img_cols = get_info_xml(tiling_meta_xml)
 
     print('Exporting tiles metadata...')
-    xml_tree = create_xml_metadata(tiles_dir, grid_rows, grid_cols, img_rows, img_cols, nblocks)
+    xml_tree = create_xml_metadata(tiles_dir, seg_dir, grid_rows, grid_cols, img_rows, img_cols, nblocks)
     print(ET.tostring(xml_tree, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
     with open(xml_file, 'w+') as out:
         out.write(ET.tostring(xml_tree, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
