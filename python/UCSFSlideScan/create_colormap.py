@@ -13,11 +13,9 @@ from skimage import img_as_ubyte
 
 
 def compute_colormaps(hist_dir,cmap_dir, vmin, vmax):
-
     norm = mpl.colors.Normalize(vmin=vmin,vmax=vmax)
     #cmap = cm.nipy_spectral
     cmap = cm.gray
-
 
     for root, dir, files in os.walk(hist_dir):
         for fname in fnmatch.filter(files, '*_hm_pertissue.npy'):
@@ -39,7 +37,37 @@ def compute_colormaps(hist_dir,cmap_dir, vmin, vmax):
             io.imsave(new_name,R)
 
 
+def get_dirs_minmax(root_dir):
+    dir_list = []
+    min_per_tissue = 0
+    max_per_tissue = 0
+    list_dirs = glob.glob(root_dir + '/*/')
+    for ldir in list_dirs:
+        if os.path.isdir(ldir):
+            if ldir.find('magick_tmp') != -1:
+                continue
+            min_max_file = os.path.join(ldir, 'heat_map/TAU_seg_tiles/min_max.npy')
+            min_max = np.load(min_max_file)
+
+            if min_max[0] < min_per_tissue:
+                min_per_tissue = min_max[0]
+            if min_max[1] > max_per_tissue:
+                max_per_tissue = min_max[1]
+
+            dir_list.append(ldir)
+
+    return min_per_tissue, max_per_tissue, dir_list
+
+
+
+
+
+
 def main():
+
+    if len(sys.argv) != 2:
+        print('Usage: create_colormap.py <root_dir>')
+        exit()
 
     #npy_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/hm_tiles'
     #out_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/colormap_tiles'
