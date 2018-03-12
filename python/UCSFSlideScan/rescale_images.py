@@ -36,6 +36,7 @@ def convert(root_dir):
     #iterate over files in dict
     for input_fn in image_files.keys():
         output_fn = 'res10_' + input_fn
+        #enter image directory
         os.chdir(image_files[input_fn])
         if os.path.isfile(output_fn):
             print('This image has already been resized.')
