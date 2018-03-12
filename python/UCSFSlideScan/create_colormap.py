@@ -38,7 +38,7 @@ def compute_colormaps(hist_dir,cmap_dir, vmin, vmax):
 
 
 def get_dirs_minmax(root_dir):
-    dir_list = []
+    dir_dic = {}
     min_per_tissue = 0
     max_per_tissue = 0
     list_dirs = glob.glob(root_dir + '/*/')
@@ -46,21 +46,33 @@ def get_dirs_minmax(root_dir):
         if os.path.isdir(ldir):
             if ldir.find('magick_tmp') != -1:
                 continue
-            min_max_file = os.path.join(ldir, 'heat_map/TAU_seg_tiles/min_max.npy')
+            min_max_file = os.path.join(ldir, 'heat_map/hm_tiles_0.1/min_max.npy')
             min_max = np.load(min_max_file)
-
             if min_max[0] < min_per_tissue:
                 min_per_tissue = min_max[0]
             if min_max[1] > max_per_tissue:
                 max_per_tissue = min_max[1]
 
-            dir_list.append(ldir)
+            npy_dir = os.path.join(ldir, 'heat_map/hm_tiles_0.1')
+            cm_dir = os.path.join(ldir, 'heat_map/color_map_0.1')
+            if not os.path.exists(cm_dir):
+                os.mkdir(cm_dir)
 
-    return min_per_tissue, max_per_tissue, dir_list
+            dir_dic[ldir]= (npy_dir,cm_dir)
+
+    return min_per_tissue, max_per_tissue, dir_dic
 
 
+def run_compute_colormap(root_dir):
+    vmin,vmax,dirs_dic = get_dirs_minmax(root_dir)
 
+    for cdir in dirs_dic.keys():
+        dirs = dirs_dic[cdir]
+        npy_dir = dirs[0]
+        cm_dir = dirs[1]
 
+        print('Computing color maps for {}. Min: {} Max:{}'.format(cdir,vmin,vmax))
+        compute_colormaps(npy_dir,cm_dir, vmin, vmax)
 
 
 def main():
@@ -69,18 +81,18 @@ def main():
         print('Usage: create_colormap.py <root_dir>')
         exit()
 
+    root_dir = str(sys.argv[1])  # abs path to where the images are
+
     #npy_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/hm_tiles'
     #out_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/colormap_tiles'
-    npy_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/hm_tiles_0.1'
-    out_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/colormap_tiles_0.1'
-
-    vmin = 0
-    vmax = 66.1213
+    #npy_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/hm_tiles_0.1'
+    #out_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100440/colormap_tiles_0.1'
+    #vmin = 0
+    #vmax = 66.1213
     #vmax = 28.7227577641 #per tissue
     #vmax = 1.00780147993 #per tile
 
-
-    compute_colormaps(npy_dir,out_dir, vmin, vmax)
+    run_compute_colormap(root_dir)
 
 
 if __name__ == '__main__':
