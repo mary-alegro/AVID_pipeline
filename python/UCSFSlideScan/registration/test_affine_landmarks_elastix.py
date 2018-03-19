@@ -7,9 +7,12 @@ import skimage.measure as meas
 iterationNumbers = 6000
 spatialSamples = 6000
 
-ref = sitk.ReadImage('/home/maryana/storage/Posdoc/AVID/test_elastix/1181_001-Whole-Brain_0457.png.nii')
-mov = sitk.ReadImage('/home/maryana/storage/Posdoc/AVID/test_elastix/ants_AT100_457_affine_centered.nii')
-ref_mask = sitk.ReadImage('/home/maryana/storage/Posdoc/AVID/test_elastix/MASK_1181_001-Whole-Brain_0457_v2.png.nii',sitk.sitkUInt8)
+#folder = '/home/maryana/storage/Posdoc/AVID/test_elastix/'
+folder = '/Volumes/SUSHI_HD/SUSHI/Posdoc/AVID/AV13/test_elastix/'
+
+ref = sitk.ReadImage(folder+'1181_001-Whole-Brain_0344.png.nii')
+mov = sitk.ReadImage(folder+'ants_AT100_344_affine.nii')
+#ref_mask = sitk.ReadImage('MASK_1181_001-Whole-Brain_0457_v2.png.nii',sitk.sitkUInt8)
 
 
 # elastixImageFilter = sitk.ElastixImageFilter()
@@ -21,24 +24,28 @@ ref_mask = sitk.ReadImage('/home/maryana/storage/Posdoc/AVID/test_elastix/MASK_1
 # sitk.WriteImage(elastixImageFilter.GetResultImage(),'/home/maryana/storage/Posdoc/AVID/test_elastix/elastix_AT100_457_h2b_noland.nii')
 
 elastixImageFilter = sitk.ElastixImageFilter()
+# elastixImageFilter.SetParameterMap(sitk.GetDefaultParameterMap('translation'))
+# elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('rigid'))
+# elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('affine'))
+#elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('affine'))
 elastixImageFilter.SetParameterMap(sitk.GetDefaultParameterMap('bspline'))
 elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
 elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
 elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
-elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
+#elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
 
 
 elastixImageFilter.SetParameter(0,'FinalGridSpacingInPhysicalUnits','15.0')
 elastixImageFilter.SetParameter(1,'FinalGridSpacingInPhysicalUnits','11.0')
 elastixImageFilter.SetParameter(2,'FinalGridSpacingInPhysicalUnits','7.0')
 elastixImageFilter.SetParameter(3,'FinalGridSpacingInPhysicalUnits','5.0')
-elastixImageFilter.SetParameter(4,'FinalGridSpacingInPhysicalUnits','2.0')
+#elastixImageFilter.SetParameter(4,'FinalGridSpacingInPhysicalUnits','4.0')
 
 
 
 elastixImageFilter.SetMovingImage(mov)
 elastixImageFilter.SetFixedImage(ref)
-elastixImageFilter.SetFixedMask(ref_mask)
+#elastixImageFilter.SetFixedMask(ref_mask)
 
 
 #elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('affine'))
@@ -62,7 +69,7 @@ elastixImageFilter.LogToConsoleOn()
 elastixImageFilter.PrintParameterMap()
 
 elastixImageFilter.Execute()
-sitk.WriteImage(elastixImageFilter.GetResultImage(),'/home/maryana/storage/Posdoc/AVID/test_elastix/elastix_AT100_457_YESland.nii')
+sitk.WriteImage(elastixImageFilter.GetResultImage(),folder+'elastix_AT100_344_bspline.nii')
 
 
 img = elastixImageFilter.GetResultImage()

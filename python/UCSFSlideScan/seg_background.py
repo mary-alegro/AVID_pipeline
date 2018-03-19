@@ -26,27 +26,35 @@ def seg_background(img,segname, outname):
     mask4 = mask3*255
     io.imsave(outname,mask4.astype('ubyte'))
 
-    #segment image
-    gry = color.rgb2gray(img)
-    gry = img_as_ubyte(gry)
-    gry[mask3 == False] = 0
-    io.imsave(segname,gry)
+    if segname: #if segname not empty
+        #segment image
+        gry = color.rgb2gray(img)
+        gry = img_as_ubyte(gry)
+        gry[mask3 == False] = 0
+        io.imsave(segname,gry)
 
 def main():
 
-    if len(sys.argv) != 4:
-        print('Usage: seg_background <rescaled histo> <seg_img> <mask>')
+    if len(sys.argv) != 4 and len(sys.argv) != 3:
+        print('Usage: seg_background <rescaled histo> [<seg_img>] <mask>')
         print('Example: seg_background /AVID/AV13/AT100#440/res_10.tif /AVID/AV13/AT100#440/seg_res_10.tif /AVID/AV13/AT100#440/mask_res_10.tif')
         exit()
 
-    imgname = str(sys.argv[1]) #abs path to where the images are
-    segname = str(sys.argv[2])
-    outname = str(sys.argv[3]) #row size
+        #imgname = "/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/res_10.tif"
+        #outname = "/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/mask_res_10.tif"
 
-    #imgname = "/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/res_10.tif"
-    #outname = "/Volumes/SUSHI_HD/SUSHI/AVID/AV13/AT100#440/mask_res_10.tif"
+    if len(sys.argv) == 4:
+        imgname = str(sys.argv[1]) #abs path to where the images are
+        segname = str(sys.argv[2])
+        outname = str(sys.argv[3]) #row size
+    elif len(sys.argv) == 3:
+        imgname = str(sys.argv[1]) #abs path to where the images are
+        segname = []
+        outname = str(sys.argv[2]) #row size
+
     img = io.imread(imgname)
-    seg_background(img,segname,outname)
+    seg_background(img, segname, outname)
+
     print('Mask successfully saved.')
 
 
