@@ -4,16 +4,21 @@ import matplotlib.pyplot as plt
 import sys
 import skimage.measure as meas
 
-iterationNumbers = 6000
-spatialSamples = 6000
 
-#folder = '/home/maryana/storage/Posdoc/AVID/test_elastix/'
-folder = '/Volumes/SUSHI_HD/SUSHI/Posdoc/AVID/AV13/test_elastix/'
+slice_id='322'
 
-ref = sitk.ReadImage(folder+'1181_001-Whole-Brain_0344.png.nii')
-mov = sitk.ReadImage(folder+'ants_AT100_344_affine.nii')
-#ref_mask = sitk.ReadImage('MASK_1181_001-Whole-Brain_0457_v2.png.nii',sitk.sitkUInt8)
+block_img='1181_001-Whole-Brain_0'+slice_id+'.png.nii'
+#block_img='crop_'+slice_id+'.nii'
 
+reg_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT8/full_res/slices/AT8_{}/reg/'.format(slice_id)
+
+ref = sitk.ReadImage('/home/maryana/storage/Posdoc/AVID/AV13/blockface/nii/'+block_img)
+mov = sitk.ReadImage(reg_dir+'ants_AT8_'+slice_id+'_affine.nii')
+#ref_mask = sitk.ReadImage(folder+'MASK_1181_001-Whole-Brain_0457_v2.png.nii',sitk.sitkUInt8)
+
+
+parameterMap = sitk.GetDefaultParameterMap("bspline")
+del parameterMap['FinalGridSpacingInPhysicalUnits']
 
 # elastixImageFilter = sitk.ElastixImageFilter()
 # elastixImageFilter.SetMovingImage(mov)
@@ -24,22 +29,38 @@ mov = sitk.ReadImage(folder+'ants_AT100_344_affine.nii')
 # sitk.WriteImage(elastixImageFilter.GetResultImage(),'/home/maryana/storage/Posdoc/AVID/test_elastix/elastix_AT100_457_h2b_noland.nii')
 
 elastixImageFilter = sitk.ElastixImageFilter()
+elastixImageFilter.SetOutputDirectory(reg_dir)
 # elastixImageFilter.SetParameterMap(sitk.GetDefaultParameterMap('translation'))
 # elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('rigid'))
 # elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('affine'))
 #elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('affine'))
-elastixImageFilter.SetParameterMap(sitk.GetDefaultParameterMap('bspline'))
-elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
-elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
-elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
+# elastixImageFilter.SetParameterMap(sitk.GetDefaultParameterMap('bspline'))
+# elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
+# elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
+# elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
 #elastixImageFilter.AddParameterMap(sitk.GetDefaultParameterMap('bspline'))
 
+elastixImageFilter.SetParameterMap(parameterMap)
+elastixImageFilter.AddParameterMap(parameterMap)
+elastixImageFilter.AddParameterMap(parameterMap)
+elastixImageFilter.AddParameterMap(parameterMap)
+elastixImageFilter.AddParameterMap(parameterMap)
+elastixImageFilter.AddParameterMap(parameterMap)
+#elastixImageFilter.AddParameterMap(parameterMap)
 
-elastixImageFilter.SetParameter(0,'FinalGridSpacingInPhysicalUnits','15.0')
-elastixImageFilter.SetParameter(1,'FinalGridSpacingInPhysicalUnits','11.0')
-elastixImageFilter.SetParameter(2,'FinalGridSpacingInPhysicalUnits','7.0')
-elastixImageFilter.SetParameter(3,'FinalGridSpacingInPhysicalUnits','5.0')
-#elastixImageFilter.SetParameter(4,'FinalGridSpacingInPhysicalUnits','4.0')
+elastixImageFilter.SetParameter('FinalBSplineInterpolationOrder','0')
+
+
+elastixImageFilter.SetParameter(0,'FinalGridSpacingInVoxels','100')
+elastixImageFilter.SetParameter(1,'FinalGridSpacingInVoxels','80')
+elastixImageFilter.SetParameter(2,'FinalGridSpacingInVoxels','50')
+elastixImageFilter.SetParameter(3,'FinalGridSpacingInVoxels','30')
+elastixImageFilter.SetParameter(4,'FinalGridSpacingInVoxels','20')
+elastixImageFilter.SetParameter(5,'FinalGridSpacingInVoxels','10')
+#elastixImageFilter.SetParameter(6,'FinalGridSpacingInVoxels','5')
+
+
+#elastixImageFilter.SetParameter(4,'FinalGridSpacingInPhysicalUnits','2.0')
 
 
 
@@ -69,7 +90,8 @@ elastixImageFilter.LogToConsoleOn()
 elastixImageFilter.PrintParameterMap()
 
 elastixImageFilter.Execute()
-sitk.WriteImage(elastixImageFilter.GetResultImage(),folder+'elastix_AT100_344_bspline.nii')
+out_img_file = reg_dir+'/elastix_AT8_'+slice_id+'_bspline.nii'
+sitk.WriteImage(elastixImageFilter.GetResultImage(),out_img_file)
 
 
 img = elastixImageFilter.GetResultImage()
@@ -85,3 +107,5 @@ img_to_show[:,:,1] = sitk.GetArrayFromImage(ref)
 
 plt.imshow(img_to_show)
 plt.show()
+
+print(out_img_file)

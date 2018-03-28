@@ -6,31 +6,34 @@ import skimage.measure as meas
 
 
 
-ref = sitk.ReadImage('/home/maryana/storage/Posdoc/AVID/test_elastix/1181_001-Whole-Brain_0457.png.nii')
-mov = sitk.ReadImage('/home/maryana/storage/Posdoc/AVID/test_elastix/ants_AT100_457_affine_centered.nii')
+ref = sitk.ReadImage('/home/maryana/storage/Posdoc/AVID/AV13/blockface/nii/1181_001-Whole-Brain_0360.png.nii')
+mov = sitk.ReadImage('/home/maryana/storage/Posdoc/AVID/AV13/AT100/full_res/resize_mary/AT100_360/reg/ants_AT100_360_affine.nii')
 
 parameterMap = sitk.GetDefaultParameterMap("bspline")
 parameterMap['Transform'] = ['SplineKernelTransform']
-parameterMap['SplineKernelType'] = ['ThinPlateSpline']
+#parameterMap['SplineKernelType'] = ['ThinPlateSpline']
 
-parameterMapVector = sitk.VectorOfParameterMap()
-parameterMapVector.append(parameterMap)
+#parameterMapVector = sitk.VectorOfParameterMap()
+# parameterMapVector.append(parameterMap)
 
 elastixImageFilter = sitk.ElastixImageFilter()
-elastixImageFilter.SetParameterMap(parameterMapVector)
+
+elastixImageFilter.SetParameterMap(parameterMap)
 elastixImageFilter.LogToConsoleOn()
 elastixImageFilter.PrintParameterMap()
 
 elastixImageFilter.SetFixedImage(ref)
 elastixImageFilter.SetMovingImage(mov)
-elastixImageFilter.SetFixedPointSetFileName('/home/maryana/storage/Posdoc/AVID/test_elastix/ref_ants_ctr.pts')
-elastixImageFilter.SetMovingPointSetFileName('/home/maryana/storage/Posdoc/AVID/test_elastix/mov_ants_ctr.pts')
+elastixImageFilter.SetFixedPointSetFileName('/home/maryana/storage/Posdoc/AVID/AV13/test_elastix/ref.pts')
+#elastixImageFilter.SetMovingPointSetFileName('/home/maryana/storage/Posdoc/AVID/AV13/test_elastix/mov_ants_ctr.pts')
+
+#sitk.WriteParameterFile(elastixImageFilter.GetParameterMap()[0], '/home/maryana/storage/Posdoc/AVID/AV13/test_elastix/params.txt')
 
 elastixImageFilter.Execute()
 
 
 
-sitk.WriteImage(elastixImageFilter.GetResultImage(),'/home/maryana/storage/Posdoc/AVID/test_elastix/elastix_AT100_457_h2b_landmarks.nii')
+sitk.WriteImage(elastixImageFilter.GetResultImage(),'/home/maryana/storage/Posdoc/AVID/AV13/AT100/full_res/resize_mary/AT100_360/output/RES(10x10)/reg/elastix_AT100_.nii')
 img = elastixImageFilter.GetResultImage()
 np_img = sitk.GetArrayFromImage(img)
 np_img[np_img < 0] = 0

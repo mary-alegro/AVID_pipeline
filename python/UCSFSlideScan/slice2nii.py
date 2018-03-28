@@ -14,17 +14,27 @@ import skimage.color as color
 import nibabel as nib
 
 
-def create_nii(img_file,size,nii_file):
-
+def save_nii(img,size,nii_file):
     M = np.array([[size[0], 0, 0, 0],[0, size[1], 0, 0],[0, 0, size[2], 0],[0, 0, 0, 1]])
-    img = io.imread(img_file)
-
     if img.ndim > 2:
         img = color.rgb2gray(img)
-
     nii = nib.Nifti1Image(img, M)
     nib.save(nii,nii_file)
 
+def create_nii(img,size):
+    M = np.array([[size[0], 0, 0, 0],[0, size[1], 0, 0],[0, 0, size[2], 0],[0, 0, 0, 1]])
+    #img = io.imread(img_file)
+    if img.ndim > 2:
+        img = color.rgb2gray(img)
+    nii = nib.Nifti1Image(img, M)
+    return nii
+    #nib.save(nii,nii_file)
+
+def run_create_nii(img_file,x_size,y_size,z_size,nii_file):
+    size = np.array([x_size, y_size, z_size, 0])
+    img = io.imread(img_file)
+    nii = create_nii(img, size)
+    nib.save(nii,nii_file)
 
 def main():
     if len(sys.argv) != 6:
@@ -35,9 +45,7 @@ def main():
     y_size = float(sys.argv[3])
     z_size = float(sys.argv[4])
     nii_file = str(sys.argv[5])
-    size = np.array([x_size, y_size, z_size, 0])
-
-    create_nii(img_file, size, nii_file)
+    run_create_nii(img_file,x_size,y_size,z_size,nii_file)
 
 if __name__ == '__main__':
     main()

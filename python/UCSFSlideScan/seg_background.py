@@ -25,6 +25,7 @@ def seg_background(img,segname, outname):
     mask3 = mht.erode(mask2,se2)
     mask4 = mask3*255
     io.imsave(outname,mask4.astype('ubyte'))
+    print('Mask {} successfully saved.'.format(outname))
 
     if segname: #if segname not empty
         #segment image
@@ -32,6 +33,14 @@ def seg_background(img,segname, outname):
         gry = img_as_ubyte(gry)
         gry[mask3 == False] = 0
         io.imsave(segname,gry)
+        print('BW image {} successfully saved.'.format(segname))
+
+
+
+
+def run_seg_background(imgname,segname, outname):
+    img = io.imread(imgname)
+    seg_background(img, segname, outname)
 
 def main():
 
@@ -52,10 +61,11 @@ def main():
         segname = []
         outname = str(sys.argv[2]) #row size
 
-    img = io.imread(imgname)
-    seg_background(img, segname, outname)
+    # img = io.imread(imgname)
+    # seg_background(img, segname, outname)
+    run_seg_background(imgname, segname, outname)
 
-    print('Mask successfully saved.')
+
 
 
 if __name__ == '__main__':
