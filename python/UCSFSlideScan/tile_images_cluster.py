@@ -48,8 +48,6 @@ def save_metadata(img_name,info_dic,log_file):
 
 def tile_images(root_dir):
 
-
-
     #create Image Magick tmp directory
     TMP_DIR = os.path.join(root_dir,'magick_tmp')
     if not os.path.exists(TMP_DIR):
@@ -57,7 +55,7 @@ def tile_images(root_dir):
 
     #export Image Magick env variables
     os.environ['MAGICK_TMPDIR'] = TMP_DIR
-    os.environ['MAGICK_MEMORY_LIMIT'] = '24Gb'
+    os.environ['MAGICK_MEMORY_LIMIT'] = '64Gb'
 
     #get file information and tiling grid size
     file_dic = get_img_info(root_dir)
@@ -92,6 +90,7 @@ def tile_images(root_dir):
 
         print("Tiling file {}".format(fi))
         status = subprocess.call(['convert', '-crop', str_tile, '+repage', '+adjoin', fi, str_tname], env=dict(os.environ), stderr=log_err, stdout=log_out)
+
 
         #save metadata (used by export_heatmap_metadata.py)
         meta_file = os.path.join(tiles_dir,'tiling_info.xml')

@@ -16,8 +16,9 @@ def get_histo_files(img_dir):
 def run_batch_segmentation(in_dir,out_dir):
     files = get_histo_files(in_dir)
     for histo_name in files:
-        base_name = os.path.basename(histo_name)
-        mask_name = os.path.join(out_dir,base_name)
+        file_name = os.path.basename(histo_name)
+        base_name = os.path.splitext(file_name)[0]
+        mask_name = os.path.join(out_dir,base_name+'_brain_mask.tif')
         seg_bkg.run_seg_background(histo_name,[],mask_name)
 
 

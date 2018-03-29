@@ -28,9 +28,9 @@ def convert_png2nii(files_dir,out_dir,M=np.eye(4)):
             nib.save(nii2,nii_name)
 
 def main():
-    files_dir='/home/maryana/storage/Posdoc/AVID/AV23/blockface/aligned'
-    out_dir = '/home/maryana/storage/Posdoc/AVID/AV23/blockface/nii'
-    M = np.array([[0.123, 0, 0, 0], [0, 0.123, 0, 0], [0, 0, 0.123, 0], [0, 0, 0, 1]])
+    files_dir='/Users/maryana/Posdoc/AVID/AV23/blockface/aligned'
+    out_dir = '/Users/maryana/Posdoc/AVID/AV23/blockface/nii'
+    M = np.array([[0.114, 0, 0, 0], [0, 0.114, 0, 0], [0, 0, 0.114, 0], [0, 0, 0, 1]])
     convert_png2nii(files_dir,out_dir,M)
 
 
