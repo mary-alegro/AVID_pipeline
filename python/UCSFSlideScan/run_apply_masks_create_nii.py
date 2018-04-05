@@ -25,7 +25,7 @@ def run_segment_convert(res10_dir, masks_dir, out_dir, x_size, y_size, z_size):
     for histo_file in list_histo:
         file_name = os.path.basename(histo_file)
         base_name = os.path.splitext(file_name)[0]
-        mask_file = os.path.join(masks_dir,base_name+'_mask.tif')
+        mask_file = os.path.join(masks_dir,base_name+'_brain_mask.tif')
         if not os.path.isfile(mask_file):
             print('Warning! No mask found for {}. Skipping!'.format(histo_file))
             continue
