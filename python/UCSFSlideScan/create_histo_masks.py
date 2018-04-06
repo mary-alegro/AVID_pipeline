@@ -11,6 +11,7 @@ import mahotas as mht
 import os
 import ntpath
 import sys
+import skimage.color as color
 
 
 
@@ -43,7 +44,7 @@ def create_masks(b_masks_dir,wm_masks_dir,outdir):
 
         bmask = io.imread(bmask_file)
         if bmask.ndim > 2:
-            bmask = bmask[:,:,0]
+            bmask = color.
         wmmask = io.imread(wmmask_file)
         if wmmask.ndim > 2:
             wmmask = wmmask[:,:,0]
