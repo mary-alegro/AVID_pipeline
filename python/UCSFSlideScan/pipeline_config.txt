@@ -1,0 +1,7 @@
+[global]
+PIX_1MM = 819
+PIX_5MM = 4095
+MAGICK_MEM = 12Gb
+
+[tile_masking]
+MASK_VAL = 255

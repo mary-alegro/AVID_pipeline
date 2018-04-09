@@ -222,7 +222,7 @@ def process_masks(root_dir):
 
 def main():
     if len(sys.argv) != 2:
-        print('Usage: tile_images_cluster.py <root_dir>')
+        print('Usage: ImageTiler.py <root_dir>')
         exit()
 
     root_dir = str(sys.argv[1])  # abs path to where the images are
