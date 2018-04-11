@@ -64,7 +64,7 @@ class ImageTiler(object):
         for root, dir, files in os.walk(root_dir):
             if fnmatch.fnmatch(root,'*/RES(*'): #it's inside /RES*
                 for fn in fnmatch.filter(files,'*_*_*.tif'): #get only full resolution images
-                    if fn.find('res10') == 0: #skip res10 images
+                    if fn.find('res10') > -1: #skip res10 images
                         continue
                     file_name = os.path.join(root,fn)
                     tiff = tifffile.TiffFile(file_name) #load tiff header only
@@ -123,6 +123,7 @@ class ImageTiler(object):
 
             # Check if file was already processed. If so, skip it.
             if os.path.exists(os.path.join(home_dir, 'tiles/tiling_info.xml')):
+                self.logger.info('File tiles/tiling_info.xml exists. Skipping this image.')
                 print('File {} has already been tiled. Nothing to do.'.format(fi))
                 continue
 
