@@ -31,7 +31,7 @@ cd $RAW_DIR
 echo $PWD
 
 echo 'Export XML'
-python /home/LargeSlideScan/workspace/UCSFSlideScan/python/UCSFSlideScan/create_terastitch_xml.py $ROOT_DIR'/Metadata.txt' $RAW_DIR'/xml_import.xml' '/data/'$SLICE_NAME'/raw'
+python /home/LargeSlideScan/python/UCSFSlideScan/create_terastitch_xml.py $ROOT_DIR'/Metadata.txt' $RAW_DIR'/xml_import.xml' '/data/'$SLICE_NAME'/raw'
 touch $ROOT_DIR'/expxml'
 
 echo 'Import'
