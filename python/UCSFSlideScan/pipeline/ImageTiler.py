@@ -145,7 +145,7 @@ class ImageTiler(object):
 
             self.logger.info('Beginning to tile.')
             print("Tiling file {}".format(fi))
-            status = subprocess.call(['convert', '-crop', str_tile, '+repage', '+adjoin', fi, str_tname], env=dict(os.environ), stderr=log_err, stdout=log_out)
+            status = subprocess.call(['convert', '-debug', 'all', '-crop', str_tile, '+repage', '+adjoin', fi, str_tname], env=dict(os.environ), stderr=log_err, stdout=log_out)
             self.logger.info('Tiling finished. Status: %s',str(status))
 
             if status == 0:
