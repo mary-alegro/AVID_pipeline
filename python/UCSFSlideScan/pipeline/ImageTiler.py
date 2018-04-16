@@ -107,6 +107,7 @@ class ImageTiler(object):
         #export Image Magick env variables
         os.environ['MAGICK_TMPDIR'] = TMP_DIR
         os.environ['MAGICK_MEMORY_LIMIT'] = self.MEM_MAX
+        os.environ['MAGICK_MAP_LIMIT'] = self.MEM_MAX
 
         #get file information and tiling grid size
         self.logger.info('Reading files info.')
@@ -145,7 +146,7 @@ class ImageTiler(object):
 
             self.logger.info('Beginning to tile.')
             print("Tiling file {}".format(fi))
-            status = subprocess.call(['convert', '-debug', 'all', '-crop', str_tile, '+repage', '+adjoin', fi, str_tname], env=dict(os.environ), stderr=log_err, stdout=log_out)
+            status = subprocess.call(['convert', '-debug', 'all', fi, '-crop', str_tile, '+repage', '+adjoin', str_tname], env=dict(os.environ), stderr=log_err, stdout=log_out)
             self.logger.info('Tiling finished. Status: %s',str(status))
 
             if status == 0:
