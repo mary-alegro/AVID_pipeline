@@ -27,8 +27,8 @@ def main():
 
 
     pipeline.add_stage(img_tiles)
-    pipeline.add_stage(mask_tiles)
-    pipeline.add_stage(apply_mask)
+    #pipeline.add_stage(mask_tiles)
+    #pipeline.add_stage(apply_mask)
 
     #run pipeline
     pipeline.execute()

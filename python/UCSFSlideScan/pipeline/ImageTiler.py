@@ -144,24 +144,51 @@ class ImageTiler(object):
             log_err = open(log_err_name,'wb+')
             # run system process
 
-            self.logger.info('Beginning to tile.')
-            print("Tiling file {}".format(fi))
-            status = subprocess.call(['convert', '-debug', 'all', fi, '-crop', str_tile, '+repage', '+adjoin', str_tname], env=dict(os.environ), stderr=log_err, stdout=log_out)
-            self.logger.info('Tiling finished. Status: %s',str(status))
+            #create cache files
+            base_name = os.path.basename(fi)
+            mpc_fi = os.path.join(home_dir,base_name+'.mpc')
+            cache_fi = os.path.join(home_dir,base_name+'.cache')
+            self.logger.info('Creating cache files')
+            status = subprocess.call(['convert', fi, mpc_fi],env=dict(os.environ), stderr=log_err, stdout=log_out)
+            self.logger.info('Finished cache files')
 
             if status == 0:
-                if self.check_num_tiles(tiles_dir,tile_grid[1]*tile_grid[0]):
-                    # save metadata (used by export_heatmap_metadata.py)
-                    meta_file = os.path.join(tiles_dir, 'tiling_info.xml')
-                    self.save_metadata(fi, fdic, meta_file)
-                    self.logger.info('Metadata saved.')
+                self.logger.info('Cache file successfully created.')
+                self.logger.info('Beginning to tile.')
+                print("Tiling file {}".format(fi))
+                status = subprocess.call(['convert', '-debug', 'all', '-limit', 'memory', self.MEM_MAX, '-limit', 'map', self.MEM_MAX, fi, '-crop', str_tile, '+repage', '+adjoin', str_tname],
+                                         env=dict(os.environ), stderr=log_err, stdout=log_out)
+                self.logger.info('Tiling finished. Status: %s',str(status))
+
+                if status == 0:
+                    if self.check_num_tiles(tiles_dir,tile_grid[1]*tile_grid[0]):
+                        # save metadata (used by export_heatmap_metadata.py)
+                        meta_file = os.path.join(tiles_dir, 'tiling_info.xml')
+                        self.save_metadata(fi, fdic, meta_file)
+                        self.logger.info('Metadata saved.')
+
+                    else:
+                        self.logger.info('ERROR: Incorrect number of tiles saved.')
+                        self.nErrors += 1
+
                 else:
-                    self.logger.info('ERROR: Incorrect number of tiles saved.')
+                    self.logger.info('There was and error during the tiling process. Tiling incomplete.', str(status))
                     self.nErrors += 1
 
+                # always try to delete cache files
+                self.logger.debug('Trying to delete cache files')
+                if os.path.exists(mpc_fi):
+                    os.remove(mpc_fi)
+                    self.logger.debug('MPC file removed')
+                if os.path.exists(cache_fi):
+                    os.remove(cache_fi)
+                    self.logger.debug('CACHE file removed')
+
             else:
-                self.logger.info('There was and error during the tiling process. Tiling incomplete.', str(status))
-                self.nErrors += 1
+                self.logger.info('Failed to create cache file. Aborting.')
+
+
+
 
 
 
