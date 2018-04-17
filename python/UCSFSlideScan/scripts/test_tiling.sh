@@ -6,5 +6,7 @@ mkdir $TMP_DIR
 
 export MAGICK_TMPDIR=$TMP_DIR
 export MAGICK_MEMORY_LIMIT=64Gb
+export MAGICK_MAP_LIMIT=64Gb
 
-convert -crop 7x14 +repage +adjoin /data/00000_000000_000000.tif /data/tiles/tile_%04d.tif
+echo 'Tiling images'
+convert -debug all /data/000000_-85480_000000.tif -crop 17x20@ +repage +adjoin /data/tiles/tile_%04d.tif
