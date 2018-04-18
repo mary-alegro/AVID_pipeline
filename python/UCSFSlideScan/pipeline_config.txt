@@ -2,6 +2,7 @@
 PIX_1MM = 819
 PIX_5MM = 4095
 MAGICK_MEM = 12Gb
+SCRIPT_DIR = /home/maryana/Projects/LargeSlideScan/python/UCSFSlideScan/scripts/
 
 [tile_masking]
 MASK_VAL = 255

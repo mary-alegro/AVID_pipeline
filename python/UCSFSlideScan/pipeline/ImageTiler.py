@@ -9,6 +9,8 @@ import logging
 import glob
 import ConfigParser
 
+sys.path.append('../scripts')
+
 #
 # This script is supposed to run on the cluster
 # Script for automatically tiling the full resolution histology images, using Image Magick
@@ -39,6 +41,7 @@ class ImageTiler(object):
         self.PIX_1MM = 819  # 1mm= 819 pixels
         self.PIX_5MM = 4095  # 5mm = 4095 pixels
         self.MEM_MAX = '14Gb'
+        self.SCRIPT_DIR=''
 
     def get_stage_name(self):
         return self.stage_name
@@ -49,6 +52,7 @@ class ImageTiler(object):
             self.MEM_MAX = str(self.config.get('global', 'MAGICK_MEM'))
             self.PIX_1MM = int(self.config.get('global', 'PIX_1MM'))
             self.PIX_5MM = int(self.config.get('global', 'PIX_5MM'))
+            self.SCRIPT_DIR = str(self.config.get('global', 'SCRIPT_DIR'))
 
     def run_stage(self):
         # root_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100/full_res'
@@ -105,9 +109,9 @@ class ImageTiler(object):
             os.mkdir(TMP_DIR,0777)
 
         #export Image Magick env variables
-        os.environ['MAGICK_TMPDIR'] = TMP_DIR
-        os.environ['MAGICK_MEMORY_LIMIT'] = self.MEM_MAX
-        os.environ['MAGICK_MAP_LIMIT'] = self.MEM_MAX
+        # os.environ['MAGICK_TMPDIR'] = TMP_DIR
+        # os.environ['MAGICK_MEMORY_LIMIT'] = self.MEM_MAX
+        # os.environ['MAGICK_MAP_LIMIT'] = self.MEM_MAX
 
         #get file information and tiling grid size
         self.logger.info('Reading files info.')
@@ -142,22 +146,26 @@ class ImageTiler(object):
             log_err_name = os.path.join(home_dir,'stderr_log.txt')
             log_out = open(log_out_name,'wb+')
             log_err = open(log_err_name,'wb+')
-            # run system process
 
             #create cache files
             base_name = os.path.basename(fi)
             mpc_fi = os.path.join(home_dir,base_name+'.mpc')
             cache_fi = os.path.join(home_dir,base_name+'.cache')
+
             self.logger.info('Creating cache files')
             status = subprocess.call(['convert', fi, mpc_fi],env=dict(os.environ), stderr=log_err, stdout=log_out)
             self.logger.info('Finished cache files')
 
+            # run system process
             if status == 0:
                 self.logger.info('Cache file successfully created.')
                 self.logger.info('Beginning to tile.')
+                self.logger.debug('Tiling script: '+self.SCRIPT_DIR+'run_convert_pipeline.sh')
+
                 print("Tiling file {}".format(fi))
-                status = subprocess.call(['convert', '-debug', 'all', '-limit', 'memory', self.MEM_MAX, '-limit', 'map', self.MEM_MAX, fi, '-crop', str_tile, '+repage', '+adjoin', str_tname],
-                                         env=dict(os.environ), stderr=log_err, stdout=log_out)
+                # status = subprocess.call(['convert', '-debug', 'all', ('-limit memory ' + self.MEM_MAX), ('-limit map ' + self.MEM_MAX), fi, '-crop', str_tile, '+repage', '+adjoin', str_tname],
+                #                          env=dict(os.environ), stderr=log_err, stdout=log_out)
+                status = subprocess.call([self.SCRIPT_DIR+'run_convert_pipeline.sh', fi, str_tile, tiles_dir, TMP_DIR], env=dict(os.environ), stderr=log_err, stdout=log_out)
                 self.logger.info('Tiling finished. Status: %s',str(status))
 
                 if status == 0:
