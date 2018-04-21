@@ -8,12 +8,14 @@ from misc.XMLUtils import XMLUtils
 import logging
 import glob
 import ConfigParser
+from misc.TiffTileLoader import TiffTileLoader
 
 sys.path.append('../scripts')
 
 #
 # This script is supposed to run on the cluster
 # Script for automatically tiling the full resolution histology images, using Image Magick
+
 
 
 class ImageTiler(object):
@@ -104,9 +106,9 @@ class ImageTiler(object):
     def tile_images(self,root_dir):
 
         #create Image Magick tmp directory
-        TMP_DIR = os.path.join(root_dir,'magick_tmp')
-        if not os.path.exists(TMP_DIR):
-            os.mkdir(TMP_DIR,0777)
+        # TMP_DIR = os.path.join(root_dir,'magick_tmp')
+        # if not os.path.exists(TMP_DIR):
+        #     os.mkdir(TMP_DIR,0777)
 
         #export Image Magick env variables
         # os.environ['MAGICK_TMPDIR'] = TMP_DIR
@@ -138,62 +140,83 @@ class ImageTiler(object):
                 self.logger.info('Creating tiles folder %s', tiles_dir)
                 os.mkdir(tiles_dir, 0777)
 
-            str_tile = '{}x{}@'.format(tile_grid[1],tile_grid[0]) #image magick works with COLSxROWS format
-            str_tname = 'tile_%04d.tif' #tile file name pattern
+            #str_tile = '{}x{}@'.format(tile_grid[1],tile_grid[0]) #image magick works with COLSxROWS format
+            #str_tname = 'tile_%04d.tif' #tile file name pattern
+            str_tname = 'tile_{:04}.tif'
             str_tname = os.path.join(tiles_dir,str_tname)
 
-            log_out_name = os.path.join(home_dir,'stdout_log.txt')
-            log_err_name = os.path.join(home_dir,'stderr_log.txt')
-            log_out = open(log_out_name,'wb+')
-            log_err = open(log_err_name,'wb+')
+            tiffLoader = TiffTileLoader(self.PIX_1MM,self.PIX_5MM)
+            tiffLoader.open_file(fi)
+            tiffLoader.compute_tile_coords(tile_grid[0],tile_grid[1])
+            tile_iterator = tiffLoader.get_tile_iterator() # the iterator makes sure the tiles are always in the right order
+            count = 0
 
-            #create cache files
-            base_name = os.path.basename(fi)
-            mpc_fi = os.path.join(home_dir,base_name+'.mpc')
-            cache_fi = os.path.join(home_dir,base_name+'.cache')
+            self.logger.info('Beginning to save tiles')
+            for tile in tile_iterator:
+                tile_name = str_tname.format(count)
+                io.imsave(tile_name,tile)
+                count += 1
+            self.logger.info('Finished saving tiles')
 
-            self.logger.info('Creating cache files')
-            status = subprocess.call(['convert', fi, mpc_fi],env=dict(os.environ), stderr=log_err, stdout=log_out)
-            self.logger.info('Finished cache files')
+            if self.check_num_tiles(tiles_dir,tile_grid[1]*tile_grid[0]):
+                # save metadata (used by export_heatmap_metadata.py)
+                meta_file = os.path.join(tiles_dir, 'tiling_info.xml')
+                self.save_metadata(fi, fdic, meta_file)
+                self.logger.info('Metadata saved.')
 
-            # run system process
-            if status == 0:
-                self.logger.info('Cache file successfully created.')
-                self.logger.info('Beginning to tile.')
-                self.logger.debug('Tiling script: '+self.SCRIPT_DIR+'run_convert_pipeline.sh')
 
-                print("Tiling file {}".format(fi))
-                # status = subprocess.call(['convert', '-debug', 'all', ('-limit memory ' + self.MEM_MAX), ('-limit map ' + self.MEM_MAX), fi, '-crop', str_tile, '+repage', '+adjoin', str_tname],
-                #                          env=dict(os.environ), stderr=log_err, stdout=log_out)
-                status = subprocess.call([self.SCRIPT_DIR+'run_convert_pipeline.sh', fi, str_tile, tiles_dir, TMP_DIR], env=dict(os.environ), stderr=log_err, stdout=log_out)
-                self.logger.info('Tiling finished. Status: %s',str(status))
-
-                if status == 0:
-                    if self.check_num_tiles(tiles_dir,tile_grid[1]*tile_grid[0]):
-                        # save metadata (used by export_heatmap_metadata.py)
-                        meta_file = os.path.join(tiles_dir, 'tiling_info.xml')
-                        self.save_metadata(fi, fdic, meta_file)
-                        self.logger.info('Metadata saved.')
-
-                    else:
-                        self.logger.info('ERROR: Incorrect number of tiles saved.')
-                        self.nErrors += 1
-
-                else:
-                    self.logger.info('There was and error during the tiling process. Tiling incomplete.', str(status))
-                    self.nErrors += 1
-
-                # always try to delete cache files
-                self.logger.debug('Trying to delete cache files')
-                if os.path.exists(mpc_fi):
-                    os.remove(mpc_fi)
-                    self.logger.debug('MPC file removed')
-                if os.path.exists(cache_fi):
-                    os.remove(cache_fi)
-                    self.logger.debug('CACHE file removed')
-
-            else:
-                self.logger.info('Failed to create cache file. Aborting.')
+            # log_out_name = os.path.join(home_dir,'stdout_log.txt')
+            # log_err_name = os.path.join(home_dir,'stderr_log.txt')
+            # log_out = open(log_out_name,'wb+')
+            # log_err = open(log_err_name,'wb+')
+            #
+            # #create cache files
+            # base_name = os.path.basename(fi)
+            # mpc_fi = os.path.join(home_dir,base_name+'.mpc')
+            # cache_fi = os.path.join(home_dir,base_name+'.cache')
+            #
+            # self.logger.info('Creating cache files')
+            # status = subprocess.call(['convert', fi, mpc_fi],env=dict(os.environ), stderr=log_err, stdout=log_out)
+            # self.logger.info('Finished cache files')
+            #
+            # # run system process
+            # if status == 0:
+            #     self.logger.info('Cache file successfully created.')
+            #     self.logger.info('Beginning to tile.')
+            #     self.logger.debug('Tiling script: '+self.SCRIPT_DIR+'run_convert_pipeline.sh')
+            #
+            #     print("Tiling file {}".format(fi))
+            #     # status = subprocess.call(['convert', '-debug', 'all', ('-limit memory ' + self.MEM_MAX), ('-limit map ' + self.MEM_MAX), fi, '-crop', str_tile, '+repage', '+adjoin', str_tname],
+            #     #                          env=dict(os.environ), stderr=log_err, stdout=log_out)
+            #     status = subprocess.call([self.SCRIPT_DIR+'run_convert_pipeline.sh', fi, str_tile, tiles_dir, TMP_DIR], env=dict(os.environ), stderr=log_err, stdout=log_out)
+            #     self.logger.info('Tiling finished. Status: %s',str(status))
+            #
+            #     if status == 0:
+            #         if self.check_num_tiles(tiles_dir,tile_grid[1]*tile_grid[0]):
+            #             # save metadata (used by export_heatmap_metadata.py)
+            #             meta_file = os.path.join(tiles_dir, 'tiling_info.xml')
+            #             self.save_metadata(fi, fdic, meta_file)
+            #             self.logger.info('Metadata saved.')
+            #
+            #         else:
+            #             self.logger.info('ERROR: Incorrect number of tiles saved.')
+            #             self.nErrors += 1
+            #
+            #     else:
+            #         self.logger.info('There was and error during the tiling process. Tiling incomplete.', str(status))
+            #         self.nErrors += 1
+            #
+            #     # always try to delete cache files
+            #     self.logger.debug('Trying to delete cache files')
+            #     if os.path.exists(mpc_fi):
+            #         os.remove(mpc_fi)
+            #         self.logger.debug('MPC file removed')
+            #     if os.path.exists(cache_fi):
+            #         os.remove(cache_fi)
+            #         self.logger.debug('CACHE file removed')
+            #
+            # else:
+            #     self.logger.info('Failed to create cache file. Aborting.')
 
 
 
