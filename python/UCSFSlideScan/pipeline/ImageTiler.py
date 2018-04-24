@@ -1,5 +1,4 @@
 import os
-import subprocess
 import sys
 import fnmatch
 import skimage.io as io
@@ -7,7 +6,6 @@ import tifffile
 from misc.XMLUtils import XMLUtils
 import logging
 import glob
-import ConfigParser
 from misc.TiffTileLoader import TiffTileLoader
 
 sys.path.append('../scripts')
@@ -138,7 +136,7 @@ class ImageTiler(object):
             tiles_dir = os.path.join(home_dir,'tiles')
             if not os.path.exists(tiles_dir):
                 self.logger.info('Creating tiles folder %s', tiles_dir)
-                os.mkdir(tiles_dir, 0777)
+                os.mkdir(tiles_dir, 0o0777)
 
             #str_tile = '{}x{}@'.format(tile_grid[1],tile_grid[0]) #image magick works with COLSxROWS format
             #str_tname = 'tile_%04d.tif' #tile file name pattern
@@ -146,7 +144,9 @@ class ImageTiler(object):
             str_tname = os.path.join(tiles_dir,str_tname)
 
             tiffLoader = TiffTileLoader(self.PIX_1MM,self.PIX_5MM)
+            self.logger.info('Opening full resolution image')
             tiffLoader.open_file(fi)
+            self.logger.info('Computing tile coordinates')
             tiffLoader.compute_tile_coords(tile_grid[0],tile_grid[1])
             tile_iterator = tiffLoader.get_tile_iterator() # the iterator makes sure the tiles are always in the right order
             count = 0
@@ -163,6 +163,8 @@ class ImageTiler(object):
                 meta_file = os.path.join(tiles_dir, 'tiling_info.xml')
                 self.save_metadata(fi, fdic, meta_file)
                 self.logger.info('Metadata saved.')
+
+            tiffLoader.sanity_check(tiles_dir)
 
 
             # log_out_name = os.path.join(home_dir,'stdout_log.txt')

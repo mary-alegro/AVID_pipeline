@@ -1,6 +1,6 @@
 
-from Node import Node
-from Tree import Tree
+from misc.Node import Node
+from misc.Tree import Tree
 
 
 class XMLUtils(object):

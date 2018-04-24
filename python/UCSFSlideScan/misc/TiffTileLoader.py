@@ -7,6 +7,12 @@ import gdal
 import numpy as np
 
 
+def ind2sub(array_shape, ind):
+    rows = (ind.astype('int') / array_shape[1])
+    cols = (ind.astype('int') % array_shape[1]) # or numpy.mod(ind.astype('int'), array_shape[1])
+    return (rows, cols)
+
+
 class TiffTileLoader(object):
 
     def __init__(self, p1MM, p5MM):
@@ -25,11 +31,11 @@ class TiffTileLoader(object):
 
 
     def get_file_dim(self):
-        x = self.ds.RasterXSize
-        y = self.ds.RasterYSize
+        cols = self.ds.RasterXSize
+        rows = self.ds.RasterYSize
         z = self.ds.RasterCount
 
-        return [x,y,z]
+        return [rows,cols,z]
 
 
     def get_tile(self, x, y, xsize, ysize):
@@ -59,14 +65,14 @@ class TiffTileLoader(object):
 
         row_off = np.floor(size[0]/grid_rows) #initial block size
         row_off = int(row_off)
-        row_rem = size[0] % grid_rows
+        row_rem = size[0] % int(grid_rows)
         row_add = np.zeros([int(grid_rows),1]) #correction factor
         if row_rem > 0: # we have to compensate for uneven block sizes (reminder > 0). Make the last block in the row bigger since it's more likely to be background.
             row_add[-1] = row_rem
 
         col_off = np.floor(size[1]/grid_cols) #initial block size
         col_off = int(col_off)
-        col_rem = size[1] % grid_cols
+        col_rem = size[1] % int(grid_cols)
         col_add = np.zeros([int(grid_cols),1]) #correction factor
         if col_rem > 0:
             col_add[-1] = col_rem
@@ -87,7 +93,7 @@ class TiffTileLoader(object):
 
                 up_col = ((col_count+1) * col_off) + np.sum(col_add[0:col_count + 1])
                 tile_ind += 1
-
+            up_col = 0
             up_row = ((row_count+1) * row_off) + np.sum(row_add[0:row_count + 1])
 
         self.coords = tile_coords
@@ -97,6 +103,33 @@ class TiffTileLoader(object):
     def get_tile_iterator(self):
         iterator = TileIterator(self.ds,self.coords)
         return iterator
+
+    def sanity_check(self,tiles_dir,grid_rows,grid_cols):
+
+        rows_mat = np.array([grid_rows,grid_cols]) #tiles height
+        cols_mat = np.array([grid_rows,grid_cols]) #tiles width
+
+        files = glob.glob(os.path.join(tiles_dir,'*.tif'))
+        ind = 0
+        for f in files:
+            tiff = tifffile.TiffFile(f)  # load tiff header only
+            size = tiff.series[0].shape
+            r,c = ind2sub((grid_rows,grid_cols),ind)
+
+            rows_mat[r,c] = size[0]
+            cols_mat[r,c] = size[1]
+            ind += 1
+
+        for rr in range(grid_rows): #check each row's width
+            width = cols
+
+
+        orig_size = self.get_file_dim()
+        if orig_size[0] != rows_size:
+            print('Original number of rows differs from total rows in tiles.')
+        if orig_size[1] != cols_size:
+            print('Original number of columns differs from total columns in tiles.')
+
 
 
 class TileIterator(object):
