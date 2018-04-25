@@ -114,7 +114,7 @@ class ImageTiler(object):
             if os.path.exists(os.path.join(home_dir, 'tiles/tiling_info.xml')):
                 self.logger.info('File tiles/tiling_info.xml exists. Skipping this image.')
                 print('File {} has already been tiled. Nothing to do.'.format(fi))
-                continue
+                #continue
 
             #create tiles directory
             tiles_dir = os.path.join(home_dir,'tiles')
@@ -144,13 +144,13 @@ class ImageTiler(object):
             #run tiling
             tile_iterator = tiffLoader.get_tile_iterator() # the iterator makes sure the tiles are always in the right order
             count = 0
-            self.logger.info('Beginning to save tiles')
-            print('Saving tiles...')
-            for tile in tile_iterator:
-                tile_name = str_tname.format(count)
-                io.imsave(tile_name,tile)
-                count += 1
-            self.logger.info('Finished saving tiles')
+            # self.logger.info('Beginning to save tiles')
+            # print('Saving tiles...')
+            # for tile in tile_iterator:
+            #     tile_name = str_tname.format(count)
+            #     io.imsave(tile_name,tile)
+            #     count += 1
+            # self.logger.info('Finished saving tiles')
 
             #check if all tiles were saved
             if self.check_num_tiles(tiles_dir,tile_grid[1]*tile_grid[0]):

@@ -150,16 +150,15 @@ class TiffTileLoader(object):
         cols_mat = np.zeros([grid_rows,grid_cols]) #tiles width
         orig_size = self.get_file_dim()
 
-        files = glob.glob(os.path.join(tiles_dir,'*.tif'))
-        ind = 0
-        for f in files:
-            tiff = tifffile.TiffFile(f)  # load tiff header only
-            size = tiff.series[0].shape
-            r,c = ind2sub((grid_rows,grid_cols),ind)
+        for row in range(grid_rows):
+            for col in range(grid_cols):
+                ind = sub2ind((grid_rows,grid_cols),row,col)
+                f = os.path.join(tiles_dir,'tile_{:04}.tif'.format(ind))
+                tiff = tifffile.TiffFile(f)  # load tiff header only
+                size = tiff.series[0].shape
 
-            rows_mat[r,c] = size[0]
-            cols_mat[r,c] = size[1]
-            ind += 1
+                rows_mat[row,col] = size[0]
+                cols_mat[row,col] = size[1]
 
         for rr in range(grid_rows): #check each row's width
             width = np.sum(cols_mat[rr,:])
