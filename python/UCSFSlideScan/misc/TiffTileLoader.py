@@ -154,10 +154,10 @@ class TiffTileLoader(object):
 
     def coords_sanity_check(self,grid_rows,grid_cols):
         size = self.get_file_dim()
-        self.coords_sanity_check(self.coords,grid_rows,grid_cols,(size[0],size[1]))
+        return self._coords_sanity_check(self.coords,grid_rows,grid_cols,(size[0],size[1]))
 
 
-    def coords_sanity_check(self,coords_arr, grid_rows,grid_cols, orig_size):
+    def _coords_sanity_check(self,coords_arr, grid_rows,grid_cols, orig_size):
         ok = True
 
         rows_mat = np.zeros([grid_rows,grid_cols]) #tiles height
@@ -188,10 +188,10 @@ class TiffTileLoader(object):
 
     def sanity_check(self,tiles_dir,grid_rows,grid_cols):
         orig_size = self.get_file_dim()
-        self.sanity_check(tiles_dir,grid_rows,grid_cols,orig_size)
+        return self._sanity_check(tiles_dir,grid_rows,grid_cols,orig_size)
 
 
-    def sanity_check(self,tiles_dir,grid_rows,grid_cols,orig_size):
+    def _sanity_check(self,tiles_dir,grid_rows,grid_cols,orig_size):
         ok = True
 
         rows_mat = np.zeros([grid_rows,grid_cols]) #tiles height
