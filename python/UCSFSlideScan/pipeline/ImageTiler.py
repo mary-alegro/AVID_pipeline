@@ -7,13 +7,7 @@ from misc.XMLUtils import XMLUtils
 import logging
 import glob
 from misc.TiffTileLoader import TiffTileLoader
-
-sys.path.append('../scripts')
-
-#
-# This script is supposed to run on the cluster
-# Script for automatically tiling the full resolution histology images, using Image Magick
-
+import numpy as np
 
 
 class ImageTiler(object):
@@ -84,12 +78,11 @@ class ImageTiler(object):
 
 
     def save_metadata(self,img_name,info_dic,log_file):
-
         tiles = info_dic['tile_grid']
+
         tile_info = {'name':'Tiles','attrib':{'grid_rows':str(tiles[0]),'grid_cols':str(tiles[1])}}
         s = info_dic['size']
         img_info = {'name':'Image', 'attrib':{'rows':str(s[0]), 'cols':str(s[1]), 'file':img_name, 'home':info_dic['home'], 'children':[tile_info]}}
-
         XMLUtils.dict2xmlfile(img_info,log_file)
 
 
@@ -103,16 +96,6 @@ class ImageTiler(object):
 
     def tile_images(self,root_dir):
 
-        #create Image Magick tmp directory
-        # TMP_DIR = os.path.join(root_dir,'magick_tmp')
-        # if not os.path.exists(TMP_DIR):
-        #     os.mkdir(TMP_DIR,0777)
-
-        #export Image Magick env variables
-        # os.environ['MAGICK_TMPDIR'] = TMP_DIR
-        # os.environ['MAGICK_MEMORY_LIMIT'] = self.MEM_MAX
-        # os.environ['MAGICK_MAP_LIMIT'] = self.MEM_MAX
-
         #get file information and tiling grid size
         self.logger.info('Reading files info.')
         file_dic = self.get_img_info(root_dir)
@@ -121,6 +104,7 @@ class ImageTiler(object):
         for fi in file_dic.keys():
 
             self.logger.info('*** Processing %s ***',fi)
+            print('Processing {}'.format(fi))
 
             fdic = file_dic[fi]
             home_dir = fdic['home']
@@ -138,8 +122,7 @@ class ImageTiler(object):
                 self.logger.info('Creating tiles folder %s', tiles_dir)
                 os.mkdir(tiles_dir, 0o0777)
 
-            #str_tile = '{}x{}@'.format(tile_grid[1],tile_grid[0]) #image magick works with COLSxROWS format
-            #str_tname = 'tile_%04d.tif' #tile file name pattern
+            #tile names
             str_tname = 'tile_{:04}.tif'
             str_tname = os.path.join(tiles_dir,str_tname)
 
@@ -147,24 +130,45 @@ class ImageTiler(object):
             self.logger.info('Opening full resolution image')
             tiffLoader.open_file(fi)
             self.logger.info('Computing tile coordinates')
+
+            # compute tiles coordinates
             tiffLoader.compute_tile_coords(tile_grid[0],tile_grid[1])
+            # check if coordinates yield same size as original image
+            if not tiffLoader.coords_sanity_check(tile_grid[0],tile_grid[1]):
+                self.logger.info('Coord sanity: Total tiled images size differs from original image size')
+                print('Coord sanity check NOT OK')
+            else:
+                self.logger.info('Coords sanity check OK')
+                print('Coord sanity check OK')
+
+            #run tiling
             tile_iterator = tiffLoader.get_tile_iterator() # the iterator makes sure the tiles are always in the right order
             count = 0
-
             self.logger.info('Beginning to save tiles')
+            print('Saving tiles...')
             for tile in tile_iterator:
                 tile_name = str_tname.format(count)
                 io.imsave(tile_name,tile)
                 count += 1
             self.logger.info('Finished saving tiles')
 
+            #check if all tiles were saved
             if self.check_num_tiles(tiles_dir,tile_grid[1]*tile_grid[0]):
                 # save metadata (used by export_heatmap_metadata.py)
                 meta_file = os.path.join(tiles_dir, 'tiling_info.xml')
-                self.save_metadata(fi, fdic, meta_file)
+                self.save_metadata(fi, fdic, meta_file) #save metadata
                 self.logger.info('Metadata saved.')
+                coods_file = os.path.join(tiles_dir, 'tile_coordinates.npy')
+                np.save(coods_file,tiffLoader.get_tile_coords())
+                self.logger.info('Tile coodinates matrix saved.')
 
-            tiffLoader.sanity_check(tiles_dir)
+            # check if tiles have the same size of the original image
+            if not tiffLoader.sanity_check(tiles_dir, tile_grid[0], tile_grid[1]):
+                self.logger.info('Total tiled images size differs from original image size')
+                print('Sanity check NOT OK')
+            else:
+                self.logger.info('Sanity check OK')
+                print('Sanity check OK')
 
 
             # log_out_name = os.path.join(home_dir,'stdout_log.txt')

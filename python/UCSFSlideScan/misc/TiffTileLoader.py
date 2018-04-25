@@ -8,9 +8,13 @@ import numpy as np
 
 
 def ind2sub(array_shape, ind):
-    rows = (ind.astype('int') / array_shape[1])
-    cols = (ind.astype('int') % array_shape[1]) # or numpy.mod(ind.astype('int'), array_shape[1])
+    rows = (int(ind) / array_shape[1])
+    cols = (int(ind) % array_shape[1]) # or numpy.mod(ind.astype('int'), array_shape[1])
     return (rows, cols)
+
+def sub2ind(size,r,c):
+    ind = r*size[1]+c
+    return ind
 
 
 class TiffTileLoader(object):
@@ -91,23 +95,60 @@ class TiffTileLoader(object):
                 tile_coords[tile_ind,2] = low_row
                 tile_coords[tile_ind,3] = low_col
 
-                up_col = ((col_count+1) * col_off) + np.sum(col_add[0:col_count + 1])
+                #up_col = ((col_count+1) * col_off) + np.sum(col_add[0:col_count + 1])
+                up_col = low_col
                 tile_ind += 1
             up_col = 0
-            up_row = ((row_count+1) * row_off) + np.sum(row_add[0:row_count + 1])
+            #up_row = ((row_count+1) * row_off) + np.sum(row_add[0:row_count + 1])
+            up_row = low_row
 
         self.coords = tile_coords
         #return tile_coords
+
+    def get_tile_coords(self):
+        return self.coords
 
 
     def get_tile_iterator(self):
         iterator = TileIterator(self.ds,self.coords)
         return iterator
 
-    def sanity_check(self,tiles_dir,grid_rows,grid_cols):
 
-        rows_mat = np.array([grid_rows,grid_cols]) #tiles height
-        cols_mat = np.array([grid_rows,grid_cols]) #tiles width
+    def coords_sanity_check(self,grid_rows,grid_cols):
+        ok = True
+
+        rows_mat = np.zeros([grid_rows,grid_cols]) #tiles height
+        cols_mat = np.zeros([grid_rows,grid_cols]) #tiles width
+        orig_size = self.get_file_dim()
+
+        for row in range(grid_rows):
+            for col in range(grid_cols):
+                ind = sub2ind((grid_rows,grid_cols),row,col)
+                up_row, up_col, low_row, low_col = self.coords[ind,:] #[up_row, up_col, low_row, low_col]
+                cols_mat[row,col] = low_col - up_col #tile width
+                rows_mat[row,col] = low_row - up_row #tile height
+
+        for rr in range(grid_rows): #check each row's width
+            width = np.sum(cols_mat[rr,:])
+            if width != orig_size[1]: #num. cols == width
+                print('Coord: Row {} width ({}) differs from original image size ({}).'.format(rr, width, orig_size[1]))
+                ok = False
+
+        for cc in range(grid_cols): #check each row's width
+            height = np.sum(rows_mat[:,cc])
+            if height != orig_size[0]: #num. rows == height
+                print('Coord: Column {} height ({}) differs from original image size ({}).'.format(cc, height, orig_size[0]))
+                ok = False
+
+        return ok
+
+
+    def sanity_check(self,tiles_dir,grid_rows,grid_cols):
+        ok = True
+
+        rows_mat = np.zeros([grid_rows,grid_cols]) #tiles height
+        cols_mat = np.zeros([grid_rows,grid_cols]) #tiles width
+        orig_size = self.get_file_dim()
 
         files = glob.glob(os.path.join(tiles_dir,'*.tif'))
         ind = 0
@@ -121,14 +162,21 @@ class TiffTileLoader(object):
             ind += 1
 
         for rr in range(grid_rows): #check each row's width
-            width = cols
+            width = np.sum(cols_mat[rr,:])
+            if width != orig_size[1]: #num. cols == width
+                print('Row {} width ({}) differs from original image size ({}).'.format(rr, width, orig_size[1]))
+                ok = False
+
+        for cc in range(grid_cols): #check each row's width
+            height = np.sum(rows_mat[:,cc])
+            if height != orig_size[0]: #num. rows == height
+                print('Column {} height ({}) differs from original image size ({}).'.format(cc, height, orig_size[0]))
+                ok = False
+
+        return ok
 
 
-        orig_size = self.get_file_dim()
-        if orig_size[0] != rows_size:
-            print('Original number of rows differs from total rows in tiles.')
-        if orig_size[1] != cols_size:
-            print('Original number of columns differs from total columns in tiles.')
+
 
 
 

@@ -4,7 +4,6 @@ import sys
 import fnmatch
 import skimage.io as io
 import tifffile
-from misc.XMLUtils import XMLUtils
 import logging
 import glob
 import ConfigParser
@@ -36,8 +35,9 @@ def fetch_files(root_dir,dest_dir):
 
 def main():
 
-    root_dir = '/home/maryana/R_DRIVE/Experiments/AVID/Cases/1181-002/Master Package 1181-002/Images/Stitched/AT100'
-    dest_dir = '/home/maryana/storage/Posdoc/AVID/AV23/AT100/res10'
+    root_dir = '/home/maryana/R_DRIVE/Experiments/AVID/Cases/1181-002/Master Package 1181-002/Images/Stitched/AT8'
+    #dest_dir = '/home/maryana/storage/Posdoc/AVID/AV23/AT100/res10'
+    dest_dir = '/home/maryana/storage/Posdoc/AVID/AV23/AT8/res10/img'
     fetch_files(root_dir,dest_dir)
 
 if __name__ == '__main__':

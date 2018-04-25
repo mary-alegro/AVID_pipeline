@@ -4,11 +4,13 @@ import sys
 import fnmatch
 import skimage.io as io
 import tifffile
-from misc.XMLUtils import XMLUtils
+#from misc.XMLUtils import XMLUtils
 import logging
 import glob
 import ConfigParser
 import shutil
+
+#sys.path.append('/home/maryana/Projects/LargeSlideScan/python/UCSFSlideScan/misc')
 
 def get_img_info(root_dir):
     file_list = {}
@@ -40,7 +42,10 @@ def rename_file(root_dir):
 
 def main():
 
-    root_dir = '/home/maryana/R_DRIVE/Experiments/AVID/Cases/1181-002/Master Package 1181-002/Images/Stitched/AT100'
+
+
+    #root_dir = '/home/maryana/R_DRIVE/Experiments/AVID/Cases/1181-002/Master Package 1181-002/Images/Stitched/AT100'
+    root_dir = '/home/maryana/R_DRIVE/Experiments/AVID/Cases/1181-002/Master Package 1181-002/Images/Stitched/AT8'
     rename_file(root_dir)
 
 if __name__ == '__main__':
