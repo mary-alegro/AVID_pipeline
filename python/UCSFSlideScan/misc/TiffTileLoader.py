@@ -105,6 +105,44 @@ class TiffTileLoader(object):
         self.coords = tile_coords
         #return tile_coords
 
+
+    def merge_tiles_rgb(self,tiles_dir,coords_file,out_file,grid_tiles,orig_size):
+        if not self.sanity_check(tiles_dir,grid_tiles[0],grid_tiles[1],orig_size):
+            print('Cannot merge tiles. Tiles size differs from original size.')
+            return False
+
+        tile_coords = np.load(coords_file)
+        if not self.coords_sanity_check(tile_coords,grid_tiles[0],grid_tiles[1],orig_size):
+            print('Cannot merge tiles. Coordinates in coordinates files yields erroneous image size.')
+            return False
+
+        img_map = tifffile.memmap(out_file,shape=(orig_size[0],orig_size[1],3),dtype='uint8') #RGB
+        files = glob.glob(os.path.join(tiles_dir,'*.tif'))
+        for fi in files:
+            img = io.imread(fi)
+            basename = os.path.basename(fi)
+            idx1 = basename.find('_')
+            idx2 = basename.format('.tif')
+            num = basename[idx1+1:idx2]
+
+            ind = int(num)
+            up_row,up_col,low_row,low_col = tile_coords[ind,:]
+            img_map[up_row:low_row,up_col:low_col] = img
+
+        img_map.flush()
+        return True
+
+
+
+
+
+
+
+
+
+
+
+
     def get_tile_coords(self):
         return self.coords
 
@@ -115,16 +153,21 @@ class TiffTileLoader(object):
 
 
     def coords_sanity_check(self,grid_rows,grid_cols):
+        size = self.get_file_dim()
+        self.coords_sanity_check(self.coords,grid_rows,grid_cols,(size[0],size[1]))
+
+
+    def coords_sanity_check(self,coords_arr, grid_rows,grid_cols, orig_size):
         ok = True
 
         rows_mat = np.zeros([grid_rows,grid_cols]) #tiles height
         cols_mat = np.zeros([grid_rows,grid_cols]) #tiles width
-        orig_size = self.get_file_dim()
+        #orig_size = self.get_file_dim()
 
         for row in range(grid_rows):
             for col in range(grid_cols):
                 ind = sub2ind((grid_rows,grid_cols),row,col)
-                up_row, up_col, low_row, low_col = self.coords[ind,:] #[up_row, up_col, low_row, low_col]
+                up_row, up_col, low_row, low_col = coords_arr[ind,:] #[up_row, up_col, low_row, low_col]
                 cols_mat[row,col] = low_col - up_col #tile width
                 rows_mat[row,col] = low_row - up_row #tile height
 
@@ -144,11 +187,16 @@ class TiffTileLoader(object):
 
 
     def sanity_check(self,tiles_dir,grid_rows,grid_cols):
+        orig_size = self.get_file_dim()
+        self.sanity_check(tiles_dir,grid_rows,grid_cols,orig_size)
+
+
+    def sanity_check(self,tiles_dir,grid_rows,grid_cols,orig_size):
         ok = True
 
         rows_mat = np.zeros([grid_rows,grid_cols]) #tiles height
         cols_mat = np.zeros([grid_rows,grid_cols]) #tiles width
-        orig_size = self.get_file_dim()
+        #orig_size = self.get_file_dim()
 
         for row in range(grid_rows):
             for col in range(grid_cols):
@@ -173,9 +221,6 @@ class TiffTileLoader(object):
                 ok = False
 
         return ok
-
-
-
 
 
 

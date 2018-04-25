@@ -1,6 +1,6 @@
 
-from Tree import Tree
-from Node import Node
+from misc.Tree import Tree
+from misc.Node import Node
 
 
 def main():
