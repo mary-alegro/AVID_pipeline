@@ -1,13 +1,14 @@
 
 from misc.Node import Node
 from misc.Tree import Tree
+from lxml import etree as ET
 
 
 class XMLUtils(object):
 
     @staticmethod
     def parse_dict(dics,parent=None):
-        # dics is always and array with 1 or more dictionaries. There head must always have 1 single dict.
+        # dics is always and array with 1 or more dictionaries. The head must always have 1 single dict.
 
         node = None
 
@@ -34,6 +35,25 @@ class XMLUtils(object):
                     node.add_data(node_dic)
 
         return node
+
+    @staticmethod
+    def parse_tiles_metadata(xml_file):
+        xml_tree = ET.parse(xml_file)
+
+        image_node = xml_tree.xpath('//Image')[0]
+        img_rows = int(image_node.attrib['rows'])
+        img_cols = int(image_node.attrib['cols'])
+        img_home = str(image_node.attrib['home'])
+        img_file = str(image_node.attrib['file'])
+
+        tiles_node = xml_tree.xpath('//Tiles')[0]
+        grid_cols = int(tiles_node.attrib['grid_cols'])
+        grid_rows = int(tiles_node.attrib['grid_rows'])
+
+        return grid_rows, grid_cols, img_rows, img_cols, img_home, img_file
+
+
+
 
     @staticmethod
     def dict2xml(dic):

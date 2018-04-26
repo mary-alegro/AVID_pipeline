@@ -19,7 +19,7 @@ def sub2ind(size,r,c):
 
 class TiffTileLoader(object):
 
-    def __init__(self, p1MM, p5MM):
+    def __init__(self, p1MM=819, p5MM=4095):
         self.ds = None
         gdal.UseExceptions()
         #default values
@@ -107,12 +107,12 @@ class TiffTileLoader(object):
 
 
     def merge_tiles_rgb(self,tiles_dir,coords_file,out_file,grid_tiles,orig_size):
-        if not self.sanity_check(tiles_dir,grid_tiles[0],grid_tiles[1],orig_size):
+        if not self._sanity_check(tiles_dir,grid_tiles[0],grid_tiles[1],orig_size):
             print('Cannot merge tiles. Tiles size differs from original size.')
             return False
 
         tile_coords = np.load(coords_file)
-        if not self.coords_sanity_check(tile_coords,grid_tiles[0],grid_tiles[1],orig_size):
+        if not self._coords_sanity_check(tile_coords,grid_tiles[0],grid_tiles[1],orig_size):
             print('Cannot merge tiles. Coordinates in coordinates files yields erroneous image size.')
             return False
 
@@ -122,12 +122,12 @@ class TiffTileLoader(object):
             img = io.imread(fi)
             basename = os.path.basename(fi)
             idx1 = basename.find('_')
-            idx2 = basename.format('.tif')
+            idx2 = basename.find('.tif')
             num = basename[idx1+1:idx2]
 
             ind = int(num)
-            up_row,up_col,low_row,low_col = tile_coords[ind,:]
-            img_map[up_row:low_row,up_col:low_col] = img
+            up_row,up_col,low_row,low_col = tile_coords[ind,:].astype('int')
+            img_map[up_row:low_row,up_col:low_col,:] = img[...]
 
         img_map.flush()
         return True
@@ -232,9 +232,19 @@ class TileIterator(object):
         self.nTiles = tile_coords.shape[0]
         self.curr = 0
 
-        self.rCh = self.ds.GetRasterBand(1)
-        self.gCh = self.ds.GetRasterBand(2)
-        self.bCh = self.ds.GetRasterBand(3)
+        self.nChannels = self.ds.RasterCount
+
+        if self.nChannels == 3:
+            self.rCh = self.ds.GetRasterBand(1)
+            self.gCh = self.ds.GetRasterBand(2)
+            self.bCh = self.ds.GetRasterBand(3)
+            self.bw = None
+        else:
+            self.bw = self.ds.GetRasterBand(1)
+            self.rCh = None
+            self.gCh = None
+            self.bCh = None
+
 
     def __iter__(self):
         return self
@@ -258,12 +268,14 @@ class TileIterator(object):
         xsize = int(xsize)
         ysize = int(ysize)
 
-        R = self.rCh.ReadAsArray(x, y, xsize,ysize)
-        G = self.gCh.ReadAsArray(x, y, xsize, ysize)
-        B = self.bCh.ReadAsArray(x, y, xsize, ysize)
-
-        s = R.shape
-        img = np.concatenate((R.reshape(s[0],s[1],1),G.reshape(s[0],s[1],1),B.reshape(s[0],s[1],1)),axis=2)
+        if self.nChannels > 1:
+            R = self.rCh.ReadAsArray(x, y, xsize,ysize)
+            G = self.gCh.ReadAsArray(x, y, xsize, ysize)
+            B = self.bCh.ReadAsArray(x, y, xsize, ysize)
+            s = R.shape
+            img = np.concatenate((R.reshape(s[0],s[1],1),G.reshape(s[0],s[1],1),B.reshape(s[0],s[1],1)),axis=2)
+        else:
+            img = self.bw.ReadAsArray(x, y, xsize,ysize)
 
         return img
 

@@ -7,7 +7,8 @@ import tifffile
 from misc.XMLUtils import XMLUtils
 import logging
 import glob
-import ConfigParser
+from misc.TiffTileLoader import TiffTileLoader
+import numpy as np
 
 #
 # This script is supposed to run on the cluster
@@ -63,6 +64,7 @@ class MaskTiler(object):
         file_list = dict()
         mask_list = dict()
 
+        #get info from all histology images
         for root, dir, files in os.walk(root_dir):
             if fnmatch.fnmatch(root,'*/RES(*'): #it's inside /RES*
                 for fn in fnmatch.filter(files,'*_*_*.tif'): #get only full resolution images
@@ -71,13 +73,28 @@ class MaskTiler(object):
                     file_name = os.path.join(root,fn)
                     tiff = tifffile.TiffFile(file_name) #load tiff header only
                     size = tiff.series[0].shape
-                    # compute tile grid.
-                    # note that there's always a rounding problem since image size are hardly ever multiples of PIX_5MM
-                    nB_rows = size[0] / self.PIX_5MM  # num. of 5mm high blocks along the 'row' dimension
-                    nB_cols = size[1] / self.PIX_5MM  # num. of 5mm wide blocks along the 'columns' dimension
-                    file_list[file_name] = {'home':root, 'size':size, 'tile_grid':[nB_rows, nB_cols]}
+
+                    #try to load tile grid from the imaging tiling process
+                    tiles_dir = os.path.join(root_dir,'tiles')
+                    meta_xml = os.path.join(tiles_dir, 'tiling_info.xml')
+                    if os.path.exists(tiles_dir) and os.path.exists(meta_xml):
+                        grid_rows, grid_cols, img_rows, img_cols, img_home, img_file = XMLUtils.parse_tiles_metadata(meta_xml)
+                        tile_grid = [grid_rows,grid_cols]
+
+                        if size[0] != img_rows or size[1] != img_cols:
+                            self.logger.info('WARNING: image size in tiling_info.xml differs from size read from image file.({}x{}/{}x{})'.format(size[0],size[1],img_rows,img_cols))
+                            print('WARNING: image size in tiling_info.xml differs from size read from image file.({}x{}/{}x{})'.format(size[0],size[1],img_rows,img_cols))
+
+                    else:
+                        # compute tile grid from file_size.
+                        # note that there's always a rounding problem since image size are hardly ever multiples of PIX_5MM
+                        nB_rows = size[0] / self.PIX_5MM  # num. of 5mm high blocks along the 'row' dimension
+                        nB_cols = size[1] / self.PIX_5MM  # num. of 5mm wide blocks along the 'columns' dimension
+                        tile_grid = [nB_rows, nB_cols]
+                    file_list[file_name] = {'home':root, 'size':size, 'tile_grid':tile_grid}
                     del tiff
 
+        #find respective masks, files without masks are ignored
         for f in file_list.keys():
             #get masks folder
             home_dir = file_list[f]['home']
@@ -93,9 +110,11 @@ class MaskTiler(object):
                     for fm in fnmatch.filter(files, '*mask.tif'):  # there should be only one
                         if fm.find('brain') != -1 or fm.find('wm') != -1:
                             continue
-                        mask_file = os.path.join(root,fm)
+                        mask_root = root
+                        mask_file = os.path.join(mask_root,fm)
 
-                mask_list[mask_file] = {'home':root, 'full_size':file_list[f]['size'], 'tile_grid':file_list[f]['tile_grid']}
+
+                mask_list[mask_file] = {'home':mask_root, 'full_size':file_list[f]['size'], 'tile_grid':file_list[f]['tile_grid']}
 
         return mask_list
 
@@ -165,14 +184,12 @@ class MaskTiler(object):
             log_err_name1 = os.path.join(home_dir,'resize_stderr_log.txt')
             log_out1 = open(log_out_name1,'wb+')
             log_err1 = open(log_err_name1,'wb+')
-            size_str = '{}x{}'.format(full_size[1],full_size[0]) #image magick uses cols x rows convention
+            size_str = '{}x{}!'.format(full_size[1],full_size[0]) #image magick uses cols x rows convention
 
             filename = os.path.splitext(os.path.basename(fi))[0]
-            str_rname = os.path.join(home_dir,filename+'_full_res.tif')
-
-            self.logger.info('Resized file: %s',str_rname)
-
-            str_rname = 'TIFF64:' + str_rname #save as BigTiff
+            str_name = os.path.join(home_dir,filename+'_full_res.tif')
+            str_rname = 'TIFF64:' + str_name #save as BigTiff
+            self.logger.info('Resized file: %s', str_name)
 
             # run resize system process
             print("Resizing file {}".format(fi))
@@ -185,35 +202,62 @@ class MaskTiler(object):
                 # Tiling
                 ####
 
+                #check if resized mask size is correct
+                tiff = tifffile.TiffFile(str_name)  # load tiff header only
+                mask_size = tiff.series[0].shape
+                if mask_size[0] != full_size[0] or mask_size[1] != full_size[1]:
+                    self.logger.info('Size of rescaled mask differs from original image size. Skipping this image.')
+                    continue
+
                 self.logger.info('Beginning tiling.')
+                # tile names
+                str_tname = 'tile_{:04}.tif'
+                str_tname = os.path.join(tiles_dir, str_tname)
 
-                log_out_name2 = os.path.join(home_dir,'tile_stdout_log.txt')
-                log_err_name2 = os.path.join(home_dir,'tile_stderr_log.txt')
-                log_out2 = open(log_out_name2,'wb+')
-                log_err2 = open(log_err_name2,'wb+')
-                str_tile = '{}x{}@'.format(tile_grid[1],tile_grid[0]) #image magick works with COLSxROWS format
-                str_tname = 'tile_%04d.tif' #tile file name pattern
-                str_tname = os.path.join(tiles_dir,str_tname)
+                tiffLoader = TiffTileLoader(self.PIX_1MM, self.PIX_5MM)
+                #load resized mask file
+                self.logger.info('Opening full resolution image')
+                tiffLoader.open_file(str_name)
+                self.logger.info('Computing tile coordinates')
+                # compute tiles coordinates
+                tiffLoader.compute_tile_coords(tile_grid[0], tile_grid[1])
 
-                #run tiling process
-                print("Tiling file {}".format(str_rname))
-                status = subprocess.call(['convert', '-crop', str_tile, '+repage', '+adjoin', str_rname, str_tname],
-                                         env=dict(os.environ), stderr=log_err2, stdout=log_out2)
-
-                self.logger.info('Tiling ended. Status: %s', str(status))
-
-                if status == 0:
-                    if self.check_num_tiles(tiles_dir, tile_grid[1] * tile_grid[0]):
-                        #save metadata (used by export_heatmap_metadata.py)
-                        meta_file = os.path.join(tiles_dir,'mask_tiling_info.xml')
-                        self.save_metadata(str_rname,fdic,meta_file)
-                        self.logger.info('Metadata saved.')
-                    else:
-                        self.logger.info('ERROR: Not all tiles were saved.')
-                        self.nError += 1
+                # check if coordinates yield same size as original image
+                if not tiffLoader.coords_sanity_check(tile_grid[0], tile_grid[1]):
+                    self.logger.info('Coord sanity: Total tiled images size differs from original image size')
+                    print('Coord sanity check NOT OK')
                 else:
-                    self.logger.info('Tiling failed.')
-                    self.nError += 1
+                    self.logger.info('Coords sanity check OK')
+                    print('Coord sanity check OK')
+
+                # run tiling
+                tile_iterator = tiffLoader.get_tile_iterator()  # the iterator makes sure the tiles are always in the right order
+                count = 0
+                self.logger.info('Beginning to save tiles')
+                print('Saving tiles...')
+                for tile in tile_iterator:
+                    tile_name = str_tname.format(count)
+                    io.imsave(tile_name, tile)
+                    count += 1
+                self.logger.info('Finished saving tiles')
+
+                # check if all tiles were saved, save metadata and coodinates file
+                if self.check_num_tiles(tiles_dir, tile_grid[1] * tile_grid[0]):
+                    # save metadata (used by export_heatmap_metadata.py)
+                    meta_file = os.path.join(tiles_dir, 'tiling_info.xml')
+                    self.save_metadata(fi, fdic, meta_file)  # save metadata
+                    self.logger.info('Metadata saved.')
+                    coods_file = os.path.join(tiles_dir, 'tile_coordinates.npy')
+                    np.save(coods_file, tiffLoader.get_tile_coords())
+                    self.logger.info('Tile coodinates matrix saved.')
+
+                # check if tiles have the same size of the original image
+                if not tiffLoader.sanity_check(tiles_dir, tile_grid[0], tile_grid[1]):
+                    self.logger.info('Total tiled images size differs from original image size')
+                    print('Sanity check NOT OK')
+                else:
+                    self.logger.info('Sanity check OK')
+                    print('Sanity check OK')
 
             else:
                 self.logger.info('Resizing failed. Cannot continue.')
@@ -225,14 +269,9 @@ def main():
         print('Usage: ImageTiler.py <root_dir>')
         exit()
 
-    root_dir = str(sys.argv[1])  # abs path to where the images are
-
-    #root_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100/full_res'
-    #root_dir= '/Users/maryana/Posdoc/AVID/AV13/TEMP'
-
-    #process_masks(root_dir)
-
-
+    root_dir = str(sys.argv[1])
+    maskTiler = MaskTiler('Mask Tiler',root_dir)
+    maskTiler.process_masks(root_dir)
 
 if __name__ == '__main__':
     main()
