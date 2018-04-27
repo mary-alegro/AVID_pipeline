@@ -89,8 +89,9 @@ class TileMasker(object):
                 nT_histo = len(tiles_histo)
 
                 if nT_mask != nT_histo:
-                    self.logger.info('WARNING: the number of mask and histology tiles does not match')
-                    print('Warning: the number o mask and histology tiles is different.')
+                    self.logger.info('ERROR: the number of mask and histology tiles does not match. Skipping this images.')
+                    print('ERROR: the number o mask and histology tiles is different. Skipping this images.')
+                    continue
 
                 for mTile in tiles_mask:
                     mask_tile_name = os.path.join(mask_dir,mTile)
@@ -99,12 +100,12 @@ class TileMasker(object):
 
                     #check if files exist
                     if not os.path.exists(mask_tile_name):
-                        self.logger.info('EERROR: file {} does not exist'.format(mask_tile_name))
+                        self.logger.info('ERROR: file {} does not exist'.format(mask_tile_name))
                         print('Error: file {} does not exist'.format(mask_tile_name))
                         self.nErrors += 1
                         continue
                     if not os.path.exists(histo_tile_name):
-                        self.logger.info('EERROR: file {} does not exist'.format(histo_tile_name))
+                        self.logger.info('ERROR: file {} does not exist'.format(histo_tile_name))
                         print('Error: file {} does not exist'.format(histo_tile_name))
                         self.nErrors += 1
                         continue
@@ -164,7 +165,8 @@ def main():
         exit()
 
     root_dir = str(sys.argv[1])  # abs path to where the images are
-    #apply_masks(root_dir)
+    tileMasker = TileMasker('Apply tile masks',root_dir)
+    tileMasker.apply_masks(root_dir)
 
 if __name__ == '__main__':
     main()
