@@ -65,7 +65,8 @@ class TileMasker(object):
                     continue
 
                 #create segmented histo dir
-                self.create_dir_struct(os.path.join(root_dir,ldir))
+                #self.create_dir_struct(os.path.join(root_dir,ldir))
+                self.create_dir_struct(os.path.join(ldir))
                 self.logger.info('Directory structure created.')
 
                 #get mask tiles dir path

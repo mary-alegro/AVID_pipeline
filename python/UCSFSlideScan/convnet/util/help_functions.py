@@ -78,9 +78,10 @@ def pred_to_imgs(pred, patch_height, patch_width, mode="original"):
     assert (pred.shape[2]==2 )  #check the classes are 2
     pred_images = np.empty((pred.shape[0],pred.shape[1]))  #(Npatches,height*width)
     if mode=="original":
-        for i in range(pred.shape[0]):
-            for pix in range(pred.shape[1]):
-                pred_images[i,pix]=pred[i,pix,1]
+        # for i in range(pred.shape[0]):
+        #     for pix in range(pred.shape[1]):
+        #         pred_images[i,pix]=pred[i,pix,1]
+        pred_images = pred[:,:,1]
     elif mode=="threshold":
         for i in range(pred.shape[0]):
             for pix in range(pred.shape[1]):

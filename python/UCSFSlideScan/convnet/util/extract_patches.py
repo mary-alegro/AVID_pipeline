@@ -1,12 +1,11 @@
 import numpy as np
 import random
 import ConfigParser
-
 from help_functions import load_hdf5
 from help_functions import visualize
 from help_functions import group_images
-
 from pre_processing import my_PreProc, preproc_color
+import skimage.io as io
 
 
 #To select the same images
@@ -101,7 +100,8 @@ def get_data_testing(test_imgs_original, test_groudTruth, Imgs_to_test, mean_ima
 # return the ground truth in its original shape
 def get_data_segmenting_overlap(test_img_original, Imgs_to_test, mean_image_path, patch_height, patch_width, stride_height, stride_width, is_color=True):
     ### test
-    test_img_original = load_hdf5(test_img_original) #should be only one big image
+    #test_img_original = load_hdf5(test_img_original) #should be only one big image
+    test_img_original = io.imread(test_img_original)
     test_img_original = np.transpose(test_img_original,axes=(2,0,1))
     test_img_original = test_img_original.reshape([1,test_img_original.shape[0],test_img_original.shape[1],test_img_original.shape[2]])
     #test_masks = load_hdf5(test_groudTruth)

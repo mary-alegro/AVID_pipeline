@@ -26,8 +26,18 @@ import fnmatch
 from misc.imoverlay import imoverlay as imoverlay
 import mahotas as mh
 import skimage.io as io
+import glob
 
 
+
+def get_folder_list(root_dir):
+    folder_list = []
+
+    for root, dir, files in os.walk(root_dir):
+        if fnmatch.fnmatch(root, '*heat_map'):
+            folder_list.append(root)
+
+    return folder_list
 
 
 
@@ -109,7 +119,9 @@ def run_prediction(config_file):
 
 
 
-def run_segmentation(img_dir,out_dir,config_file):
+def run_segmentation(root_dir,config_file):
+
+    dir_list = get_folder_list(root_dir)
 
     ### Read config
 
@@ -145,14 +157,30 @@ def run_segmentation(img_dir,out_dir,config_file):
     model = model_from_json(open(path_experiment + name_experiment + '_architecture.json').read())
     model.load_weights(path_experiment + name_experiment + '_' + best_last + '_weights.h5')
 
-    for root, dir, files in os.walk(img_dir):
+    #for root, dir, files in os.walk(img_dir):
+    for folder in dir_list:
 
+        #check if tiles folder exists
+        tiles_dir = os.path.join(folder,'seg_tiles')
+        if not os.path.exists(tiles_dir):
+            print('Error: tiles folder {} does not exist.'.format(tiles_dir))
+            continue
+
+        #creat output folder
+        out_dir = os.path.join(folder,'TAU_seg_tiles')
+        if not os.path.exists(out_dir):
+            os.mkdir(out_dir)
+
+        print('*** Processing files in folder {}'.format(folder))
+
+        #get a list of tif files
+        files = glob.glob(os.path.join(tiles_dir,'*.tif'))
         nTotal = len(files)
         print('{} tile(s) to segment.'.format(nTotal))
 
-        for fname in fnmatch.filter(files, '*.hdf5'):
+        for fname in files:
 
-            test_imgs_original = os.path.join(root,fname)
+            test_imgs_original = os.path.join(tiles_dir,fname)
             print('Segmenting image {}.'.format(test_imgs_original))
 
             # ============ Load the data and divide in patches
@@ -165,7 +193,8 @@ def run_segmentation(img_dir,out_dir,config_file):
             stride_height=35
             stride_width=35
 
-            orig_img = load_hdf5(test_imgs_original)
+            #orig_img = load_hdf5(test_imgs_original)
+            orig_img = io.imread(test_imgs_original)
 
             if average_mode == True:
                 patches_imgs_test, new_height, new_width, masks_test = get_data_segmenting_overlap(
@@ -188,10 +217,8 @@ def run_segmentation(img_dir,out_dir,config_file):
                 )
 
             # ================ Run the prediction of the patches ==================================
-            best_last = config.get('testing settings', 'best_last')
-            # Load the saved model
-            model = model_from_json(open(path_experiment + name_experiment + '_architecture.json').read())
-            model.load_weights(path_experiment + name_experiment + '_' + best_last + '_weights.h5')
+
+
             # Calculate the predictions
             predictions = model.predict(patches_imgs_test, batch_size=32, verbose=2)
             print "predicted images size :"
@@ -205,7 +232,6 @@ def run_segmentation(img_dir,out_dir,config_file):
             else:
                 pred_imgs = recompone(pred_patches, 13, 12)  # predictions
 
-
             img = pred_imgs[0,0,...]
             img = img.reshape([img.shape[0],img.shape[1]])
 
@@ -217,32 +243,36 @@ def run_segmentation(img_dir,out_dir,config_file):
             img = 1-img
             mask = img>0.8
             bw = mh.bwperim(mask)
+
+            basename = os.path.basename(fname)
             overlay = imoverlay(orig_img,bw,[0.3,1,0.3])
-            out_name = os.path.join(out_dir,fname[0:-4]+'_over.tif')
-            out_name_mask = os.path.join(out_dir,fname[0:-5]+'_mask.tif')
+            out_name = os.path.join(out_dir,basename[0:-4]+'_over.tif')
+            out_name_seg = os.path.join(out_dir,basename[0:-4]+'_mask.tif')
 
             # print('Saving {}'.format(out_name))
             # io.imsave(out_name,overlay)
 
-            print('Saving {}'.format(out_name_mask))
-            io.imsave(out_name_mask,(mask*255).astype('uint8'))
+            print('Saving {}'.format(out_name_seg))
+            io.imsave(out_name_seg,(mask*255).astype('uint8'))
 
 
 
 def main():
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 3:
         print('Usage: run_unet_seg <in_dir> <out_dir> <config_file.txt>')
         exit()
-    
-    img_dir = str(sys.argv[1])
-    out_dir = str(sys.argv[2])
-    config_path = str(sys.argv[3])
+
+    # img_dir = str(sys.argv[1])
+    # out_dir = str(sys.argv[2])
+    # config_path = str(sys.argv[3])
+    root_dir = str(sys.argv[1])
+    config_path = str(sys.argv[2])
 
     #img_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100#440/hdf5_tiles/'
     #out_dir = '/home/maryana/storage/Posdoc/AVID/AV13/AT100#440/TAU_seg_tiles'
     #config_path = '/home/maryana/Projects/retina-unet/configuration_avid_ucsf.txt'
 
-    run_segmentation(img_dir,out_dir,config_path)
+    run_segmentation(root_dir,config_path)
 
 
 if __name__ == '__main__':
