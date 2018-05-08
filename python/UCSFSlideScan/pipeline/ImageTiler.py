@@ -37,6 +37,7 @@ class ImageTiler(object):
         self.MEM_MAX = '14Gb'
         self.SCRIPT_DIR=''
 
+
     def get_stage_name(self):
         return self.stage_name
 

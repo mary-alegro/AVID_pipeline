@@ -6,3 +6,6 @@ SCRIPT_DIR = /home/maryana/Projects/LargeSlideScan/python/UCSFSlideScan/scripts/
 
 [tile_masking]
 MASK_VAL = 255
+
+[heat_map]
+HMAP_RES = 0.1

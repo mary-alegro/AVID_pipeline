@@ -11,6 +11,9 @@ import tifffile
 
 PIX_MM = 819
 
+
+
+
 def sub2ind(size,r,c):
     ind = r*size[1]+c
     return ind
@@ -136,6 +139,10 @@ def export_metadata(case_dir):
     tiles_dir = os.path.join(case_dir, 'heat_map/seg_tiles/')
     seg_dir = os.path.join(case_dir, 'heat_map/TAU_seg_tiles/')
 
+    if not os.path.exists(seg_dir):
+        print('{} does not exist.'.format(seg_dir))
+        return False
+
     # get info from tiling metadata
     tiling_meta_xml = find_xml_file(case_dir)
     grid_rows, grid_cols, nblocks, pix_mm, img_rows, img_cols = get_info_xml(tiling_meta_xml)
@@ -146,6 +153,8 @@ def export_metadata(case_dir):
     with open(xml_file, 'w+') as out:
         out.write(ET.tostring(xml_tree, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
     print('Metadata saved in {}'.format(xml_file))
+
+    return True
 
 
 

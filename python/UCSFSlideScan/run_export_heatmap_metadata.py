@@ -1,12 +1,7 @@
 import os
-import subprocess
 import sys
-import fnmatch
-import skimage.io as io
-import tifffile
-from misc.XMLUtils import XMLUtils
 import glob
-import export_heatmap_metadata as hmeta
+from pipeline import export_heatmap_metadata as hmeta
 
 #
 # This script is supposed to run on the cluster

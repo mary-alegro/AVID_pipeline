@@ -74,7 +74,7 @@ class MaskTiler(object):
                     tiff = tifffile.TiffFile(file_name) #load tiff header only
                     size = tiff.series[0].shape
 
-                    #try to load tile grid from the imaging tiling process
+                    #try to load tile grid from the histology tiling process
                     tiles_dir = os.path.join(root_dir,'tiles')
                     meta_xml = os.path.join(tiles_dir, 'tiling_info.xml')
                     if os.path.exists(tiles_dir) and os.path.exists(meta_xml):

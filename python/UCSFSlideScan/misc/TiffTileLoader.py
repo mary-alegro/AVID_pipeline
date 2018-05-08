@@ -133,16 +133,6 @@ class TiffTileLoader(object):
         return True
 
 
-
-
-
-
-
-
-
-
-
-
     def get_tile_coords(self):
         return self.coords
 
