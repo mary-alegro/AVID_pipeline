@@ -59,50 +59,58 @@ def heatmap_worker(tiles_dir,seg_dir, hm_dir, nblocks_tile, pix_mm, file_bundle,
 
         histo_per_tissue = np.zeros(img.shape[0:2])
 
-        if os.path.isfile(mask_path): #run image processing routine if mask exists
-            #mask = io.imread(mask_path)
-            rows = img.shape[0]
-            cols = img.shape[1]
-            bg_row = 0
-            bg_col = 0
-            for r in range(nblocks_tile): #process blocks
-                end_row = NPIX_BLOCK * (r + 1)
-
-                for c in range(nblocks_tile):
-                    end_col = NPIX_BLOCK*(c + 1)
-
-                    # last block can be problematic, we have to check if the indices are inside the right range
-                    if c == (nblocks_tile-1):
-                        if end_col != cols:
-                            end_col = cols
-
-                    if r == (nblocks_tile - 1):
-                        if end_row != rows:
-                            end_row = rows
-
-                    block_mask = mask[bg_row:end_row,bg_col:end_col]
-                    block_img = img[bg_row:end_row,bg_col:end_col,:]
-
-                    nonzero_pix_mask = get_num_white(block_mask) #get number of non-zero pixels in mask
-                    #total_pix_block = rows*cols #total number of pixel in image block
-                    npix_tissue_block = get_num_pix_tissue(block_img)
-
-                    #percent_total = float(nonzero_pix_mask)/float(total_pix_block)
-                    percent_tissue = 0.0 if npix_tissue_block == 0 else (float(nonzero_pix_mask)/float(npix_tissue_block))
-                    percent_tissue_100 = percent_tissue*100
-                    if percent_tissue_100 > 100.00:
-                        percent_tissue_100 = 100.0 # this can happen in some situations where the mask is bigger than the tissue are. this usually happens when segmenting background (like sharpie marks)
-
-                    #histo_per_tile[bg_row:end_row,bg_col:end_col] = percent_total*100
-                    histo_per_tissue[bg_row:end_row,bg_col:end_col] = percent_tissue_100
-
-                    # histo_per_tile_16[bg_row:end_row,bg_col:end_col] = percent_total*100
-                    # histo_per_tissue_16[bg_row:end_row,bg_col:end_col] = percent_tissue*100
-
-                    bg_col = end_col
-
-                bg_row = end_row
+        n_total_pix_tissue_tile = float(get_num_pix_tissue(img))
+        n_total_pix_tile = img.shape[0]*img.shape[1]
+        percent_tissue = n_total_pix_tissue_tile/n_total_pix_tile
+        print('Percent tissue pixels: {}'.format(percent_tissue))
+        if percent_tissue < 0.05:
+            print('{} is empty'.format(img_name))
+        else:
+            print('Processing {}'.format(img_name))
+            if os.path.isfile(mask_path): #run image processing routine if mask exists
+                #mask = io.imread(mask_path)
+                rows = img.shape[0]
+                cols = img.shape[1]
+                bg_row = 0
                 bg_col = 0
+                for r in range(nblocks_tile): #process blocks
+                    end_row = NPIX_BLOCK * (r + 1)
+
+                    for c in range(nblocks_tile):
+                        end_col = NPIX_BLOCK*(c + 1)
+
+                        # last block can be problematic, we have to check if the indices are inside the right range
+                        if c == (nblocks_tile-1):
+                            if end_col != cols:
+                                end_col = cols
+
+                        if r == (nblocks_tile - 1):
+                            if end_row != rows:
+                                end_row = rows
+
+                        block_mask = mask[bg_row:end_row,bg_col:end_col]
+                        block_img = img[bg_row:end_row,bg_col:end_col,:]
+
+                        nonzero_pix_mask = get_num_white(block_mask) #get number of non-zero pixels in mask
+                        #total_pix_block = rows*cols #total number of pixel in image block
+                        npix_tissue_block = get_num_pix_tissue(block_img)
+
+                        #percent_total = float(nonzero_pix_mask)/float(total_pix_block)
+                        percent_tissue = 0.0 if npix_tissue_block == 0 else (float(nonzero_pix_mask)/float(npix_tissue_block))
+                        percent_tissue_100 = percent_tissue*100
+                        if percent_tissue_100 > 100.00:
+                            percent_tissue_100 = 100.0 # this can happen in some situations where the mask is bigger than the tissue are. this usually happens when segmenting background (like sharpie marks)
+
+                        #histo_per_tile[bg_row:end_row,bg_col:end_col] = percent_total*100
+                        histo_per_tissue[bg_row:end_row,bg_col:end_col] = percent_tissue_100
+
+                        # histo_per_tile_16[bg_row:end_row,bg_col:end_col] = percent_total*100
+                        # histo_per_tissue_16[bg_row:end_row,bg_col:end_col] = percent_tissue*100
+
+                        bg_col = end_col
+
+                    bg_row = end_row
+                    bg_col = 0
 
         #get min and max values for the entire slice, per amount of tissue
         histo_per_tissue_min = histo_per_tissue.min()

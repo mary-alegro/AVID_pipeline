@@ -126,8 +126,10 @@ def get_info_xml(xml_file):
     tiles_node = xml_tree.xpath('//Tiles')[0]
     # orig_rows = int(tiles_node.attrib['rows'])
     # orig_cols = int(tiles_node.attrib['cols'])
-    pix_mm = int(tiles_node.attrib['pix_mm'])
-    nblocks = int(tiles_node.attrib['nblocks_tile'])
+    #pix_mm = int(tiles_node.attrib['pix_mm'])
+    pix_mm = PIX_MM
+    #nblocks = int(tiles_node.attrib['nblocks_tile'])
+    nblocks = 5
     grid_cols = int(tiles_node.attrib['grid_cols'])
     grid_rows = int(tiles_node.attrib['grid_rows'])
 

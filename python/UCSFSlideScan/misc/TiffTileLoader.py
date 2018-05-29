@@ -28,10 +28,23 @@ class TiffTileLoader(object):
         self.PIX_1MM = p1MM
         self.PIX_5MM = p5MM
         self.coords = []
+        self.nChannels = -1
 
 
     def open_file(self,file_name):
         self.ds = gdal.Open(file_name)
+        self.nChannels = self.ds.RasterCount
+        if self.nChannels == 3:
+            self.rCh = self.ds.GetRasterBand(1)
+            self.gCh = self.ds.GetRasterBand(2)
+            self.bCh = self.ds.GetRasterBand(3)
+            self.bw = None
+        else:
+            self.bw = self.ds.GetRasterBand(1)
+            self.rCh = None
+            self.gCh = None
+            self.bCh = None
+            self.nChannels = 1
 
 
     def get_file_dim(self):
@@ -43,18 +56,36 @@ class TiffTileLoader(object):
 
 
     def get_tile(self, x, y, xsize, ysize):
-        rCh = self.ds.GetRasterBand(1)
-        gCh = self.ds.GetRasterBand(2)
-        bCh = self.ds.GetRasterBand(3)
+        x = int(x)
+        y = int(y)
+        xsize = int(xsize)
+        ysize = int(ysize)
 
-        R = rCh.ReadAsArray(x, y, xsize,ysize)
-        G = gCh.ReadAsArray(x, y, xsize, ysize)
-        B = bCh.ReadAsArray(x, y, xsize, ysize)
-
-        s = R.shape
-        img = np.concatenate((R.reshape(s[0],s[1],1),G.reshape(s[0],s[1],1),B.reshape(s[0],s[1],1)),axis=2)
+        if self.nChannels > 1:
+            R = self.rCh.ReadAsArray(x, y, xsize,ysize)
+            G = self.gCh.ReadAsArray(x, y, xsize, ysize)
+            B = self.bCh.ReadAsArray(x, y, xsize, ysize)
+            s = R.shape
+            img = np.concatenate((R.reshape(s[0],s[1],1),G.reshape(s[0],s[1],1),B.reshape(s[0],s[1],1)),axis=2)
+        else:
+            img = self.bw.ReadAsArray(x, y, xsize,ysize)
 
         return img
+
+    def get_tile_by_num(self,ind):
+        if len(self.coords) > 0:
+            if ind < 0 or ind > self.coords.shape[0]-1:
+                print('Error: index must be a number between 0 and {}'.format(self.coords.shape[0]-1))
+                return None
+
+            r1,c1,r2,c2 = self.coords[ind]
+            ysize = r2-r1
+            xsize = c2-c1
+            tile = self.get_tile(c1,r1,xsize,ysize)
+            return tile
+        else:
+            print('Error: Tile coordinates not set.')
+            return None
 
 
     def compute_tile_coords(self,grid_rows,grid_cols):
@@ -234,6 +265,7 @@ class TileIterator(object):
             self.rCh = None
             self.gCh = None
             self.bCh = None
+            self.nChannels = 1
 
 
     def __iter__(self):
