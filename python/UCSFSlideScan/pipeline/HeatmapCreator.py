@@ -289,7 +289,7 @@ class HeatmapCreator(object):
             if fnmatch.fnmatch(root,'*/RES(*'): #it's inside /RES*
                 if res_dir == '':
                     res_dir = root
-                for fn in fnmatch.filter(files,'*_*_*.tif'): #get only full resolution images
+                for fn in fnmatch.filter(files,'*.tif'): #get only full resolution images
                     if fn.find('res10') > -1: #skip res10 images
                         res10_file = fn
 
