@@ -1,15 +1,11 @@
 import os
-import sys
 import fnmatch
 import skimage.io as io
-import tifffile
 from misc.XMLUtils import XMLUtils
 import logging
 import glob
 from misc.TiffTileLoader import TiffTileLoader
 import numpy as np
-from lxml import etree as ET
-import  export_heatmap_metadata  as exp_meta
 import skimage.transform as xform
 import nibabel as nib
 
@@ -302,7 +298,7 @@ class HeatmapCreator(object):
 
     def get_dirs_to_process(self,root_dir):
         dirs_list = []
-        slice_dirs = glob.glob(os.path.join(self.root_dir, '*'))
+        slice_dirs = glob.glob(os.path.join(root_dir, '*'))
         for sd in slice_dirs:
             if os.path.isdir(sd) and sd.find('magick_tmp') == -1:
                 dirs_list.append(sd)
@@ -364,9 +360,11 @@ class HeatmapCreator(object):
         self.logger.info('Creating 10% resolution heatmap.')
         print('Creating 10% resolution heatmap.')
         res10_hm_file = os.path.join(hm_dir,'heat_map_'+str(self.HMAP_RES)+'_res10.npy')
-        self.rescale_heatmap(res10_file, hm_file, res10_hm_file, coords_map, grid_tile, orig_img_size, self.SCALE_FACTOR_VAL)
-        self.logger.info('10% resolution heatmap successfully created.')
-
+        status = self.rescale_heatmap(res10_file, hm_file, res10_hm_file, coords_map, grid_tile, orig_img_size, self.SCALE_FACTOR_VAL)
+        if status:
+            self.logger.info('10% resolution heatmap successfully created.')
+        else:
+            self.logger.info('There was ans error creating 10% resolution heatmap.')
 
 
 

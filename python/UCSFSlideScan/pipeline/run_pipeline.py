@@ -9,6 +9,7 @@ from ImageTiler import ImageTiler
 from MaskTiler import MaskTiler
 from TileMasker import TileMasker
 from HeatmapCreator import HeatmapCreator
+from ColormapCreator import ColormapCreator
 import ConfigParser
 
 
@@ -25,14 +26,16 @@ def main():
     img_tiles = ImageTiler('Image Tiling',root_dir)
     mask_tiles = MaskTiler('Mask Resizing and Tiling',root_dir)
     apply_mask = TileMasker('Mask Tiles',root_dir)
-    comp_heatmap = HeatmapCreator('Compute HeatMap',root_dir)
+    heatmap_comp = HeatmapCreator('Compute HeatMap',root_dir)
+    colormap_comp = ColormapCreator('Compute ColorMap', root_dir)
 
 
 
     #pipeline.add_stage(img_tiles)
     #pipeline.add_stage(mask_tiles)
     #pipeline.add_stage(apply_mask)
-    pipeline.add_stage(comp_heatmap)
+    pipeline.add_stage(heatmap_comp)
+    pipeline.add_stage(colormap_comp)
 
     #run pipeline
     pipeline.execute()
