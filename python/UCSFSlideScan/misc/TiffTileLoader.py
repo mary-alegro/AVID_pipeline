@@ -133,7 +133,7 @@ class TiffTileLoader(object):
             #up_row = ((row_count+1) * row_off) + np.sum(row_add[0:row_count + 1])
             up_row = low_row
 
-        self.coords = tile_coords
+        self.coords = tile_coords.astype('int')
         #return tile_coords
 
 

@@ -9,3 +9,4 @@ MASK_VAL = 255
 
 [heat_map]
 HMAP_RES = 0.1
+SCALE_FACTOR = 1000
