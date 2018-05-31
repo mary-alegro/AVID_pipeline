@@ -305,7 +305,7 @@ class HeatmapCreator(object):
         dirs_list = []
         slice_dirs = glob.glob(os.path.join(root_dir, '*'))
         for sd in slice_dirs:
-            if os.path.isdir(sd) and sd.find('magick_tmp') == -1:
+            if (os.path.isdir(sd) or os.path.islink(sd)) and sd.find('magick_tmp') == -1:
                 dirs_list.append(sd)
         return dirs_list
 
