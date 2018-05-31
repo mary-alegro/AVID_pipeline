@@ -47,6 +47,8 @@ class HeatmapCreator(object):
         self.HMAP_RES = 0.1
         self.SCALE_FACTOR_VAL = 1000.0
 
+        self.logger.info('Initializing stage.')
+
 
     def get_stage_name(self):
         return self.stage_name
@@ -56,6 +58,9 @@ class HeatmapCreator(object):
         if self.root_dir:
 
             slice_dirs = self.get_dirs_to_process(self.root_dir)
+
+            self.logger.info('{}  directories to process.'.format(len(slice_dirs)))
+
             for slice_dir in slice_dirs:
                 self.run_compute_heatmap(slice_dir)
 

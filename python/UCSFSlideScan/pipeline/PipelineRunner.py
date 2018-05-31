@@ -42,6 +42,10 @@ class PipelineRunner(object):
             else:
                 self.logger.info('%s finished WITH errors.', S.get_stage_name())
 
+
+    def get_stages(self):
+        return self.stages_arr
+
 # def main():
 #     if len(sys.argv) != 2:
 #         print('Usage: ImageTiler.py <root_dir>')

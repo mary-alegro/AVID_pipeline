@@ -21,6 +21,8 @@ def main():
     root_dir = str(sys.argv[1])  # abs path to where the images are
     conf_file = str(sys.argv[2])
 
+    print('### Creating pipeline ###')
+
     #create the pipeline
     pipeline = PipelineRunner(root_dir,conf_file)
     img_tiles = ImageTiler('Image Tiling',root_dir)
@@ -30,15 +32,23 @@ def main():
     colormap_comp = ColormapCreator('Compute ColorMap', root_dir)
 
 
-
     #pipeline.add_stage(img_tiles)
     #pipeline.add_stage(mask_tiles)
     #pipeline.add_stage(apply_mask)
     pipeline.add_stage(heatmap_comp)
     pipeline.add_stage(colormap_comp)
 
+    print('__________________________')
+    print('Stages:')
+    for st in pipeline.get_stages():
+        print('    '+st.get_stage_name())
+    print('__________________________')
+    print('Starting...')
+
     #run pipeline
     pipeline.execute()
+
+    print('### Pipeline Finished ###')
 
 
 
