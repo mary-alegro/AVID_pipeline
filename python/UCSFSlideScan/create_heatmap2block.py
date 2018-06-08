@@ -9,7 +9,7 @@ nii = nib.load('/home/maryana/storage/Posdoc/AVID/AV13/blockface/nii/av13_blockf
 vol = nii.get_data()
 vol2 = np.zeros(vol.shape)
 
-slices = [280,312,344,376,408,440,472,504,536,568,600,632,296,328,360,392,424,457,488,520,552,584,616,648]
+slices = [296,312,328,344,360,376,392,408,424,440,457,472,488,504,520,536,552,568,584,600,616,632,648]
 slice_name='/home/maryana/storage/Posdoc/AVID/AV13/AT100/full_res/AT100_{}/reg/elastix_AT100_{}_heatmap_bspline.nii'
 
 for id in slices:

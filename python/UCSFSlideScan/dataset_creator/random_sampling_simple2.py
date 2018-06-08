@@ -17,6 +17,14 @@ import glob
 THRESH=0.20
 
 
+def get_dirs_to_process(root_dir):
+    dirs_list = []
+    slice_dirs = glob.glob(os.path.join(root_dir, '*'))
+    for sd in slice_dirs:
+        if (os.path.isdir(sd) or os.path.islink(sd)) and sd.find('magick_tmp') == -1:
+            dirs_list.append(sd)
+    return dirs_list
+
 def get_files_info(root_dir):
     dirs = glob.glob(os.path.join(root_dir,'*'))
     file_dic = {}
@@ -41,8 +49,8 @@ def get_files_info(root_dir):
             files = glob.glob(os.path.join(patch_mask_dir,'*.tif'))
             if files:
                 patch_mask = files[0] # there should be only one
-            if not os.path.exists(patch_mask):
-                patch_mask = None
+            # if not os.path.exists(patch_mask):
+            #     patch_mask = None
 
 
         if os.path.exists(mask_tiles_dir) and os.path.exists(seg_tiles_dir) and os.path.exists(metadata_xml):
@@ -109,7 +117,7 @@ def get_gray_matter(img_arr):
 #     return (overlap_area/(x_len * y_len) > .1)
 
 
-def collect_samples(root_dir, x_len, y_len):
+def collect_samples(root_dir, x_len, y_len, patch_count):
 
     home_dir = os.getcwd()
 
@@ -150,6 +158,7 @@ def collect_samples(root_dir, x_len, y_len):
 
         #parse through all tiles to extract patches
         count = 0
+        #patch_count = 0
         for fn in masked_file_list:
 
             count+=1
@@ -172,6 +181,8 @@ def collect_samples(root_dir, x_len, y_len):
             if patch_mask:
                 #load respective tile from patch mask
                 tile_pmask_small = tiffLoader.get_tile_by_num(snum)
+                if tile_pmask_small.ndim > 2:
+                    tile_pmask_small = tile_pmask_small[...,0]
                 #resize patch mask tile to match full res tile size
                 tile_pmask = xform.resize(tile_pmask_small,tile_arr.shape,preserve_range=True).astype('uint8')
 
@@ -230,9 +241,11 @@ def collect_samples(root_dir, x_len, y_len):
                 patch = extract_color_patch(patch_x, x, patch_y, y, (count-1), colored_file_list)
                 os.chdir(home_dir)
                 os.chdir('patches')
-                scipy.misc.imsave('patch' + '_' + str((count-1))+'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
+                scipy.misc.imsave('patch' + '_' + str(patch_count)+'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
+                patch_count += 1
 
             os.chdir(home_dir)
+
 
 def extract_color_patch(patch_x, x, patch_y, y, fn, colored_file_list):
 
@@ -281,7 +294,15 @@ def main():
         x_len = sys.argv[2]
         y_len = sys.argv[3]
         print("collected arguments")
-        collect_samples(root_dir, x_len, y_len)
+
+        # folders = get_dirs_to_process(root_dir)
+        # nFolders = len(folders)
+        # print('Num. folders: {}'.format(nFolders))
+        # patch_count = 0
+        # for rt in folders:
+        #    patch_count = collect_samples(rt, x_len, y_len,patch_count)
+        patch_count = 0
+        collect_samples(root_dir, x_len, y_len,patch_count)
     else:
         print("Usage: enter a directory, x length of each sample, y length of each sample")
 if __name__ == "__main__":

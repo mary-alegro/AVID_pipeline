@@ -198,11 +198,11 @@ class HeatmapCreator(object):
                     bg_row = end_row
                     bg_col = 0
 
-            # get min and max values for the entire slice, per amount of tissue
-            if histo_per_tissue.min() < min_val_tissue:
-                min_val_tissue = histo_per_tissue.min()
-            if histo_per_tissue.max() > max_val_tissue:
-                max_val_tissue = histo_per_tissue.max()
+                # get min and max values for the entire slice, per amount of tissue
+                if histo_per_tissue.min() < min_val_tissue:
+                    min_val_tissue = histo_per_tissue.min()
+                if histo_per_tissue.max() > max_val_tissue:
+                    max_val_tissue = histo_per_tissue.max()
 
             # hm2_name = os.path.join(hm_dir, img_name[0:-4] + '_hm_pertissue.npy')
             # np.save(hm2_name, histo_per_tissue)
