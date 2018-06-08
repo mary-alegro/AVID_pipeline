@@ -46,6 +46,10 @@ class HeatmapCreator(object):
         self.PIX_5MM = 4095  # 5mm = 4095 pixels
         self.HMAP_RES = 0.1
         self.SCALE_FACTOR_VAL = 1000.0
+        self.X_DIM = 0.0123
+        self.Y_DIM = 0.0123
+        self.Z_DIM = 0.122
+
 
         self.logger.info('Initializing stage.')
 
@@ -79,6 +83,9 @@ class HeatmapCreator(object):
             self.PIX_5MM = int(self.config.get('global', 'PIX_5MM'))
             self.HMAP_RES = float(self.config.get('heat_map', 'HMAP_RES'))
             self.SCALE_FACTOR_VAL = float(self.config.get('heat_map', 'SCALE_FACTOR'))
+            self.X_DIM = float(self.config.get('heat_map', 'X_DIM'))
+            self.Y_DIM = float(self.config.get('heat_map', 'Y_DIM'))
+            self.Z_DIM = float(self.config.get('heat_map', 'Z_DIM'))
 
 
 
@@ -263,7 +270,7 @@ class HeatmapCreator(object):
         #create NIFTI heatmap file
         self.logger.info('Saving res 10 NIFTI file.')
         nii_name = res10_hm_file[0:-4] + '.nii'
-        M = np.eye(4)
+        M = np.eye(4) * np.array([self.X_DIM, self.Y_DIM, self.Z_DIM, 1])
         nii = nib.Nifti1Image(hmap_res10,M)
         nib.save(nii,nii_name)
 
