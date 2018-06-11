@@ -302,7 +302,7 @@ class HeatmapCreator(object):
                 if res_dir == '':
                     res_dir = root
                 for fn in fnmatch.filter(files,'*.tif'): #get only full resolution images
-                    if fn.find('res10') > -1: #skip res10 images
+                    if fn.find('res10') > -1: #get res10 images
                         res10_file = fn
 
         res10_file = os.path.join(res_dir,res10_file)
