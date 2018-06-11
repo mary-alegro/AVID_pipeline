@@ -147,15 +147,15 @@ def send_files(local_root,remote_root):
 
 
 def main():
-    # if len(sys.argv) != 3:
-    #     print('Usage: send_files_to_cluster.py <local_root_dir> <remote_root_dir>')
-    #     exit()
-    #
-    # local_root_dir = str(sys.argv[1])  # abs path to where the images are
-    # rem_root_dir = str(sys.argv[2])
+    if len(sys.argv) != 3:
+        print('Usage: send_files_to_cluster.py <local_root_dir> <remote_root_dir>')
+        exit()
 
-    local_root_dir = '/Volumes/macdata/groups/grinberg/Experiments/AVID/Cases/1181-002/Master Package 1181-002/Images/Stitched/AT100'
-    rem_root_dir = '/grinberg/scratch/AVID/AV2_AT100'
+    local_root_dir = str(sys.argv[1])  # abs path to where the images are
+    rem_root_dir = str(sys.argv[2])
+
+    # local_root_dir = '/Volumes/macdata/groups/grinberg/Experiments/AVID/Cases/1181-002/Master Package 1181-002/Images/Stitched/AT100'
+    # rem_root_dir = '/grinberg/scratch/AVID/AV2_AT100'
 
     send_files(local_root_dir,rem_root_dir)
 
