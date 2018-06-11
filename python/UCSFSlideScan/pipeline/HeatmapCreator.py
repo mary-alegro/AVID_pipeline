@@ -211,9 +211,9 @@ class HeatmapCreator(object):
                 if histo_per_tissue.max() > max_val_tissue:
                     max_val_tissue = histo_per_tissue.max()
 
-            # hm2_name = os.path.join(hm_dir, img_name[0:-4] + '_hm_pertissue.npy')
-            # np.save(hm2_name, histo_per_tissue)
-            heatmap_per_tissue[row_up:row_low,col_up:col_low] = histo_per_tissue[...]
+                # hm2_name = os.path.join(hm_dir, img_name[0:-4] + '_hm_pertissue.npy')
+                # np.save(hm2_name, histo_per_tissue)
+                heatmap_per_tissue[row_up:row_low,col_up:col_low] = histo_per_tissue[...]
 
         self.logger.info('Saving full resolution heatmap.')
         heatmap_per_tissue.flush()
@@ -302,7 +302,7 @@ class HeatmapCreator(object):
                 if res_dir == '':
                     res_dir = root
                 for fn in fnmatch.filter(files,'*.tif'): #get only full resolution images
-                    if fn.find('res10') > -1: #get res10 images
+                    if fn.find('res10') > -1: #skip res10 images
                         res10_file = fn
 
         res10_file = os.path.join(res_dir,res10_file)
