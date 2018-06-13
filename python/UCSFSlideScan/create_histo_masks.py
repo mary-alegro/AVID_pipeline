@@ -48,8 +48,12 @@ def create_masks(b_masks_dir,wm_masks_dir,outdir):
             bmask[bmask > 0] = 255
         wmmask = io.imread(wmmask_file)
         if wmmask.ndim > 2:
-            wmmask = color.rgb2gray(wmmask)
-            wmmask[wmmask > 0] = 255
+            if wmmask.shape[2] >= 3:
+                wmmask = color.rgb2gray(wmmask)
+                wmmask[wmmask > 0] = 255
+            elif wmmask.shape[2] == 2:
+                wmmask = wmmask[...,0]
+                wmmask[wmmask > 0] = 255
 
         bmask[wmmask == MASK_VAL] = 0 #masks white matter out of the brain mask
 
