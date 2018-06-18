@@ -134,7 +134,8 @@ class HeatmapCreator(object):
             #histo_per_tissue = np.zeros(img.shape[0:2])
 
             #process tile data
-            if os.path.isfile(mask_path):  # run image processing routine if TAU tangles mask exists
+            # run image processing routine if TAU tangles mask exists
+            if os.path.isfile(mask_path):
 
                 img = io.imread(img_path)
 
@@ -151,7 +152,7 @@ class HeatmapCreator(object):
 
                 #sanity check, check if size from coordinates file matches tile image size
                 if rows_tmp != rows:
-                    self.logger.info('Error: Tile row size differs from size caculated from coordinates. Skipping.')
+                    self.logger.info('Error: Tile row size differs from size calculated from coordinates. Skipping.')
                     self.nErrors += 1
                     continue
                 if cols_tmp != cols:

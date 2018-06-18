@@ -4,7 +4,7 @@ import ConfigParser
 from help_functions import load_hdf5
 from help_functions import visualize
 from help_functions import group_images
-from pre_processing import my_PreProc, preproc_color
+from pre_processing import my_PreProc, preproc_color, preproc_color2, preproc_scale
 import skimage.io as io
 
 
@@ -65,7 +65,7 @@ def get_data_testing(test_imgs_original, test_groudTruth, Imgs_to_test, mean_ima
     if not is_color:
         test_imgs = my_PreProc(test_imgs_original)
     else:
-        test_imgs = preproc_color(test_imgs_original,mean_image_path)
+        test_imgs = preproc_scale(test_imgs_original,mean_image_path)
     test_masks = test_masks/255.
 
     #extend both images and masks so they can be divided exactly by the patches dimensions
@@ -101,7 +101,7 @@ def get_data_testing(test_imgs_original, test_groudTruth, Imgs_to_test, mean_ima
 def get_data_segmenting_overlap(test_img_original, Imgs_to_test, mean_image_path, patch_height, patch_width, stride_height, stride_width, is_color=True):
     ### test
     #test_img_original = load_hdf5(test_img_original) #should be only one big image
-    test_img_original = io.imread(test_img_original)
+    #test_img_original = io.imread(test_img_original)
     test_img_original = np.transpose(test_img_original,axes=(2,0,1))
     test_img_original = test_img_original.reshape([1,test_img_original.shape[0],test_img_original.shape[1],test_img_original.shape[2]])
     #test_masks = load_hdf5(test_groudTruth)
@@ -111,8 +111,7 @@ def get_data_segmenting_overlap(test_img_original, Imgs_to_test, mean_image_path
     if not is_color:
         test_img = my_PreProc(test_img_original)
     else:
-        test_img = preproc_color(test_img_original, mean_image_path)
-
+        test_img = preproc_color(test_img_original,mean_image_path)
     test_mask = test_mask/255.
     #extend both images and masks so they can be divided exactly by the patches dimensions
     #test_img = test_img[0:Imgs_to_test,:,:,:]
@@ -150,7 +149,7 @@ def get_data_testing_overlap(test_imgs_original, test_groudTruth, Imgs_to_test, 
     if not is_color:
         test_imgs = my_PreProc(test_imgs_original)
     else:
-        test_imgs = preproc_color(test_imgs_original,mean_image_path)
+        test_imgs = preproc_scale(test_imgs_original,mean_image_path)
 
     test_masks = test_masks/255.
     #extend both images and masks so they can be divided exactly by the patches dimensions

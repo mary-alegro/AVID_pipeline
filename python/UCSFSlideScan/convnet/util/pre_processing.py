@@ -26,16 +26,92 @@ def my_PreProc(data):
     return train_imgs
 
 
+
 def preproc_color(data,path_mu):
     mu = load_mean_values(path_mu)
     data = substract_mean(data,mu)
+    data /= 255.
     #data = data/255.
     return data
+
+
+def preproc_scale(data):
+
+    maxR = np.max(data[:,0,...])
+    maxG = np.max(data[:,1, ...])
+    maxB = np.max(data[:,2, ...])
+
+    minR = np.min(data[:,0,...])
+    minG = np.min(data[:,1, ...])
+    minB = np.min(data[:,2, ...])
+
+    for im in range(data.shape[0]):
+        R = data[im, 0, ...]
+        G = data[im, 1, ...]
+        B = data[im, 2, ...]
+
+        R = (R - minR) / (maxR - minR)
+        G = (G - minG) / (maxG - minG)
+        B = (B - minB) / (maxB - minB)
+
+        data[im, 0, ...] = R
+        data[im, 1, ...] = G
+        data[im, 2, ...] = B
+
+    return data
+
+
+
+def preproc_color2(data):
+
+    meanR = np.mean(data[:,0,...])
+    meanG = np.mean(data[:,1,...])
+    meanB = np.mean(data[:,2,...])
+
+    stdR = np.std(data[:,0,...])
+    stdG = np.std(data[:,1, ...])
+    stdB = np.std(data[:,2, ...])
+
+    for im in range(data.shape[0]):
+        R = data[im, 0, ...]
+        G = data[im, 1, ...]
+        B = data[im, 2, ...]
+
+        R = (R - meanR) / stdR
+        G = (G - meanG) / stdG
+        B = (B - meanB) / stdB
+
+        data[im, 0, ...] = R
+        data[im, 1, ...] = G
+        data[im, 2, ...] = B
+
+    minR = np.min(data[:, 0, ...])
+    minG = np.min(data[:, 1, ...])
+    minB = np.min(data[:, 2, ...])
+
+    maxR = np.max(data[:, 0, ...])
+    maxG = np.max(data[:, 1, ...])
+    maxB = np.max(data[:, 2, ...])
+
+    for im in range(data.shape[0]):
+        R = data[im, 0, ...]
+        G = data[im, 1, ...]
+        B = data[im, 2, ...]
+
+        R = (R - minR) / (maxR - minR)
+        G = (G - minG) / (maxG - minG)
+        B = (B - minB) / (maxB - minB)
+
+        data[im, 0, ...] = R
+        data[im, 1, ...] = G
+        data[im, 2, ...] = B
+
+    return data
+
 
 #============================================================
 #========= PRE PROCESSING FUNCTIONS ========================#
 #============================================================
-
 
 
 def load_mean_values(path): #mean R,G,B
@@ -47,10 +123,28 @@ def load_mean_values(path): #mean R,G,B
     mu = np.array([mr.mean(),mg.mean(),mb.mean()])
     return mu #mu = [uR, uG, uB]
 
-def substract_mean(imgs,mu):
-    mu = mu.reshape([1,3,1,1]) #reshape mu array to fit the dataset and allow substraction
-    imgs = imgs-mu
-    return imgs
+def substract_mean(data,mu):
+    # mu = mu.reshape([1,3,1,1]) #reshape mu array to fit the dataset and allow substraction
+    # imgs = imgs-mu
+
+    muR = mu[0]
+    muG = mu[1]
+    muB = mu[2]
+
+    for im in range(data.shape[0]):
+        R = data[im, 0, ...]
+        G = data[im, 1, ...]
+        B = data[im, 2, ...]
+
+        R = R - muR
+        G = G - muG
+        B = B - muB
+
+        data[im, 0, ...] = R
+        data[im, 1, ...] = G
+        data[im, 2, ...] = B
+
+    return data
 
 
 #==== histogram equalization

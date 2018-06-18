@@ -12,6 +12,8 @@ import numpy as np
 import sys
 import glob
 
+TISSUE_THRESH = 0.90
+
 def prepare_images(img,pshape):
     if img.shape[0] > pshape[0]:
         img = img[0:pshape[0],...]
@@ -21,12 +23,21 @@ def prepare_images(img,pshape):
     return img
 
 
-def compute_mean_image_RGB(root_dir,dest_file,binary_file,shape,file_ext='tif'):
+def get_num_pix_tissue(img):  # assumes RGB image
+        tmp_img = img[:, :, 0] + img[:, :, 1] + img[:, :, 2]
+        tmp_nnz_b = tmp_img.flatten().nonzero()
+        nnz_b = float(len(tmp_nnz_b[0]))  # number of non-zero pixel in img
+        return nnz_b
+
+
+def compute_mean_image_RGB(root_dir,dest_file,file_ext='tif'):
             
     ncount = 0
-    meanR = np.zeros(shape)
-    meanG = np.zeros(shape)
-    meanB = np.zeros(shape)
+    nskip = 0
+    meanR = []
+    meanG = []
+    meanB = []
+    shape = []
 
     nFiles = len(glob.glob(os.path.join(root_dir,'*.'+file_ext)))
     print('{} images to process.'.format(nFiles))
@@ -36,6 +47,28 @@ def compute_mean_image_RGB(root_dir,dest_file,binary_file,shape,file_ext='tif'):
             img_path = os.path.join(root,fname)
             try:
                 img = io.imread(img_path)
+
+                if len(meanR) == 0:
+                    shape = img.shape[0:2]
+                    meanR = np.zeros(shape)
+                    meanG = np.zeros(shape)
+                    meanB = np.zeros(shape)
+                    print('Size: {},{}'.format(shape[0],shape[1]))
+
+                npix_tissue = get_num_pix_tissue(img)
+                percent_tissue = npix_tissue / (img.shape[0]*img.shape[1])
+                if percent_tissue < TISSUE_THRESH:
+                    print('Image has too little tissue. Skipping.')
+                    nskip += 1
+                    continue
+
+                if img.shape[0] > shape[0] or img.shape[1] > shape[1]:
+                    img = img[0:shape[0],0:shape[1],:]
+                elif img.shape[0] < shape[0] or img.shape[1] < shape[1]:
+                    print('Image is too small. Skipping.')
+                    nskip += 1
+                    continue
+
                 img = img.astype(float)
                 img = prepare_images(img,shape)
             except:
@@ -67,6 +100,8 @@ def compute_mean_image_RGB(root_dir,dest_file,binary_file,shape,file_ext='tif'):
     mean_img = np.concatenate((mR,mG,mB),axis=2) #RGB
     #save mean image as numpy array
     np.save(dest_file,mean_img)
+    print('{} images(s) processed.'.format((nFiles - nskip)))
+    print('{} image(s) skipped.'.format(nskip))
 
 
 
@@ -75,23 +110,24 @@ def compute_mean_image_RGB(root_dir,dest_file,binary_file,shape,file_ext='tif'):
 
 def main():
 
-    if len(sys.argv) != 5:
-        print('Usage: compute_mean_image <absolute_path_to_patches> <row size> <col size> <file_ext>')
+    if len(sys.argv) != 3:
+        #print('Usage: compute_mean_image_AVID <absolute_path_to_patches> <row size> <col size> <file_ext>')
+        print('Usage: compute_mean_image_AVID <absolute_path_to_patches> <file_ext>')
         exit()
 
     root_dir = str(sys.argv[1]) #abs path to where the images are
-    rshape = int(sys.argv[2]) #row size
-    cshape = int(sys.argv[3]) #col size
-    file_ext = str(sys.argv[4])
-    pshape = [rshape,cshape]
+    #rshape = int(sys.argv[2]) #row size
+    #cshape = int(sys.argv[3]) #col size
+    file_ext = str(sys.argv[2])
+    #pshape = [rshape,cshape]
 
     dest_file = os.path.join(root_dir,'mean_image.npy')
-    binary_file = os.path.join(root_dir,'mean_image.binaryproto')
+    #binary_file = os.path.join(root_dir,'mean_image.binaryproto')
     #pshape = [256,256]
 
     
     print('Computing mean image from patches in: {}'.format(root_dir))
-    compute_mean_image_RGB(root_dir, dest_file, binary_file, pshape, file_ext)
+    compute_mean_image_RGB(root_dir, dest_file, file_ext)
     print('Mean npy image saved in: {}'.format(dest_file))
     # print('Mean proto image saved in: {}'.format(binary_file))
     #

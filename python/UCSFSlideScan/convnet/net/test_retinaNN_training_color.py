@@ -20,11 +20,11 @@ from keras.utils.vis_utils import plot_model
 from keras.optimizers import SGD
 
 import sys
-sys.path.insert(0, './util/')
-from help_functions import *
+#sys.path.insert(0, './util/')
+from convnet.util.help_functions import *
 
 #function to obtain data for training/testing (validation)
-from extract_patches import get_data_training
+from convnet.util.extract_patches import get_data_training
 
 
 
@@ -65,8 +65,9 @@ def get_unet(n_ch,patch_height,patch_width):
 
     model = Model(input=inputs, output=conv7)
 
-    # sgd = SGD(lr=0.01, decay=1e-6, momentum=0.3, nesterov=False)
-    model.compile(optimizer=SGD(lr=0.001), loss='categorical_crossentropy',metrics=['accuracy'])
+    sgd = SGD(lr=0.01, decay=1e-5, momentum=0.3, nesterov=False)
+    #model.compile(optimizer=SGD(lr=0.001), loss='categorical_crossentropy',metrics=['accuracy'])
+    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
     return model
 
@@ -103,8 +104,8 @@ def run_training(conf_path):
 
     #========= Save a sample of what you're feeding to the neural network ==========
     N_sample = min(patches_imgs_train.shape[0],40)
-    visualize(group_images(patches_imgs_train[0:N_sample,:,:,:],5),"AVID_sample_input_imgs")#.show()
-    visualize(group_images(patches_masks_train[0:N_sample,:,:,:],5),"AVID_sample_input_masks")#.show()
+    #visualize(group_images(patches_imgs_train[0:N_sample,:,:,:],5),"AVID_sample_input_imgs")#.show()
+    #visualize(group_images(patches_masks_train[0:N_sample,:,:,:],5),"AVID_sample_input_masks")#.show()
 
 
     #=========== Construct and save the model arcitecture =====
@@ -114,7 +115,7 @@ def run_training(conf_path):
     model = get_unet(n_ch, patch_height, patch_width)  #the U-net model
     print "Check: final output of the network:"
     print model.output_shape
-    plot_model(model, to_file= path_project + '_model.png')   #check how the model looks like
+    #plot_model(model, to_file= path_project + '_model.png')   #check how the model looks like
     json_string = model.to_json()
     open(path_project + name_experiment + '_architecture.json', 'w').write(json_string)
 

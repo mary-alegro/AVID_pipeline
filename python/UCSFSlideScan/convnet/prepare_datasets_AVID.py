@@ -21,7 +21,12 @@ def get_datasets(Nimgs,height,width,channels,imgs_dir,groundTruth_dir,train_test
             #original
             print "original image: " +files[i]
             #img = Image.open(imgs_dir+files[i])
-            img = io.imread(imgs_dir+files[i])
+            img_name = os.path.join(imgs_dir,files[i])
+            ext = img_name[-3:]
+            if ext != 'tif':
+                continue
+
+            img = io.imread(img_name)
             #corresponding ground truth
             groundTruth_name = files[i][0:-4] + "_mask.tif"
             print "ground truth name: " + groundTruth_name
