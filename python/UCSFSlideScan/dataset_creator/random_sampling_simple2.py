@@ -159,20 +159,20 @@ def collect_samples(root_dir, x_len, y_len, patch_count):
         #parse through all tiles to extract patches
         count = 0
         #patch_count = 0
-        for fn in masked_file_list:
+        for mask_file_name in masked_file_list:
 
             count+=1
             #os.chdir(masked_file_list[fn])
 
             #get tile number from file name
-            filename = os.path.basename(fn) #tile names are always 'tile_????.tif'
+            filename = os.path.basename(mask_file_name) #tile names are always 'tile_????.tif'
             idx1 = filename.find('_')
             idx2 = filename.find('.')
             snum =  filename[idx1+1:idx2]
             snum = int(snum)
 
             #load tile
-            tile_arr = cv2.imread(fn)
+            tile_arr = cv2.imread(mask_file_name)
             if tile_arr.ndim > 1:
                 tile_arr = tile_arr[...,0]
             #set minumum amount of pixels necessary in each tile
@@ -304,6 +304,6 @@ def main():
         patch_count = 0
         collect_samples(root_dir, x_len, y_len,patch_count)
     else:
-        print("Usage: enter a directory, x length of each sample, y length of each sample")
+        print("Usage: random_sampling_simple2.py <root_dir> <x_size> <y_size>")
 if __name__ == "__main__":
     main()

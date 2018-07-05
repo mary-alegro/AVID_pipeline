@@ -172,6 +172,6 @@ def main():
         print("collected arguments")
         collect_samples(root_dir, x_len, y_len)
     else:
-        print("Usage: enter a directory, x length of each sample, y length of each sample")
+        print("Usage: random_sampling_simple.py <root_dir> <x_size> <y_size>")
 if __name__ == "__main__":
     main()
