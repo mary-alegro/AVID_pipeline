@@ -21,7 +21,7 @@ def edit_txt(file_name,new_path):
     idx = []
     for r in re.finditer('\.',basename):
         idx.append(r.start())
-    file_num = basename[idx[0]+1:idx[1]]
+    file_num = int(basename[idx[0]+1:idx[1]])
 
     shutil.copyfile(file_name,bkp_file_name)
     with open(file_name,'r') as txt:
@@ -29,7 +29,7 @@ def edit_txt(file_name,new_path):
             for line in txt:
                 if line.find(TAG_STR) > -1:
                     if line.find(NO_TFORM_STR) <= -1:
-                        line = NEW_TAG_STR.format(new_path,file_num)+'\n'
+                        line = NEW_TAG_STR.format(new_path,file_num-1)+'\n'
                 tmp.write(line)
                 tmp.flush()
 
