@@ -12,6 +12,37 @@ import skimage.io as io
 # random.seed(10)
 
 #Load the original data and return the extracted patches for training/testing
+def get_data_training_4classes(DRIVE_train_imgs_original,
+                      DRIVE_train_groudTruth,
+                      mean_image_path,
+                      patch_height,
+                      patch_width,
+                      N_subimgs,
+                      inside_FOV,
+                      is_color=True):
+
+    train_imgs_original = load_hdf5(DRIVE_train_imgs_original)
+    train_masks = load_hdf5(DRIVE_train_groudTruth) #masks always the same
+
+    train_imgs = preproc_color(train_imgs_original,mean_image_path)
+    train_masks = train_masks/255.
+
+    print "\ntrain images/masks shape:"
+    print train_imgs.shape
+    print "train images range (min-max): " +str(np.min(train_imgs)) +' - '+str(np.max(train_imgs))
+    print "train masks are within 0-1\n"
+
+    #extract the TRAINING patches from the full images
+    patches_imgs_train, patches_masks_train = extract_random_4classes(train_imgs,train_masks,patch_height,patch_width,N_subimgs,inside_FOV)
+
+    print "\ntrain PATCHES images/masks shape:"
+    print patches_imgs_train.shape
+    print "train PATCHES images range (min-max): " +str(np.min(patches_imgs_train)) +' - '+str(np.max(patches_imgs_train))
+
+    return patches_imgs_train, patches_masks_train
+
+
+#Load the original data and return the extracted patches for training/testing
 def get_data_training(DRIVE_train_imgs_original,
                       DRIVE_train_groudTruth,
                       mean_image_path,
@@ -34,7 +65,7 @@ def get_data_training(DRIVE_train_imgs_original,
 
     #train_imgs = train_imgs[:,:,9:574,:]  #cut bottom and top so now it is 565*565
     #train_masks = train_masks[:,:,9:574,:]  #cut bottom and top so now it is 565*565
-    data_consistency_check(train_imgs,train_masks)
+    #data_consistency_check(train_imgs,train_masks)
 
     #check masks are within 0-1
     assert(np.min(train_masks)==0 and np.max(train_masks)==1)
@@ -46,7 +77,7 @@ def get_data_training(DRIVE_train_imgs_original,
 
     #extract the TRAINING patches from the full images
     patches_imgs_train, patches_masks_train = extract_random(train_imgs,train_masks,patch_height,patch_width,N_subimgs,inside_FOV)
-    data_consistency_check(patches_imgs_train, patches_masks_train)
+    #data_consistency_check(patches_imgs_train, patches_masks_train)
 
     print "\ntrain PATCHES images/masks shape:"
     print patches_imgs_train.shape
@@ -193,10 +224,11 @@ def extract_random(full_imgs,full_masks, patch_h,patch_w, N_patches, inside=True
     #if (N_patches%full_imgs.shape[0] != 0):
     #    print "N_patches: plase enter a multiple of 20"
     #    exit()
-    assert (len(full_imgs.shape)==4 and len(full_masks.shape)==4)  #4D arrays
-    assert (full_imgs.shape[1]==1 or full_imgs.shape[1]==3)  #check the channel is 1 or 3
-    assert (full_masks.shape[1]==1)   #masks only black and white
-    assert (full_imgs.shape[2] == full_masks.shape[2] and full_imgs.shape[3] == full_masks.shape[3])
+    # assert (len(full_imgs.shape)==4 and len(full_masks.shape)==4)  #4D arrays
+    # assert (full_imgs.shape[1]==1 or full_imgs.shape[1]==3)  #check the channel is 1 or 3
+    # assert (full_masks.shape[1]==1)   #masks only black and white
+    # assert (full_imgs.shape[2] == full_masks.shape[2] and full_imgs.shape[3] == full_masks.shape[3])
+
     patches = np.empty((N_patches,full_imgs.shape[1],patch_h,patch_w))
     patches_masks = np.empty((N_patches,full_masks.shape[1],patch_h,patch_w))
     img_h = full_imgs.shape[2]  #height of the full image
@@ -223,6 +255,40 @@ def extract_random(full_imgs,full_masks, patch_h,patch_w, N_patches, inside=True
             iter_tot +=1   #total
             k+=1  #per full_img
     return patches, patches_masks
+
+#extract patches randomly in the full training images
+#  -- Inside OR in full image
+def extract_random_4classes(full_imgs,full_masks, patch_h,patch_w, N_patches, inside=True):
+
+    patches = np.empty((N_patches,full_imgs.shape[1],patch_h,patch_w))
+    patches_masks = np.empty((N_patches,patch_h*patch_w,full_masks.shape[3]))
+    img_h = full_imgs.shape[2]  #height of the full image
+    img_w = full_imgs.shape[3] #width of the full image
+    # (0,0) in the center of the image
+    patch_per_img = int(N_patches/full_imgs.shape[0])  #N_patches equally divided in the full images
+    print "patches per full image: " +str(patch_per_img)
+    iter_tot = 0   #iter over the total numbe rof patches (N_patches)
+    for i in range(full_imgs.shape[0]):  #loop over the full images
+        k=0
+        while k <patch_per_img:
+            x_center = random.randint(0+int(patch_w/2),img_w-int(patch_w/2))
+            # print "x_center " +str(x_center)
+            y_center = random.randint(0+int(patch_h/2),img_h-int(patch_h/2))
+            # print "y_center " +str(y_center)
+            #check whether the patch is fully contained in the FOV
+            if inside==True:
+                if is_patch_inside_FOV(x_center,y_center,img_w,img_h,patch_h)==False:
+                    continue
+            patch = full_imgs[i,:,y_center-int(patch_h/2):y_center+int(patch_h/2),x_center-int(patch_w/2):x_center+int(patch_w/2)]
+            patch_mask = full_masks[i,y_center-int(patch_h/2):y_center+int(patch_h/2),x_center-int(patch_w/2):x_center+int(patch_w/2),:]
+            patch_mask2 = patch_mask.reshape((patch_mask.shape[0]*patch_mask.shape[1],full_masks.shape[3]))
+
+            patches[iter_tot]=patch
+            patches_masks[iter_tot]=patch_mask2
+            iter_tot +=1   #total
+            k+=1  #per full_img
+    return patches, patches_masks
+
 
 
 #check if the patch is fully contained in the FOV

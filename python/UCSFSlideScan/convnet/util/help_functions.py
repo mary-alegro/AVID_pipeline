@@ -72,6 +72,22 @@ def masks_Unet(masks):
                 new_masks[i,j,1]=1
     return new_masks
 
+def masks_Unet_4classes(masks_orig):
+    # masks_orig = [sBatch,4,rows,cols]
+    # masks_cnn = [sBatch,rows*cols,4]
+    sBatch = masks_orig.shape[0]
+    m_rows = masks_orig.shape[2]
+    m_cols = masks_orig.shape[3]
+    masks_cnn = np.empty((sBatch,m_rows*m_cols,4))
+    for i in range(sBatch):
+        for c in range(4): # 4 classes
+            tmp1 = masks_orig[i,c,...]
+            tmp1 = np.reshape(tmp1,(m_rows*m_cols))
+            masks_cnn[i,:,c] = tmp1
+
+    return masks_cnn
+
+
 
 def pred_to_imgs(pred, patch_height, patch_width, mode="original"):
     assert (len(pred.shape)==3)  #3D array: (Npatches,height*width,2)
