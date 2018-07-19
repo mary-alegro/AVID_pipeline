@@ -17,7 +17,7 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler, TensorBoard
 from keras import backend as K
 from keras.utils.vis_utils import plot_model
-from keras.optimizers import SGD
+from keras.optimizers import SGD, Adam
 
 import sys
 from convnet.util.help_functions import *
@@ -25,6 +25,9 @@ from convnet.util.help_functions import *
 #function to obtain data for training/testing (validation)
 from convnet.util.extract_patches import get_data_training_4classes
 
+import tensorflow as tf
+sess = tf.Session()
+K.set_session(sess)
 
 
 #Define the neural network
@@ -66,6 +69,7 @@ def get_taunet(n_ch, patch_height, patch_width):
 
     #sgd = SGD(lr=0.01, decay=1e-5, momentum=0.3, nesterov=False)
     sgd = SGD(lr=0.01,decay=1e-5)
+    #adam = Adam(lr=0.01)
     #model.compile(optimizer=SGD(lr=0.001), loss='categorical_crossentropy',metrics=['accuracy'])
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
