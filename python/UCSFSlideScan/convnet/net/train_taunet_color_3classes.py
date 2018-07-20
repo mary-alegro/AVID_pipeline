@@ -10,6 +10,7 @@
 
 import numpy as np
 import ConfigParser
+import os
 
 from keras.models import Model
 from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, UpSampling2D, Reshape, core, Dropout
@@ -26,7 +27,9 @@ from convnet.util.help_functions import *
 from convnet.util.extract_patches import get_data_training_4classes
 
 import tensorflow as tf
-sess = tf.Session()
+#sess = tf.Session()
+sess = tf.Session(config=tf.ConfigProto(inter_op_parallelism_threads=int(os.environ['NUM_INTER_THREADS']),
+                                        intra_op_parallelism_threads=int(os.environ['NUM_INTRA_THREADS'])))
 K.set_session(sess)
 
 
