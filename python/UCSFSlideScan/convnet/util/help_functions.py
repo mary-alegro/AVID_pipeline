@@ -90,8 +90,8 @@ def masks_Unet_4classes(masks_orig):
 
 
 def pred_to_imgs(pred, patch_height, patch_width, mode="original"):
-    assert (len(pred.shape)==3)  #3D array: (Npatches,height*width,2)
-    assert (pred.shape[2]==2 )  #check the classes are 2
+    #assert (len(pred.shape)==3)  #3D array: (Npatches,height*width,2)
+    #assert (pred.shape[2]==2 )  #check the classes are 2
     pred_images = np.empty((pred.shape[0],pred.shape[1]))  #(Npatches,height*width)
     if mode=="original":
         # for i in range(pred.shape[0]):
@@ -110,3 +110,28 @@ def pred_to_imgs(pred, patch_height, patch_width, mode="original"):
         exit()
     pred_images = np.reshape(pred_images,(pred_images.shape[0],1, patch_height, patch_width))
     return pred_images
+
+def pred_to_imgs_3classes(pred, patch_height, patch_width, mode="original"):
+    pred_images_c1 = np.empty((pred.shape[0],pred.shape[1]))  #(Npatches,height*width)
+    pred_images_c2 = np.empty((pred.shape[0], pred.shape[1]))  # (Npatches,height*width)
+    pred_images_c3 = np.empty((pred.shape[0], pred.shape[1]))  # (Npatches,height*width)
+    if mode=="original":
+        pred_images_c1 = pred[:,:,0]
+        pred_images_c2 = pred[:, :, 1]
+        pred_images_c3 = pred[:, :, 2]
+    elif mode=="threshold":
+        # for i in range(pred.shape[0]):
+        #     for pix in range(pred.shape[1]):
+        #         if pred[i,pix,1]>=0.5:
+        #             pred_images[i,pix]=1
+        #         else:
+        #             pred_images[i,pix]=0
+        pass
+    else:
+        print "mode " +str(mode) +" not recognized, it can be 'original' or 'threshold'"
+        exit()
+    pred_images_c1 = np.reshape(pred_images_c1,(pred_images_c1.shape[0],1, patch_height, patch_width))
+    pred_images_c2 = np.reshape(pred_images_c2, (pred_images_c2.shape[0], 1, patch_height, patch_width))
+    pred_images_c3 = np.reshape(pred_images_c3, (pred_images_c3.shape[0], 1, patch_height, patch_width))
+    return pred_images_c1,pred_images_c2,pred_images_c3
+

@@ -26,12 +26,6 @@ from convnet.util.help_functions import *
 #function to obtain data for training/testing (validation)
 from convnet.util.extract_patches import get_data_training_4classes
 
-import tensorflow as tf
-#sess = tf.Session()
-sess = tf.Session(config=tf.ConfigProto(inter_op_parallelism_threads=int(os.environ['NUM_INTER_THREADS']),
-                                        intra_op_parallelism_threads=int(os.environ['NUM_INTRA_THREADS'])))
-K.set_session(sess)
-
 
 #Define the neural network
 def get_taunet(n_ch, patch_height, patch_width):
