@@ -14,6 +14,9 @@ import skimage.io as io
 import tifffile
 import glob
 
+#Created by Riyana
+#Edited by Maryana
+
 THRESH=0.20
 
 
@@ -117,9 +120,12 @@ def get_gray_matter(img_arr):
 #     return (overlap_area/(x_len * y_len) > .1)
 
 
-def collect_samples(root_dir, x_len, y_len, patch_count):
+def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
 
-    home_dir = os.getcwd()
+    #home_dir = os.getcwd()
+    home_dir = hdir
+
+    print('Home dir: {}'.format(home_dir))
 
     x = int(x_len)
     y = int(y_len)
@@ -289,10 +295,11 @@ def extract_color_patch(patch_x, x, patch_y, y, fn, colored_file_list):
 
 def main():
     #check for user input
-    if (len(sys.argv) == 4):
+    if (len(sys.argv) == 5):
         root_dir = sys.argv[1]
         x_len = sys.argv[2]
         y_len = sys.argv[3]
+        hdir = str(sys.argv[4])
         print("collected arguments")
 
         # folders = get_dirs_to_process(root_dir)
@@ -302,8 +309,8 @@ def main():
         # for rt in folders:
         #    patch_count = collect_samples(rt, x_len, y_len,patch_count)
         patch_count = 0
-        collect_samples(root_dir, x_len, y_len,patch_count)
+        collect_samples(root_dir, x_len, y_len,patch_count,hdir)
     else:
-        print("Usage: random_sampling_simple2.py <root_dir> <x_size> <y_size>")
+        print("Usage: random_sampling_simple2.py <root_dir> <x_size> <y_size> <full_path_patches_dir>")
 if __name__ == "__main__":
     main()

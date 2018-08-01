@@ -42,10 +42,16 @@ def create_masks(b_masks_dir,wm_masks_dir,outdir):
         name_prefix = base_name[0:idx]
         wmmask_file = os.path.join(wm_masks_dir,name_prefix+'_wm_mask.tif')
 
+        print("Joining {}, {}".format(bmask_file,wmmask_file))
+
         bmask = io.imread(bmask_file)
         if bmask.ndim > 2:
-            bmask = color.rgb2gray(bmask)
-            bmask[bmask > 0] = 255
+            if bmask.shape[2] >= 3:
+                bmask = color.rgb2gray(bmask)
+                bmask[bmask > 0] = 255
+            else:
+                bmask = bmask[...,0]
+                bmask[bmask > 0] = 255
         wmmask = io.imread(wmmask_file)
         if wmmask.ndim > 2:
             if wmmask.shape[2] >= 3:
