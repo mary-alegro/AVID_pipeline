@@ -43,6 +43,10 @@ def get_files_info(root_dir):
         seg_tiles_dir = os.path.join(d,'heat_map/seg_tiles')
         patch_mask_dir = os.path.join(d,'mask/patches_mask')
 
+        print(mask_tiles_dir)
+        print(seg_tiles_dir)
+        print(patch_mask_dir)
+
         #find RES* folder
         output_dir = os.path.join(d,'output')
         res_dir = ''
