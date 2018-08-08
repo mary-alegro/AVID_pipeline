@@ -32,6 +32,9 @@ def get_files_info(root_dir):
     dirs = glob.glob(os.path.join(root_dir,'*'))
     file_dic = {}
     for d in dirs:
+
+        print(d)
+
         mask_tiles_dir = os.path.join(d,'mask/final_mask/tiles')
         seg_tiles_dir = os.path.join(d,'heat_map/seg_tiles')
         patch_mask_dir = os.path.join(d,'mask/patches_mask')
