@@ -13,6 +13,7 @@ from misc.TiffTileLoader import TiffTileLoader
 import skimage.io as io
 import tifffile
 import glob
+import uuid
 
 #Created by Riyana
 #Edited by Maryana
@@ -268,7 +269,12 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
                 patch = extract_color_patch(patch_x, x, patch_y, y, (count-1), colored_file_list)
                 os.chdir(home_dir)
                 os.chdir('patches')
-                scipy.misc.imsave('patch' + '_' + str(patch_count)+'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
+
+                #create UUID for file name
+                uu_id = str(uuid.uuid1())
+
+                scipy.misc.imsave('patch' + '_' + uu_id +'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
+                #scipy.misc.imsave('patch' + '_' + str(patch_count)+'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
                 patch_count += 1
 
             os.chdir(home_dir)
