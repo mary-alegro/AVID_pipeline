@@ -30,6 +30,10 @@ def get_dirs_to_process(root_dir):
 
 def get_files_info(root_dir):
     dirs = glob.glob(os.path.join(root_dir,'*'))
+
+    print('Globed dirs: ')
+    print(dirs)
+
     file_dic = {}
     for d in dirs:
 
