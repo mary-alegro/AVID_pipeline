@@ -64,8 +64,15 @@ def get_files_info(root_dir):
 
     return file_dic
 
+def print_dirs_info(dir_dic):
 
-
+    for d in dir_dic.keys():
+        dc = dir_dic[d]
+        print(d)
+        print(dc['mask_tiles'])
+        print(dc['seg_tiles'])
+        print(dc['patch_mask'])
+        print(dc['xml_file'])
 
 
 # def save_color_images(root_dir):
@@ -134,6 +141,9 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
     y = int(y_len)
 
     dirs_list = get_files_info(root_dir)
+    print_dirs_info(dirs_list)
+
+    print('Beginning to extract patches.')
 
     for sliceid in dirs_list.keys():
         print('Extracting patches from {}'.format(sliceid))
