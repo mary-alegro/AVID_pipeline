@@ -72,13 +72,13 @@ def create_dataset(original_imgs_dir, mask_img_dir, dataset_img_dir, dataset_mas
         # img_patches = fx.image.extract_patches_2d(img, (y_dim, x_dim))
         # mask_patches = fx.image.extract_patches_2d(mask, (y_dim, x_dim))
 
-        Rx = sp.get_strided_view(R,F,S)
-        Gx = sp.get_strided_view(G,F,S)
-        Bx = sp.get_strided_view(B,F,S)
+        Rx = sp.get_strided_view_square(R, F, S)
+        Gx = sp.get_strided_view_square(G, F, S)
+        Bx = sp.get_strided_view_square(B, F, S)
 
-        MCx = sp.get_strided_view(mask_cell,F,S)
-        MTx = sp.get_strided_view(mask_thread,F,S)
-        MBx = sp.get_strided_view(mask_bkg,F,S)
+        MCx = sp.get_strided_view_square(mask_cell, F, S)
+        MTx = sp.get_strided_view_square(mask_thread, F, S)
+        MBx = sp.get_strided_view_square(mask_bkg, F, S)
 
 
         nPatches = Rx.shape[0]

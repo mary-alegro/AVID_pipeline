@@ -43,6 +43,46 @@ def get_data_training_4classes(DRIVE_train_imgs_original,
 
 
 #Load the original data and return the extracted patches for training/testing
+def get_data_training_rec1(DRIVE_train_imgs_original,
+                      DRIVE_train_groudTruth,
+                      patch_height,
+                      patch_width,
+                      N_subimgs,
+                      inside_FOV):
+
+
+    train_imgs = load_hdf5(DRIVE_train_imgs_original)
+    train_masks = load_hdf5(DRIVE_train_groudTruth) #masks always the same
+
+
+    # if not is_color:
+    #     train_imgs = my_PreProc(train_imgs_original)
+    # else:
+    #     train_imgs = preproc_color(train_imgs_original,mean_image_path)
+    # train_masks = train_masks/255.
+
+    max_img = train_imgs.max()
+    max_gd = train_masks.max()
+
+    #normalize values
+    train_imgs  /= max_img
+    train_imgs = np.transpose(train_imgs,axes=(2,0,1))
+    train_imgs = train_imgs.reshape((1,train_imgs.shape[0],train_imgs.shape[1],train_imgs.shape[2]))
+    train_masks = train_masks/max_gd
+    train_masks = np.transpose(train_masks,axes=(2,0,1))
+    train_masks = train_masks.reshape((1,1,train_masks.shape[1],train_masks.shape[2]))
+
+
+    patches_imgs_train, patches_masks_train = extract_random(train_imgs,train_masks,patch_height,patch_width,N_subimgs,inside_FOV)
+
+    print "\ntrain PATCHES images/masks shape:"
+    print patches_imgs_train.shape
+    print "train PATCHES images range (min-max): " +str(np.min(patches_imgs_train)) +' - '+str(np.max(patches_imgs_train))
+
+    return patches_imgs_train, patches_masks_train#, patches_imgs_test, patches_masks_test
+
+
+#Load the original data and return the extracted patches for training/testing
 def get_data_training(DRIVE_train_imgs_original,
                       DRIVE_train_groudTruth,
                       mean_image_path,
@@ -126,6 +166,21 @@ def get_data_testing(test_imgs_original, test_groudTruth, Imgs_to_test, mean_ima
 
     return patches_imgs_test, patches_masks_test
 
+def get_data_recon_overlap_1ch(test_img_original, patch_height, patch_width, stride_height, stride_width):
+
+    test_img_original = load_hdf5(test_img_original) #should be only one big image
+    test_img_original = np.transpose(test_img_original,axes=(2,0,1))
+    test_img_original = test_img_original.reshape([1,test_img_original.shape[0],test_img_original.shape[1],test_img_original.shape[2]])
+
+    #normalize image
+    test_img_original /= test_img_original.max()
+
+    test_img = paint_border_overlap(test_img_original, patch_height, patch_width, stride_height, stride_width)
+
+    #extract the TEST patches from the full images
+    patches_imgs_test = extract_ordered_overlap(test_img,patch_height,patch_width,stride_height,stride_width)
+
+    return patches_imgs_test, test_img.shape[2], test_img.shape[3]
 
 # Load the original data and return the extracted patches for testing
 # return the ground truth in its original shape
@@ -332,7 +387,7 @@ def extract_ordered(full_imgs, patch_h, patch_w):
 
 def paint_border_overlap(full_imgs, patch_h, patch_w, stride_h, stride_w):
     assert (len(full_imgs.shape)==4)  #4D arrays
-    assert (full_imgs.shape[1]==1 or full_imgs.shape[1]==3)  #check the channel is 1 or 3
+    #assert (full_imgs.shape[1]==1 or full_imgs.shape[1]==3)  #check the channel is 1 or 3
     img_h = full_imgs.shape[2]  #height of the full image
     img_w = full_imgs.shape[3] #width of the full image
     leftover_h = (img_h-patch_h)%stride_h  #leftover on the h dim
@@ -359,7 +414,7 @@ def paint_border_overlap(full_imgs, patch_h, patch_w, stride_h, stride_w):
 #Divide all the full_imgs in pacthes
 def extract_ordered_overlap(full_imgs, patch_h, patch_w,stride_h,stride_w):
     assert (len(full_imgs.shape)==4)  #4D arrays
-    assert (full_imgs.shape[1]==1 or full_imgs.shape[1]==3)  #check the channel is 1 or 3
+    #assert (full_imgs.shape[1]==1 or full_imgs.shape[1]==3)  #check the channel is 1 or 3
     img_h = full_imgs.shape[2]  #height of the full image
     img_w = full_imgs.shape[3] #width of the full image
     assert ((img_h-patch_h)%stride_h==0 and (img_w-patch_w)%stride_w==0)
@@ -408,8 +463,8 @@ def recompone_overlap(preds, img_h, img_w, stride_h, stride_w):
     assert(np.min(full_sum)>=1.0)  #at least one
     final_avg = full_prob/full_sum
     print final_avg.shape
-    assert(np.max(final_avg)<=1.0) #max value for a pixel is 1.0
-    assert(np.min(final_avg)>=0.0) #min value for a pixel is 0.0
+    #assert(np.max(final_avg)<=1.0) #max value for a pixel is 1.0
+    #assert(np.min(final_avg)>=0.0) #min value for a pixel is 0.0
     return final_avg
 
 

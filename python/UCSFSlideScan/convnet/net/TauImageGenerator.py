@@ -75,12 +75,12 @@ class TauImageGenerator:
 
         if nFore < nBack:
             diff = nBack - nFore
-            idx = np.random.choice(nFore,diff,replace=False)
+            idx = np.random.choice(nFore,diff,replace=True)
             tmp_list = [self.fore_img_list[i] for i in idx]
             self.fore_img_list += tmp_list
         elif nFore > nBack:
             diff = nFore - nBack
-            idx = np.random.choice(nBack,diff,replace=False)
+            idx = np.random.choice(nBack,diff,replace=True)
             tmp_list = [self.back_img_list[i] for i in idx]
             self.back_img_list += tmp_list
 
