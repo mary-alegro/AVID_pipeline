@@ -67,6 +67,7 @@ def create_dataset(orig_imgs_dir, patches_dir, patch_size, stride):
     min_max_file = os.path.join(patches_dir,'min_max.npy')
     np.save(min_max_file,min_max)
 
+    print('Saving patches.')
     #save patches to files
     for p in range(nPatches):
         patch = tmp_arr[p,...]
@@ -74,6 +75,7 @@ def create_dataset(orig_imgs_dir, patches_dir, patch_size, stride):
         np.save(patch_name,patch)
 
     del tmp_arr
+    print('Finished.')
 
 
 
