@@ -66,7 +66,7 @@ def get_taunet_2classes(n_ch, patch_height, patch_width):
     model = Model(input=inputs, output=conv7)
 
     #sgd = SGD(lr=0.01, decay=1e-5, momentum=0.3, nesterov=False)
-    sgd = SGD(lr=0.001,decay=1e-5)
+    sgd = SGD(lr=0.01,decay=1e-5)
     #adam = Adam(lr=0.01)
     #model.compile(optimizer=SGD(lr=0.001), loss='categorical_crossentropy',metrics=['accuracy'])
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])

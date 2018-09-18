@@ -18,6 +18,7 @@ from keras.callbacks import ModelCheckpoint, LearningRateScheduler, TensorBoard
 from keras import backend as K
 from keras.utils.vis_utils import plot_model
 from keras.optimizers import SGD
+from ReconImageGenerator import ReconImageGenerator
 
 import sys
 #sys.path.insert(0, './util/')
@@ -81,46 +82,33 @@ def get_recnet(n_ch, patch_height, patch_width):
 
 def run_training(conf_path=''):
 
-    # #========= Load settings from Config file
-    # config = ConfigParser.RawConfigParser()
-    # #config.read('../configuration_avid_ucsf.txt')
-    # config.read(conf_path)
-    # #patch to the datasets
-    # path_data = config.get('data paths', 'path_local')
-    # #Experiment name
-    # name_experiment = config.get('experiment name', 'name')
-    # #training settings
-    # N_epochs = int(config.get('training settings', 'N_epochs'))
-    # batch_size = int(config.get('training settings', 'batch_size'))
-    # path_data = config.get('data paths', 'path_local')
-    # path_project = config.get('data paths', 'path_project')
 
-    train_imgs_original = '/home/maryana/Downloads/Spiralalgea/training/training_led.h5'
-    train_groudTruth = '/home/maryana/Downloads/Spiralalgea/10x_manual/ground_truth_1ch/gd_1ch.h5'
+    # train_imgs_original = '/home/maryana/Downloads/Spiralalgea/training/training_led.h5'
+    # train_groudTruth = '/home/maryana/Downloads/Spiralalgea/10x_manual/ground_truth_1ch/gd_1ch.h5'
+    #
+    #
+    # patches_imgs_train, patches_masks_train = get_data_training_rec1(
+    #      DRIVE_train_imgs_original = train_imgs_original,
+    #     DRIVE_train_groudTruth = train_groudTruth,  #masks
+    #     #mean_image_path= '',
+    #     patch_height = 48,
+    #     patch_width = 48,
+    #     N_subimgs = 2000,
+    #     inside_FOV = False)
+    # patches_masks_train = reshape_gd_1ch(patches_masks_train)  # reduce memory consumption
 
-
-    patches_imgs_train, patches_masks_train = get_data_training_rec1(
-         DRIVE_train_imgs_original = train_imgs_original,
-        DRIVE_train_groudTruth = train_groudTruth,  #masks
-        #mean_image_path= '',
-        patch_height = 48,
-        patch_width = 48,
-        N_subimgs = 2000,
-        inside_FOV = False)
-    patches_masks_train = reshape_gd_1ch(patches_masks_train)  # reduce memory consumption
-
-
-    n_ch = patches_imgs_train.shape[1]
-    patch_height = patches_imgs_train.shape[2]
-    patch_width = patches_imgs_train.shape[3]
+    img_dim = (48, 48, 275)
+    n_ch = img_dim[2]
+    patch_height = img_dim[0]
+    patch_width = img_dim[1]
     model = get_recnet(n_ch, patch_height, patch_width)  #the U-net model
     print "Check: final output of the network:"
     print model.output_shape
 
-    best_model_path = '/home/maryana/Downloads/Spiralalgea/best_weights.h5'
-    last_model_path = '/home/maryana/Downloads/Spiralalgea/last_weights.h5'
-    model_achitecture = '/home/maryana/Downloads/Spiralalgea/model_architecture.json'
-    train_log = '/home/maryana/Downloads/Spiralalgea/logs'
+    best_model_path = '/home/maryana/storage/Spiralalgea/best_weights.h5'
+    last_model_path = '/home/maryana/storage/Spiralalgea/last_weights.h5'
+    model_achitecture = '/home/maryana/storage/Spiralalgea/model_architecture.json'
+    train_log = '/home/maryana/storage/Spiralalgea/logs'
 
     #plot_model(model, to_file= path_project + '_model.png')   #check how the model looks like
     json_string = model.to_json()
@@ -131,7 +119,26 @@ def run_training(conf_path=''):
                                 write_images=False, embeddings_freq=0, embeddings_layer_names=None,
                                 embeddings_metadata=None)
 
-    model.fit(patches_imgs_train, patches_masks_train, nb_epoch=1000, batch_size=32, verbose=2, shuffle=True, validation_split=0.1, callbacks=[checkpointer,tensorboard])
+    train_img_dir = '/home/maryana/storage/Spiralalgea/training/training_patches'
+    gt_img_dir = '/home/maryana/storage/Spiralalgea/10x_manual/ground_truth_1ch/ground_truth_1ch_patches'
+    test_train_img_dir = '/home/maryana/storage/Spiralalgea/training/training_test_patches'
+    test_gt_img_dir = '/home/maryana/storage/Spiralalgea/10x_manual/ground_truth_1ch/gt_test_1ch_patches'
+    minmax_img = '/home/maryana/storage/Spiralalgea/training/min_max.npy'
+    minmax_gt = '/home/maryana/storage/Spiralalgea/10x_manual/ground_truth_1ch/min_max.npy'
+    nClasses = 1  # actually, num. ground truth channels(# LEDs)
+    batch_size = 32
+
+    train_gen = ReconImageGenerator('train_gen',train_img_dir, gt_img_dir, minmax_img, minmax_gt, img_dim, batch_size, nClasses)
+    test_gen = ReconImageGenerator('test_gen',test_train_img_dir, test_gt_img_dir, minmax_img, minmax_gt, img_dim, batch_size, nClasses)
+    model.fit_generator(generator=train_gen.get_batch(),
+                        validation_data=test_gen.get_batch(),
+                        steps_per_epoch=train_gen.__len__(),
+                        validation_steps=50,
+                        epochs=1000,
+                        verbose=1,
+                        callbacks=[checkpointer, tensorboard])
+
+    #model.fit(patches_imgs_train, patches_masks_train, nb_epoch=1000, batch_size=32, verbose=2, shuffle=True, validation_split=0.1, callbacks=[checkpointer,tensorboard])
 
     model.save_weights(last_model_path, overwrite=True)
 

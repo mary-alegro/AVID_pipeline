@@ -10,39 +10,36 @@ import numpy as np
 import keras
 
 #class TauImageGenerator(keras.utils.Sequence):
-class TauImageGenerator:
+class ReconImageGenerator:
     'Generates data for Keras'
-    def __init__(self,gen_name,images_dir,masks_dir,mean_img,img_dim,nClasses,batch_size,do_augmentation=False,augment_percent=0.40):
+    def __init__(self,gen_name,images_dir,gt_dir,minmax_img,minmax_gt,img_dim,batch_size,nClasses,do_augmentation=False,augment_percent=0.40,file_type='npy'):
 
         self.name = gen_name
         self.images_dir = images_dir
-        self.masks_dir = masks_dir
+        self.gt_dir = gt_dir
+        self.nClasses = nClasses
 
         #self.mean_image_path = mean_img
         self.patch_rows = img_dim[0]
         self.patch_cols = img_dim[1]
         self.nChannels = img_dim[2]
-        self.nClasses = nClasses
         self.batch_size = batch_size #total num files per batch, nBack+nFore
-        self.mu = pp.load_mean_values(mean_img)
 
         #get file names
-        #self.back_img_list = glob.glob(os.path.join(images_dir, '*_1_*.tif'))
-        #self.fore_img_list = glob.glob(os.path.join(images_dir, '*_0_*.tif'))
         self.img_list = glob.glob(os.path.join(images_dir, '*.npy'))
+        self.nTotal = len(self.img_list)
 
-        #shuffle arrays and balance data
+        #get min and max values
+        self.min_max1 = np.load(minmax_img)
+        self.min_max2 = np.load(minmax_gt)
+
+        #shuffle array
         self.shuffle_files()
-        #self.balance_data()
-
-        #get num of bkg and tau tiles
-        self.nBack = len(self.back_img_list)
-        self.nFore = len(self.fore_img_list)
 
         #augmentation stuff
-        self.do_aug = do_augmentation
-        self.augment_percent = augment_percent
-        self.kera_generator = KerasDataGenerator(rotation_range=40,width_shift_range=0,height_shift_range=0,horizontal_flip=True,vertical_flip=True,fill_mode='nearest')
+        #self.do_aug = do_augmentation
+        #self.augment_percent = augment_percent
+        #self.kera_generator = KerasDataGenerator(rotation_range=40,width_shift_range=0,height_shift_range=0,horizontal_flip=True,vertical_flip=True,fill_mode='nearest')
 
         # ensure batch_size is even
         if self.batch_size % 2 != 0:
@@ -50,18 +47,19 @@ class TauImageGenerator:
             self.batch_size += 1
 
         #compute num. files to augment
-        if self.do_aug:
-            nAug = np.floor((self.batch_size/2) * self.augment_percent)
-            self.nFilesAug = nAug*2 #total num of files to augment (nFore + nBack)
-        else:
-            self.nFilesAug = 0
+        # if self.do_aug:
+        #     nAug = np.floor((self.batch_size/2) * self.augment_percent)
+        #     self.nFilesAug = nAug*2 #total num of files to augment (nFore + nBack)
+        # else:
+        #     self.nFilesAug = 0
 
         #compute num. of epochs
-        if not self.do_aug:
-            self.nBatches = int(np.floor((self.nFore + self.nBack) / self.batch_size))
-        else:
-            new_batch_size = self.batch_size - self.nFilesAug
-            self.nBatches = int(np.floor((self.nFore + self.nBack) / new_batch_size))
+        # if not self.do_aug:
+        #     self.nBatches = int(np.floor((self.nFore + self.nBack) / self.batch_size))
+        # else:
+        #     new_batch_size = self.batch_size - self.nFilesAug
+        #     self.nBatches = int(np.floor((self.nFore + self.nBack) / new_batch_size))
+        self.nBatches = int(self.nTotal / self.batch_size)
 
         #current files array index
         self.current = 0
@@ -87,8 +85,9 @@ class TauImageGenerator:
 
 
     def shuffle_files(self):
-        random.shuffle(self.fore_img_list)
-        random.shuffle(self.back_img_list)
+        #random.shuffle(self.fore_img_list)
+        #random.shuffle(self.back_img_list)
+        random.shuffle(self.img_list)
 
     def __len__(self):
         return self.nBatches
@@ -116,24 +115,10 @@ class TauImageGenerator:
 
         #print('     {} Current: {}'.format(self.name,self.current))
 
-        if not self.do_aug: #don't do data augmentation
-            begin = int(index*(self.batch_size/2))
-            end = int(begin + (self.batch_size/2))
-            tmp_img_list = self.fore_img_list[begin:end]
-            tmp_img_list += self.back_img_list[begin:end]
-            random.shuffle(tmp_img_list)
-            # #not really used without augmentation
-            # self.current = end
-
-        else:
-            nOrig = (self.batch_size / 2) - (self.nFilesAug / 2)  # num original foreground OR background files. Total original is 2*nOrig
-            begin = int(index*nOrig)
-            end = int(begin + nOrig)
-            #get only original files
-            # method '__data_generation()' will created augmentes images/masks
-            tmp_img_list = self.fore_img_list[begin:end]
-            tmp_img_list += self.back_img_list[begin:end]
-            random.shuffle(tmp_img_list)
+        begin = int(index*self.batch_size)
+        end = int(begin + self.batch_size)
+        tmp_img_list = self.img_list[begin:end]
+        random.shuffle(tmp_img_list)
 
         x,y = self.__data_generation(tmp_img_list)
 
@@ -142,78 +127,78 @@ class TauImageGenerator:
         return x,y
 
 
-
-
     #load an entire batch and do augmentation if necessary
     def __data_generation(self,file_arr):
         img_vol = np.empty((self.batch_size, self.nChannels, self.patch_rows, self.patch_cols))
         mask_vol = np.empty((self.batch_size, self.patch_rows*self.patch_cols, self.nClasses))
 
         count = 0
-        count_aug = 0
+        #count_aug = 0
         for fi in file_arr:
             img_name = os.path.basename(fi)
             img_path = os.path.join(self.images_dir, img_name)
 
-            tmp_name = img_name[5:-3]
-            mask_name = 'patch_mask' + tmp_name +'npy'
-            mask_path = os.path.join(self.masks_dir, mask_name)
+            #tmp_name = img_name[5:-3]
+            #mask_name = 'patch_' + tmp_name +'npy'
+            mask_path = os.path.join(self.gt_dir, img_name)
 
-            # get image
-            img = io.imread(img_path)
+            # get sample
+            # img = io.imread(img_path)
+            # img = img.astype('float')
+            # img = self.preproc_color(img)
+            # img_bkp = img.copy()
+
+            img = np.load(img_path)
             img = img.astype('float')
-            img = self.preproc_color(img)
-            img_bkp = img.copy()
+            img /= self.min_max1[1]
             img = np.transpose(img, axes=(2, 0, 1))
             img_vol[count, ...] = img
 
-            # get mask
+            # get ground truth
             mask = np.load(mask_path)
-            mask = mask.astype('float')
-            mask /= 255.
-            mask_bkp = mask.copy()
+            mask /= self.min_max2[1]
             mask = mask.reshape((mask.shape[0] * mask.shape[1], mask.shape[2]))
             mask_vol[count, ...] = mask
 
-            #do augmentation if flag is set
-            #number of augmented images is always less than or equal to the number of original files
-            if self.do_aug:
-                if count_aug < self.nFilesAug:
-                    count += 1
-                    img_aug,mask_aug = self.kera_generator.random_transform2(img_bkp,mask_bkp)
-                    img_aug = np.transpose(img_aug, axes=(2, 0, 1))
-                    mask_aug = mask_aug.reshape((mask_aug.shape[0] * mask_aug.shape[1], mask_aug.shape[2]))
-
-                    img_vol[count, ...] = img_aug
-                    mask_vol[count, ...] = mask_aug
-
-                    count_aug += 1
+            # #do augmentation if flag is set
+            # #number of augmented images is always less than or equal to the number of original files
+            # if self.do_aug:
+            #     if count_aug < self.nFilesAug:
+            #         count += 1
+            #         img_aug,mask_aug = self.kera_generator.random_transform2(img_bkp,mask_bkp)
+            #         img_aug = np.transpose(img_aug, axes=(2, 0, 1))
+            #         mask_aug = mask_aug.reshape((mask_aug.shape[0] * mask_aug.shape[1], mask_aug.shape[2]))
+            #
+            #         img_vol[count, ...] = img_aug
+            #         mask_vol[count, ...] = mask_aug
+            #
+            #         count_aug += 1
 
             count += 1
 
         return img_vol,mask_vol #return X,Y
 
 
-    def preproc_color(self, data):
-
-        muR = self.mu[0]
-        muG = self.mu[1]
-        muB = self.mu[2]
-
-        R = data[...,0]
-        G = data[...,1]
-        B = data[...,2]
-        R = R - muR
-        G = G - muG
-        B = B - muB
-
-        data[...,0] = R
-        data[...,1] = G
-        data[...,2] = B
-
-        data /= 255.
-
-        return data
+    # def preproc_color(self, data):
+    #
+    #     muR = self.mu[0]
+    #     muG = self.mu[1]
+    #     muB = self.mu[2]
+    #
+    #     R = data[...,0]
+    #     G = data[...,1]
+    #     B = data[...,2]
+    #     R = R - muR
+    #     G = G - muG
+    #     B = B - muB
+    #
+    #     data[...,0] = R
+    #     data[...,1] = G
+    #     data[...,2] = B
+    #
+    #     data /= 255.
+    #
+    #     return data
 
 
 
@@ -340,15 +325,18 @@ class KerasDataGenerator(keras.preprocessing.image.ImageDataGenerator):
 
 #test generator
 def main():
-    images_dir = '/home/maryana/storage2/Posdoc/AVID/AV13/AT100/training/images/patches'
-    masks_dir = '/home/maryana/storage2/Posdoc/AVID/AV13/AT100/training/masks/patches'
-    mean_img = '/home/maryana/storage2/Posdoc/AVID/AV13/AT100/training/images/mean_image.npy'
-    img_dim = (48,48,3)
-    nClasses = 3
+    images_dir = '/home/maryana/storage/Spiralalgea/training/training_patches'
+    gt_dir = '/home/maryana/storage/Spiralalgea/10x_manual/ground_truth_1ch/ground_truth_1ch_patches'
+    minmax_img = '/home/maryana/storage/Spiralalgea/training/min_max.npy'
+    minmax_gt = '/home/maryana/storage/Spiralalgea/10x_manual/ground_truth_1ch/min_max.npy'
+    img_dim = (48,48,275)
+    nClasses = 1 #actually, num. ground truth channels(# LEDs)
     batch_size = 32
     do_augmentation = True
     augment_percent = 0.40
-    tau_gen = TauImageGenerator('Debug',images_dir,masks_dir,mean_img,img_dim,nClasses,batch_size,do_augmentation,augment_percent)
+
+    #__init__(self, gen_name, images_dir, gt_dir, minmax_img, minmax_gt,img_dim,batch_size,nClasses,do_augmentation=False,augment_percent=0.40,file_type='npy')
+    tau_gen = ReconImageGenerator('Debug',images_dir, gt_dir, minmax_img, minmax_gt, img_dim, batch_size, nClasses)
 
     nEpochs = tau_gen.__len__()
     for i in range(nEpochs):

@@ -32,8 +32,8 @@ def create_dataset(orig_imgs_dir, patches_dir, patch_size, stride):
     nPat_cols = int(sp.compute_num_patches(size[1], S))
     nPatches = nPat_cols*nPat_rows
 
-    #tmp_arr_path = os.path.join(patches_dir,'tmp_patches_arr.npy')
-    #tmp_arr = np.memmap(tmp_arr_path,dtype='float',mode='w+',shape=(nPatches,nCh,F,F))
+    tmp_arr_path = os.path.join(patches_dir,'tmp_patches_arr.npy')
+    tmp_arr = np.memmap(tmp_arr_path,dtype='float',mode='w+',shape=(nPatches,nCh,F,F))
 
     #copy data to temporary memory mapped array
     #for c in range(nCh): #each file = 1 channel
@@ -42,10 +42,17 @@ def create_dataset(orig_imgs_dir, patches_dir, patch_size, stride):
 
     strided_list = []
     for c in range(nCh):
-        print('Reading channel {}'.format(c))
         file_name = files[c]
         img = io.imread(file_name)
         strided_img = sp.get_strided_view(img, F, S)
+        strided_list.append(strided_img)
+
+    for c in range(nCh):
+        print('Processing channel {}'.format(c))
+        file_name = files[c]
+        img = io.imread(file_name)
+        strided_img = sp.get_strided_view(img, F, S)
+        patch_index = 0
 
         #get min and max values
         tmp_min = img.min()
@@ -55,34 +62,27 @@ def create_dataset(orig_imgs_dir, patches_dir, patch_size, stride):
         if tmp_max > arr_max:
             arr_max = tmp_max
 
-        strided_list.append(strided_img)
+        for i in range(nPat_rows):
+            for j in range(nPat_cols):
+                patch = strided_img[i,j,...]
+                tmp_arr[patch_index,c,...] = patch
 
-    print('Saving patches.')
-    counter = 0
-    for i in range(nPat_rows):
-        for j in range(nPat_cols):
-            patch = np.empty((patch_size,patch_size,nCh))
-            #group all channels together to create patch
-            for c in range(nCh):
-                tmp_arr = strided_list[c]
-                patch[...,c] = tmp_arr[i,j,...]
-            #save patch
-            patch_name = os.path.join(patches_dir, 'patch_{}.npy'.format(counter))
-            np.save(patch_name, patch)
+                patch_index += 1
 
-            if counter % 1000 == 0:
-                print('{} of {} saved'.format(counter,nPatches))
+        del strided_img
 
-            counter += 1
-
-
-    del strided_list
-
-    print('Saving min/max')
     min_max = np.array([arr_min,arr_max])
     min_max_file = os.path.join(patches_dir,'min_max.npy')
     np.save(min_max_file,min_max)
 
+    print('Saving patches.')
+    #save patches to files
+    for p in range(nPatches):
+        patch = tmp_arr[p,...]
+        patch_name = os.path.join(patches_dir,'patch_{}.npy'.format(p))
+        np.save(patch_name,patch)
+
+    del tmp_arr
     print('Finished.')
 
 

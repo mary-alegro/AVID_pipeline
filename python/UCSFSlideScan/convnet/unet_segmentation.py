@@ -276,7 +276,7 @@ def run_segmentation(root_dir,config_file):
                 img = img[:,0:orig_img.shape[1]]
 
             img = 1-img
-            mask = img>=0.8
+            mask = img>=0.5
             #bw = mh.bwperim(mask)
 
             #mask out background just in case

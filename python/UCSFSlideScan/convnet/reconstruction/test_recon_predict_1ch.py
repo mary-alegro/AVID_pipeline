@@ -10,12 +10,12 @@ from convnet.util.extract_patches import recompone_overlap
 
 def run_reconstruction():
 
-    train_imgs_original = '/home/maryana/Downloads/Spiralalgea/training/training_led.h5'
-    train_groudTruth = '/home/maryana/Downloads/Spiralalgea/10x_manual/ground_truth_1ch/gd_1ch.h5'
-    best_model_path = '/home/maryana/Downloads/Spiralalgea/best_weights.h5'
-    last_model_path = '/home/maryana/Downloads/Spiralalgea/last_weights.h5'
-    model_achitecture = '/home/maryana/Downloads/Spiralalgea/model_architecture.json'
-    test_imgs_original = '/home/maryana/Downloads/Spiralalgea/testing/testing_led.h5'
+    train_imgs_original = '/home/maryana/storage/Spiralalgea/training/training_led.h5'
+    train_groudTruth = '/home/maryana/storage/Spiralalgea/10x_manual/ground_truth_1ch/gd_1ch.h5'
+    best_model_path = '/home/maryana/storage/Spiralalgea/best_weights.h5'
+    last_model_path = '/home/maryana/storage/Spiralalgea/last_weights.h5'
+    model_achitecture = '/home/maryana/storage/Spiralalgea/model_architecture.json'
+    test_imgs_original = '/home/maryana/storage/Spiralalgea/testing/testing_led.h5'
 
     patch_height = 48
     patch_width = 48
