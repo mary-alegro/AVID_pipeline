@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import skimage.io as io
 
 from convnet.util.help_functions import *
 from keras.models import model_from_json
@@ -8,10 +9,16 @@ from convnet.util.extract_patches import get_data_recon_overlap_1ch
 from convnet.util.extract_patches import recompone_overlap
 
 
+def load_hdf5(infile):
+  with h5py.File(infile,"r") as f:  #"with" close the file after its nested commands
+    return f["image"][()]
+
+
 def run_reconstruction():
 
     train_imgs_original = '/home/maryana/storage/Spiralalgea/training/training_led.h5'
     train_groudTruth = '/home/maryana/storage/Spiralalgea/10x_manual/ground_truth_1ch/gd_1ch.h5'
+    train_groudTruth_9ch = '/home/maryana/storage/Spiralalgea/10x_manual/test_9ch/test_9ch.h5'
     best_model_path = '/home/maryana/storage/Spiralalgea/best_weights.h5'
     last_model_path = '/home/maryana/storage/Spiralalgea/last_weights.h5'
     model_achitecture = '/home/maryana/storage/Spiralalgea/model_architecture.json'
@@ -45,8 +52,21 @@ def run_reconstruction():
 
     pred_img = recompone_overlap(pred_patches, new_height, new_width, stride_height,stride_width)
     img = np.squeeze(pred_img)
+    img_gt = io.imread('/home/maryana/storage/Spiralalgea/10x_manual/test_1ch/test_z_stack.tif')
+    gt_hf5 = load_hdf5('/home/maryana/storage/Spiralalgea/10x_manual/test_9ch/test_9ch.h5')
 
 
+    fig = plt.figure()
+    ax1 = fig.add_subplot(4, 3, 1)
+    ax1.imshow(img,cmap='gray')
+    ax2 = fig.add_subplot(4, 3, 2)
+    ax2.imshow(img_gt,cmap='gray')
+
+    for i in range(9):
+        ax = fig.add_subplot(4, 3, i+3)
+        ax.imshow(gt_hf5[...,i],cmap = 'gray')
+
+    pass
 
     # fig = plt.figure()
     # ax1 = fig.add_subplot(2, 2, 1)

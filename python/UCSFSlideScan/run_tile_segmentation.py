@@ -1,14 +1,7 @@
 import os
-import subprocess
 import sys
-import fnmatch
-import skimage.io as io
-import tifffile
-from misc.XMLUtils import XMLUtils
 import glob
-import mahotas as mht
-import numpy as np
-from convnet import prepare_tiles_4seg as prep_4seg
+from deprecated import prepare_tiles_4seg as prep_4seg
 from convnet import unet_segmentation as useg
 
 
