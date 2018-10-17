@@ -142,7 +142,7 @@ def main():
     patch_size = int(sys.argv[5])
     stride = int(sys.argv[6])
 
-    create_dataset(original_imgs_dir, mask_imgs_dir, dataset_img_dir, dataset_mask_dir, patch_size, stride, resize_mask=(200,200))
+    create_dataset(original_imgs_dir, mask_imgs_dir, dataset_img_dir, dataset_mask_dir, patch_size, stride)
 
 
 
