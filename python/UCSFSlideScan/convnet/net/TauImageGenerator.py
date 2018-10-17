@@ -8,11 +8,12 @@ import os
 import random
 import numpy as np
 import keras
+import cv2
 
 #class TauImageGenerator(keras.utils.Sequence):
 class TauImageGenerator:
     'Generates data for Keras'
-    def __init__(self,gen_name,images_dir,masks_dir,mean_img,img_dim,nClasses,batch_size,do_augmentation=False,augment_percent=0.40):
+    def __init__(self,gen_name,images_dir,masks_dir,mean_img,img_dim,mask_dim,nClasses,batch_size,do_augmentation=False,augment_percent=0.40,resize_mask=[]):
 
         self.name = gen_name
         self.images_dir = images_dir
@@ -21,6 +22,8 @@ class TauImageGenerator:
         #self.mean_image_path = mean_img
         self.patch_rows = img_dim[0]
         self.patch_cols = img_dim[1]
+        self.mask_rows = mask_dim[0]
+        self.mask_cols = mask_dim[1]
         self.nChannels = img_dim[2]
         self.nClasses = nClasses
         self.batch_size = batch_size #total num files per batch, nBack+nFore
@@ -39,6 +42,7 @@ class TauImageGenerator:
         self.nFore = len(self.fore_img_list)
 
         #augmentation stuff
+        self.resize_mask = resize_mask
         self.do_aug = do_augmentation
         self.augment_percent = augment_percent
         self.kera_generator = KerasDataGenerator(rotation_range=40,width_shift_range=0,height_shift_range=0,horizontal_flip=True,vertical_flip=True,fill_mode='nearest')
@@ -146,7 +150,11 @@ class TauImageGenerator:
     #load an entire batch and do augmentation if necessary
     def __data_generation(self,file_arr):
         img_vol = np.empty((self.batch_size, self.nChannels, self.patch_rows, self.patch_cols))
-        mask_vol = np.empty((self.batch_size, self.patch_rows*self.patch_cols, self.nClasses))
+        if self.resize_mask == []:
+            mask_vol = np.empty((self.batch_size, self.mask_rows*self.mask_cols, self.nClasses))
+        else:
+            mask_vol = np.empty((self.batch_size, self.resize_mask[0]*self.resize_mask[1], self.nClasses))
+
 
         count = 0
         count_aug = 0
@@ -160,6 +168,11 @@ class TauImageGenerator:
 
             # get image
             img = io.imread(img_path)
+
+            if img.shape[0] != self.patch_rows or img.shape[1] != self.patch_cols:
+                print('Patch has the wrong size ({},{}). Skipping.'.format(img.shape[0],img.shape[1]))
+                continue
+
             img = img.astype('float')
             img = self.preproc_color(img)
             img_bkp = img.copy()
@@ -168,6 +181,8 @@ class TauImageGenerator:
 
             # get mask
             mask = np.load(mask_path)
+            if self.resize_mask != []:
+                mask = cv2.resize(mask,self.resize_mask,interpolation=cv2.INTER_NEAREST)
             mask = mask.astype('float')
             mask /= 255.
             mask_bkp = mask.copy()

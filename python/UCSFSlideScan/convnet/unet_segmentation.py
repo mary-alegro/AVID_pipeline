@@ -172,8 +172,8 @@ def run_segmentation(root_dir,config_file):
 
     #stride_height = 35
     #stride_width = 35
-    stride_height = 20
-    stride_width = 20
+    stride_height = 15
+    stride_width = 15
 
     #for root, dir, files in os.walk(img_dir):
     for folder in dir_list:
@@ -230,10 +230,14 @@ def run_segmentation(root_dir,config_file):
                 mean_img_path = path_data + config.get('data paths', 'mean_image')
 
 
+            #pad sides
+            orig_img_pad = pad_image(orig_img.copy(), patch_height, patch_width)
+
+
             if average_mode == True:
                 patches_imgs_test, new_height, new_width, masks_test = get_data_segmenting_overlap(
                     #test_img_original=test_imgs_original,  # image path to segment
-                    test_img_original=orig_img.astype('float'),  # image path to segment
+                    test_img_original=orig_img_pad.astype('float'),  # image path to segment
                     Imgs_to_test=int(config.get('testing settings', 'full_images_to_test')),
                     mean_image_path=mean_img_path,
                     patch_height=patch_height,
@@ -268,15 +272,19 @@ def run_segmentation(root_dir,config_file):
                 pred_imgs = recompone(pred_patches, 13, 12)  # predictions
 
             img = pred_imgs[0,0,...]
-            img = img.reshape([img.shape[0],img.shape[1]])
+            #img = img.reshape([img.shape[0],img.shape[1]])
 
-            if img.shape[0] > orig_img.shape[0]:
-                img = img[0:orig_img.shape[0],...]
-            if img.shape[1] > orig_img.shape[1]:
-                img = img[:,0:orig_img.shape[1]]
+            #remove padding 1
+            pad_r1 = new_height - orig_img_pad.shape[0]
+            pad_c1 = new_width - orig_img_pad.shape[1]
+            img = img[0:img.shape[0]-pad_r1, 0:img.shape[1]-pad_c1,...]
+
+            #remove padding 2
+            img = img[patch_height:img.shape[0]-patch_height, patch_width:img.shape[1]-patch_width,...]
+
 
             img = 1-img
-            mask = img>=0.5
+            mask = img >= 0.5
             #bw = mh.bwperim(mask)
 
             #mask out background just in case

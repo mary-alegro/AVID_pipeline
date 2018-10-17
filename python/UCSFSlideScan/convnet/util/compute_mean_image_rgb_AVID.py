@@ -58,14 +58,14 @@ def compute_mean_image_RGB(root_dir,dest_file,file_ext='tif'):
                 npix_tissue = get_num_pix_tissue(img)
                 percent_tissue = npix_tissue / (img.shape[0]*img.shape[1])
                 if percent_tissue < TISSUE_THRESH:
-                    print('Image has too little tissue. Skipping.')
+                    print('Image has too little tissue. Skipping. ({})'.format(percent_tissue))
                     nskip += 1
                     continue
 
                 if img.shape[0] > shape[0] or img.shape[1] > shape[1]:
                     img = img[0:shape[0],0:shape[1],:]
                 elif img.shape[0] < shape[0] or img.shape[1] < shape[1]:
-                    print('Image is too small. Skipping.')
+                    print('Image is too small. Skipping.({},{})'.format(img.shape[0],img.shape[1]))
                     nskip += 1
                     continue
 
@@ -89,7 +89,7 @@ def compute_mean_image_RGB(root_dir,dest_file,file_ext='tif'):
             meanB += (deltaB/ncount)
 
             if ncount%1000 == 0:
-                print('{} images processed.'.format(ncount))
+                print('{} images processed. {} skipped'.format(ncount,nskip))
             
                 
     

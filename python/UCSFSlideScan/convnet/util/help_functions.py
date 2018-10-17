@@ -135,3 +135,18 @@ def pred_to_imgs_3classes(pred, patch_height, patch_width, mode="original"):
     pred_images_c3 = np.reshape(pred_images_c3, (pred_images_c3.shape[0], 1, patch_height, patch_width))
     return pred_images_c1,pred_images_c2,pred_images_c3
 
+
+def pad_image(img,pad_r,pad_c):
+    #rows
+    top_pad = img[0:pad_r,...]
+    top_pad = top_pad[::-1,...]
+    botton_pad = img[img.shape[0]:img.shape[0]-(pad_r+1):-1,...]
+    img2 = np.concatenate((top_pad,img,botton_pad),axis=0)
+    #cols
+    left_pad = img2[:,0:pad_c,:]
+    left_pad = left_pad[:,::-1,:]
+    right_pad = img2[:,img2.shape[1]:img2.shape[1]-(pad_c+1):-1,:]
+    img3 = np.concatenate((left_pad,img2,right_pad),axis=1)
+
+    return img3
+

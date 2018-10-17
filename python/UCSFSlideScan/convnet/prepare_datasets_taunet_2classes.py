@@ -10,13 +10,14 @@ import sklearn.feature_extraction as fx
 from skimage import img_as_ubyte
 import glob
 import strided_patches as sp
+import cv2
 
 NPIX_BKG = 0.98
 S = 16
 F = 48
 
 
-def create_dataset(original_imgs_dir, mask_img_dir, dataset_img_dir, dataset_mask_dir, patch_size, stride):
+def create_dataset(original_imgs_dir, mask_img_dir, dataset_img_dir, dataset_mask_dir, patch_size, stride, resize_mask = []):
 
     F = patch_size
     S = stride
@@ -108,6 +109,8 @@ def create_dataset(original_imgs_dir, mask_img_dir, dataset_img_dir, dataset_mas
                 mmb = MBx[i,j,...]
                 mask_patch = np.concatenate((mmt[...,np.newaxis],mmb[...,np.newaxis]),axis=2).astype('uint8')
 
+                if resize_mask != []:
+                    mask_patch = cv2.resize(mask_patch,resize_mask,interpolation=cv2.INTER_NEAREST)
 
                 bkg = mask_patch[...,1]>0
                 npx_bkg = len(np.nonzero(bkg)[0])
@@ -139,7 +142,7 @@ def main():
     patch_size = int(sys.argv[5])
     stride = int(sys.argv[6])
 
-    create_dataset(original_imgs_dir, mask_imgs_dir, dataset_img_dir, dataset_mask_dir, patch_size, stride)
+    create_dataset(original_imgs_dir, mask_imgs_dir, dataset_img_dir, dataset_mask_dir, patch_size, stride, resize_mask=(200,200))
 
 
 

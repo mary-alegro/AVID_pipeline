@@ -71,6 +71,8 @@ def get_taunet_2classes(n_ch, patch_height, patch_width):
     #model.compile(optimizer=SGD(lr=0.001), loss='categorical_crossentropy',metrics=['accuracy'])
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
+    model.summary()
+
     return model
 
 
