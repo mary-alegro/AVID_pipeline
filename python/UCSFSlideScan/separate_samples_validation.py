@@ -5,9 +5,9 @@ import random
 
 
 
-train_dir = '/home/maryana/storage2/Posdoc/AVID/AV13/AT100/db_training'
-test_dir = '/home/maryana/storage2/Posdoc/AVID/AV13/AT100/db_testing'
-val_dir = '/home/maryana/storage2/Posdoc/AVID/AV13/AT100/db_validation'
+train_dir = '/home/maryana/storage2/Posdoc/AVID/AV13/AT8/db_training'
+test_dir = '/home/maryana/storage2/Posdoc/AVID/AV13/AT8/db_testing'
+val_dir = '/home/maryana/storage2/Posdoc/AVID/AV13/AT8/db_validation'
 
 
 train_dir_img = os.path.join(train_dir,'images')

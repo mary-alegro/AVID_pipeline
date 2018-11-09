@@ -90,7 +90,7 @@ def create_dataset(orig_imgs_dir, patches_dir, patch_size, stride):
 def main():
 
     if len(sys.argv) != 5:
-        print('Usage: export_data_patches_memmap.py <absolute_path_to_imgs> <dataset_path_images> <patch_size> <stride>')
+        print('Usage: export_data_patches.py <absolute_path_to_imgs> <dataset_path_images> <patch_size> <stride>')
         exit()
 
     original_imgs_dir = str(sys.argv[1])

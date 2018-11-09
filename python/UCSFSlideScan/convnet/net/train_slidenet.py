@@ -10,16 +10,12 @@
 
 import numpy as np
 import ConfigParser
-import os
 import sys
+import os
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
-from keras.models import Model
-from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, UpSampling2D, Reshape, core, Dropout
-from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler, TensorBoard
-from keras import backend as K
-from keras.utils.vis_utils import plot_model
-from keras.optimizers import SGD, Adam
 from TauImageGenerator import TauImageGenerator
 import Slidenet
 
@@ -38,7 +34,6 @@ def run_training(conf_path):
     path_project = config.get('data paths', 'path_project')
     path_model = os.path.join(path_project, config.get('data paths', 'path_model'))
 
-
     train_imgs_dir = os.path.join(path_project,config.get('data paths', 'train_imgs_original'))
     train_masks_dir = os.path.join(path_project,config.get('data paths', 'train_groundTruth'))
     test_imgs_dir = os.path.join(path_project,config.get('data paths', 'test_imgs_original'))
@@ -46,13 +41,11 @@ def run_training(conf_path):
     mean_img_path = os.path.join(path_project, config.get('data paths', 'mean_image'))
     train_log = os.path.join(path_project, config.get('data paths', 'train_log'))
 
-
     n_ch = int(config.get('data attributes','num_channels'))
     patch_height = int(config.get('data attributes','patch_height'))
     patch_width = int(config.get('data attributes','patch_width'))
     img_dim = (patch_height,patch_width,n_ch)
     nClasses = int(config.get('data attributes','num_classes'))
-
 
     patch_height = 204
     patch_width = 204
@@ -77,15 +70,22 @@ def run_training(conf_path):
                                 write_images=False, embeddings_freq=0, embeddings_layer_names=None,
                                 embeddings_metadata=None)
 
-    train_gen = TauImageGenerator('train_gen',train_imgs_dir,train_masks_dir,mean_img_path,img_dim,mask_dim,nClasses,batch_size,do_augmentation=True,augment_percent=0.40)
-    test_gen = TauImageGenerator('test_gen',test_imgs_dir, test_masks_dir, mean_img_path, img_dim, mask_dim, nClasses, batch_size,do_augmentation=False,augment_percent=0.40)
+    #train_gen = TauImageGenerator('train_gen',train_imgs_dir,train_masks_dir,mean_img_path,img_dim,mask_dim,nClasses,batch_size,do_augmentation=False,augment_percent=0.40,resize_mask=[],class_weights=(0.6,0.2))
+    train_gen = TauImageGenerator('train_gen', train_imgs_dir, train_masks_dir, mean_img_path, img_dim, mask_dim, nClasses, batch_size, do_augmentation=False, augment_percent=0.40)
+    test_gen = TauImageGenerator('test_gen',test_imgs_dir, test_masks_dir, mean_img_path, img_dim, mask_dim, nClasses, batch_size, do_augmentation=False, augment_percent=0.40)
+    #test_gen = TauImageGenerator('test_gen',train_imgs_dir, train_masks_dir, mean_img_path, img_dim, mask_dim, nClasses, batch_size,do_augmentation=False,augment_percent=0.40)
+
+    sample_weights = np.zeros((200*200,2))
+    sample_weights[...,0] = 0.8
+    sample_weights[...,1] = 0.2
+
 
     #model.fit(patches_imgs_train, patches_masks_train, nb_epoch=N_epochs, batch_size=batch_size, verbose=2, shuffle=True, validation_split=0.1, callbacks=[checkpointer,tensorboard])
     model.fit_generator(generator=train_gen.get_batch(),
                         validation_data=test_gen.get_batch(),
                         steps_per_epoch=train_gen.__len__(),
-                        validation_steps=50,
-                        epochs=N_epochs,
+                        validation_steps=test_gen.__len__(),
+                        epochs=100,
                         verbose=1,
                         callbacks = [checkpointer, tensorboard])
 

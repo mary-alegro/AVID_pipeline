@@ -13,7 +13,7 @@ import cv2
 #class TauImageGenerator(keras.utils.Sequence):
 class TauImageGenerator:
     'Generates data for Keras'
-    def __init__(self,gen_name,images_dir,masks_dir,mean_img,img_dim,mask_dim,nClasses,batch_size,do_augmentation=False,augment_percent=0.40,resize_mask=[]):
+    def __init__(self,gen_name,images_dir,masks_dir,mean_img,img_dim,mask_dim,nClasses,batch_size,do_augmentation=False,augment_percent=0.40,resize_mask=[],class_weights=[]):
 
         self.name = gen_name
         self.images_dir = images_dir
@@ -29,9 +29,12 @@ class TauImageGenerator:
         self.batch_size = batch_size #total num files per batch, nBack+nFore
         self.mu = pp.load_mean_values(mean_img)
 
+        print(self.mu[...])
+
         #get file names
-        self.back_img_list = glob.glob(os.path.join(images_dir, '*_1_*.tif'))
+        #self.back_img_list = glob.glob(os.path.join(images_dir, '*_1_*.tif'))
         self.fore_img_list = glob.glob(os.path.join(images_dir, '*_0_*.tif'))
+        self.back_img_list = self.fore_img_list
 
         #shuffle arrays and balance data
         self.shuffle_files()
@@ -69,6 +72,14 @@ class TauImageGenerator:
         #current files array index
         self.current = 0
 
+        #class weights
+        self.class_weights = []
+        if len(class_weights) == self.nClasses:
+            self.class_weights = class_weights
+        else:
+            print('Erro: class_weights must have the same number of components than nClasses. Ignoring weights.')
+
+
         print('{}: #batches: {}'.format(gen_name,self.nBatches))
 
 
@@ -105,7 +116,7 @@ class TauImageGenerator:
     def get_batch(self):
 
         while 1:
-            X,Y = self.__getitem__(self.current)
+            X,Y,W = self.__getitem__(self.current)
 
             #print('  {}: Current: {}'.format(self.name, self.current))
 
@@ -113,7 +124,10 @@ class TauImageGenerator:
             if self.current >= self.nBatches:
                 self.on_epoch_end()
 
-            yield X,Y
+            if self.class_weights == []:
+                yield X,Y
+            else:
+                yield X,Y,W
 
     def __getitem__(self, index):
 
@@ -138,23 +152,27 @@ class TauImageGenerator:
             tmp_img_list += self.back_img_list[begin:end]
             random.shuffle(tmp_img_list)
 
-        x,y = self.__data_generation(tmp_img_list)
+        x,y,w = self.__data_generation(tmp_img_list)
 
         #self.current += 1
 
-        return x,y
+        return x,y,w
 
 
 
 
     #load an entire batch and do augmentation if necessary
     def __data_generation(self,file_arr):
+        sample_weights = []
         img_vol = np.empty((self.batch_size, self.nChannels, self.patch_rows, self.patch_cols))
         if self.resize_mask == []:
             mask_vol = np.empty((self.batch_size, self.mask_rows*self.mask_cols, self.nClasses))
+            if self.class_weights != []:
+                sample_weights = np.empty((self.batch_size, self.mask_rows*self.mask_cols))
         else:
             mask_vol = np.empty((self.batch_size, self.resize_mask[0]*self.resize_mask[1], self.nClasses))
-
+            if self.class_weights != []:
+                sample_weights = np.empty((self.batch_size, self.resize_mask[0]*self.resize_mask[1]))
 
         count = 0
         count_aug = 0
@@ -184,10 +202,19 @@ class TauImageGenerator:
             if self.resize_mask != []:
                 mask = cv2.resize(mask,self.resize_mask,interpolation=cv2.INTER_NEAREST)
             mask = mask.astype('float')
-            mask /= 255.
+            mask /= 255
             mask_bkp = mask.copy()
-            mask = mask.reshape((mask.shape[0] * mask.shape[1], mask.shape[2]))
+            mask = mask.reshape((mask.shape[0] * mask.shape[1], mask.shape[2])) # dim3 = 0 -> foreground; dim3 = 1 -> background
             mask_vol[count, ...] = mask
+
+            #create weights
+            if self.class_weights != []:
+                weights = np.zeros((mask.shape[0]))
+                for nC in range(self.nClasses):
+                    mask_tmp = mask[...,nC] > 0
+                    weights[mask_tmp] = self.class_weights[nC]
+                sample_weights[count, ...] = weights
+
 
             #do augmentation if flag is set
             #number of augmented images is always less than or equal to the number of original files
@@ -201,11 +228,19 @@ class TauImageGenerator:
                     img_vol[count, ...] = img_aug
                     mask_vol[count, ...] = mask_aug
 
+                    # create weights
+                    if self.class_weights != []:
+                        weights = np.zeros((mask_aug.shape[0]))
+                        for nC in range(self.nClasses):
+                            mask_tmp = mask_aug[..., nC] > 0
+                            weights[mask_tmp] = self.class_weights[nC]
+                        sample_weights[count, ...] = weights
+
                     count_aug += 1
 
             count += 1
 
-        return img_vol,mask_vol #return X,Y
+        return img_vol,mask_vol,sample_weights #return X,Y
 
 
     def preproc_color(self, data):
@@ -354,20 +389,22 @@ class KerasDataGenerator(keras.preprocessing.image.ImageDataGenerator):
 
 #test generator
 def main():
-    images_dir = '/home/maryana/storage2/Posdoc/AVID/AV13/AT100/training/images/patches'
-    masks_dir = '/home/maryana/storage2/Posdoc/AVID/AV13/AT100/training/masks/patches'
-    mean_img = '/home/maryana/storage2/Posdoc/AVID/AV13/AT100/training/images/mean_image.npy'
-    img_dim = (48,48,3)
-    nClasses = 3
+    images_dir = '/home/maryana/storage2/Posdoc/AVID/AV23/AT100/slidenet_2classes/training/images204/patches'
+    masks_dir = '/home/maryana/storage2/Posdoc/AVID/AV23/AT100/slidenet_2classes/training/masks204/patches'
+    mean_img = '/home/maryana/storage2/Posdoc/AVID/AV23/AT100/db_training/images/mean_image.npy'
+    img_dim = (204,204,3)
+    mask_dim=(200,200)
+    nClasses = 2
     batch_size = 32
-    do_augmentation = True
+    do_augmentation = False
     augment_percent = 0.40
-    tau_gen = TauImageGenerator('Debug',images_dir,masks_dir,mean_img,img_dim,nClasses,batch_size,do_augmentation,augment_percent)
+    #self,gen_name,images_dir,masks_dir,mean_img,img_dim,mask_dim,nClasses,batch_size,do_augmentation=False,augment_percent=0.40,resize_mask=[]
+    tau_gen = TauImageGenerator('Debug',images_dir,masks_dir,mean_img,img_dim,(200,200),nClasses,batch_size,do_augmentation,augment_percent,resize_mask=(200,200),class_weights=(0.8,0.2))
 
     nEpochs = tau_gen.__len__()
     for i in range(nEpochs):
         #x,y = tau_gen.__getitem__(i)
-        x,y = tau_gen.get_batch()
+        x,y,w = tau_gen.get_batch()
 
 if __name__ == "__main__":
     main()
