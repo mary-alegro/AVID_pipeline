@@ -5,6 +5,7 @@ from keras.callbacks import ModelCheckpoint, LearningRateScheduler
 from keras import backend as K
 from keras.utils.vis_utils import plot_model
 from keras.optimizers import SGD
+import numpy as np
 
 
 #Define the neural network
@@ -138,3 +139,9 @@ def dice_coef(y_true, y_pred):
     y_pred_f = K.flatten(y_pred)
     intersection = K.sum(y_true_f * y_pred_f)
     return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+
+
+
+
+
+

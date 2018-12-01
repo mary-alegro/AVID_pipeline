@@ -23,7 +23,7 @@ import cv2
 from convnet.util.pre_processing import preproc_color, load_mean_values
 from convnet.util.help_functions import pred_to_imgs
 
-def run_slidenet_pred(config_file,img2seg):
+def run_slidenet_pred(config_file,img2seg,pred_dir):
     config = ConfigParser.RawConfigParser()
     config.read(config_file)
     # path_data = config.get('data paths', 'path_local')
@@ -63,9 +63,22 @@ def run_slidenet_pred(config_file,img2seg):
     predictions = model.predict(test_img, batch_size=1, verbose=2)
     pred = np.reshape(predictions,(1,200,200,2))
     plt.imshow(pred[0,:,:,0])
+    pred0 = pred[0,:,:,0]
 
-    print "predicted images size :"
-    print predictions.shape
+    basename = os.path.basename(img2seg)
+    pred_name = os.path.join(pred_dir,basename+'_pred.npy')
+    np.save(pred_name,pred0)
+
+
+
+    # mask = pred0 > 0.7
+    # mask2 = cv2.resize(mask*255,(204,204),interpolation=cv2.INTER_NEAREST)
+    # perim = mh.bwperim(mask2)
+    # over = imoverlay(orig_img,perim,[0.1,1,0.1])
+    # plt.imshow(over)
+    #
+    # print "predicted images size :"
+    # print predictions.shape
 
 
 def subtract_mean(data,mu):
@@ -89,16 +102,28 @@ def subtract_mean(data,mu):
     return new_img
 
 
+def list_files(imgs_dir):
+    l = glob.glob(os.path.join(imgs_dir,'*.tif'))
+    return l
+
+
 
 def main():
     if len(sys.argv) != 3:
-        print('Usage: slidenet_segmentation_2classes <image to segment> <config_file.txt>')
+        print('Usage: slidenet_segmentation_2classes [<image to segment> | <dir with image set>], <config_file.txt>')
         exit()
 
     img2seg = str(sys.argv[1])
     config_path = str(sys.argv[2])
+    pred_dir = '/home/maryana/storage2/Posdoc/AVID/AV23/AT100/slidenet_2classes/training/images204'
 
-    run_slidenet_pred(config_path,img2seg)
+    if os.path.isfile(img2seg):
+        run_slidenet_pred(config_path,img2seg)
+    else:
+        files = list_files(img2seg)
+        for f in files:
+            run_slidenet_pred(config_path,f,pred_dir)
+
 
 
 if __name__ == '__main__':

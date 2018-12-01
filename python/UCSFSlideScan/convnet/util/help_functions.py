@@ -97,7 +97,7 @@ def pred_to_imgs(pred, patch_height, patch_width, mode="original"):
         # for i in range(pred.shape[0]):
         #     for pix in range(pred.shape[1]):
         #         pred_images[i,pix]=pred[i,pix,1]
-        pred_images = pred[:,:,1]
+        pred_images = pred[:,:,0]
     elif mode=="threshold":
         for i in range(pred.shape[0]):
             for pix in range(pred.shape[1]):

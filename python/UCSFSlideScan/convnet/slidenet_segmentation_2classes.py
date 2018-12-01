@@ -86,8 +86,8 @@ def run_segmentation(root_dir,config_file):
     model = model_from_json(open(os.path.join(path_model,name_experiment + '_architecture.json')).read())
     model.load_weights(os.path.join(path_model,name_experiment + '_best_weights.h5'))
 
-    stride_height = 35
-    stride_width = 35
+    stride_height = 90
+    stride_width = 90
     #stride_height = 15
     #stride_width = 15
 
@@ -129,8 +129,6 @@ def run_segmentation(root_dir,config_file):
             masks_test = None
             patches_masks_test = None
 
-
-
             #load image to segment
             #orig_img = load_hdf5(test_imgs_original)
             orig_img = io.imread(test_imgs_original)
@@ -143,9 +141,9 @@ def run_segmentation(root_dir,config_file):
                 continue
 
 
-            mean_img_path = os.path.join(tiles_dir,'mean_image.npy')
-            if not os.path.exists(mean_img_path):
-                mean_img_path = os.path.join(path_project,config.get('data paths', 'mean_image'))
+            # mean_img_path = os.path.join(tiles_dir,'mean_image.npy')
+            # if not os.path.exists(mean_img_path):
+            mean_img_path = os.path.join(path_project,config.get('data paths', 'mean_image'))
 
 
             #pad sides
@@ -183,6 +181,7 @@ def run_segmentation(root_dir,config_file):
 
             # ===== Convert the prediction arrays in corresponding images
             pred_patches = pred_to_imgs(predictions, 200, 200, "original")
+
             new_pred_patches = np.zeros((pred_patches.shape[0],1,patch_height,patch_width))
             nP = pred_patches.shape[0]
             for p in range(nP):
@@ -208,8 +207,8 @@ def run_segmentation(root_dir,config_file):
             img = img[patch_height:img.shape[0]-patch_height, patch_width:img.shape[1]-patch_width,...]
 
 
-            img = 1-img
-            mask = img >= 0.5
+            #img = 1-img
+            mask = img > 0.7
             #bw = mh.bwperim(mask)
 
             #mask out background just in case

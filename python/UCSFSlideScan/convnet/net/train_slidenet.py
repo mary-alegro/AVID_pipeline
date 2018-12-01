@@ -12,8 +12,8 @@ import numpy as np
 import ConfigParser
 import sys
 import os
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
+# os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler, TensorBoard
 from TauImageGenerator import TauImageGenerator
@@ -71,7 +71,7 @@ def run_training(conf_path):
                                 embeddings_metadata=None)
 
     #train_gen = TauImageGenerator('train_gen',train_imgs_dir,train_masks_dir,mean_img_path,img_dim,mask_dim,nClasses,batch_size,do_augmentation=False,augment_percent=0.40,resize_mask=[],class_weights=(0.6,0.2))
-    train_gen = TauImageGenerator('train_gen', train_imgs_dir, train_masks_dir, mean_img_path, img_dim, mask_dim, nClasses, batch_size, do_augmentation=False, augment_percent=0.40)
+    train_gen = TauImageGenerator('train_gen', train_imgs_dir, train_masks_dir, mean_img_path, img_dim, mask_dim, nClasses, batch_size, do_augmentation=True, augment_percent=0.40)
     test_gen = TauImageGenerator('test_gen',test_imgs_dir, test_masks_dir, mean_img_path, img_dim, mask_dim, nClasses, batch_size, do_augmentation=False, augment_percent=0.40)
     #test_gen = TauImageGenerator('test_gen',train_imgs_dir, train_masks_dir, mean_img_path, img_dim, mask_dim, nClasses, batch_size,do_augmentation=False,augment_percent=0.40)
 
@@ -85,7 +85,7 @@ def run_training(conf_path):
                         validation_data=test_gen.get_batch(),
                         steps_per_epoch=train_gen.__len__(),
                         validation_steps=test_gen.__len__(),
-                        epochs=100,
+                        epochs=500,
                         verbose=1,
                         callbacks = [checkpointer, tensorboard])
 
