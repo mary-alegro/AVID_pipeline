@@ -54,6 +54,8 @@ def get_folder_list(root_dir):
 
 def run_segmentation(root_dir,config_file):
 
+    nError = 0
+
     dir_list = get_folder_list(root_dir)
 
     ### Read config
@@ -129,9 +131,14 @@ def run_segmentation(root_dir,config_file):
             masks_test = None
             patches_masks_test = None
 
-            #load image to segment
-            #orig_img = load_hdf5(test_imgs_original)
-            orig_img = io.imread(test_imgs_original)
+            try:
+                #load image to segment
+                #orig_img = load_hdf5(test_imgs_original)
+                orig_img = io.imread(test_imgs_original)
+            except:
+                nError += 1
+                print("Error opening file {}".format(test_imgs_original))
+                continue
 
             #check if image has enough tissue
             npix_tissue = get_num_pix_tissue(orig_img)
@@ -221,6 +228,8 @@ def run_segmentation(root_dir,config_file):
 
             print('Saving {}'.format(out_name_seg))
             io.imsave(out_name_seg,(mask*255).astype('uint8'))
+
+        print("Segmentation ended with {} errors".format(nError))
 
 
 
