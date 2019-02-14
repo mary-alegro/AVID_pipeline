@@ -23,27 +23,33 @@ def run_segment_convert(res10_dir, masks_dir, out_dir, x_size, y_size, z_size):
     size = np.array([x_size, y_size, z_size, 0])
     list_histo = get_histo_files(res10_dir)
     for histo_file in list_histo:
-        file_name = os.path.basename(histo_file)
-        base_name = os.path.splitext(file_name)[0]
-        mask_file = os.path.join(masks_dir,base_name+'_brain_mask.tif')
-        if not os.path.isfile(mask_file):
-            print('Warning! No mask found for {}. Skipping!'.format(histo_file))
-            continue
+        try:
 
-        img = io.imread(histo_file)
-        if img.ndim > 2:
-            img = color.rgb2gray(img)
-        mask = io.imread(mask_file)
-        if mask.ndim > 2:
-            mask = mask[...,0]
+            print('Processing {}'.format(histo_file))
+            file_name = os.path.basename(histo_file)
+            base_name = os.path.splitext(file_name)[0]
+            mask_file = os.path.join(masks_dir,base_name+'_brain_mask.tif')
+            if not os.path.isfile(mask_file):
+                print('Warning! No mask found for {}. Skipping!'.format(histo_file))
+                continue
 
-        #mask image
-        img[mask == 0] = 0
+            img = io.imread(histo_file)
+            if img.ndim > 2:
+                img = color.rgb2gray(img)
+            mask = io.imread(mask_file)
+            if mask.ndim > 2:
+                mask = mask[...,0]
 
-        #create nifti
-        nii_name = os.path.join(out_dir,base_name+'.nii')
-        slice2nii.save_nii(img,size,nii_name)
-        print('File {} saved.'.format(nii_name))
+            #mask image
+            img[mask == 0] = 0
+
+            #create nifti
+            nii_name = os.path.join(out_dir,base_name+'.nii')
+            slice2nii.save_nii(img,size,nii_name)
+            print('File {} saved.'.format(nii_name))
+        except Exception as e:
+            print("Error processing {}".format(histo_file))
+            print(e)
 
 
 def main():

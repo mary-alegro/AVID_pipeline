@@ -2,7 +2,7 @@
 import os
 import sys
 import glob
-import create_colormap_from_tiles as ccmap
+from deprecated import create_colormap_from_tiles as ccmap
 
 
 def get_folder_list(root_dir):

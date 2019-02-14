@@ -1,16 +1,7 @@
-import fnmatch
 import os
-from skimage import io
-import numpy as np
 import sys
 import glob
-import matplotlib.pyplot as plt
-from lxml import etree as ET
-import multiprocessing as mp
-import tifffile
-import compute_heatmap_par as cp_hm
-
-
+from deprecated import compute_heatmap_par as cp_hm
 
 NPIX_MM = 819 #num. pixels in 1mm
 NBLOCK_TILE = 5 #tiles are 5x5 grid with 1mm^2 each
