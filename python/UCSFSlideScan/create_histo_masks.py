@@ -29,8 +29,7 @@ def create_masks(b_masks_dir,wm_masks_dir,outdir):
     nMasks_wm = len(wm_masks)
 
     if nMasks_b != nMasks_wm:
-        print("Error: the number of masks and images must match.")
-        return
+        print("Warning: the number of masks and images must match. ({}/{})".format(nMasks_b,nMasks_wm))
     else:
         print("Found " + str(nMasks_b) + " images to mask.")
 
@@ -41,6 +40,10 @@ def create_masks(b_masks_dir,wm_masks_dir,outdir):
         idx = base_name.find('_brain_mask.tif')
         name_prefix = base_name[0:idx]
         wmmask_file = os.path.join(wm_masks_dir,name_prefix+'_wm_mask.tif')
+
+        if not os.path.exists(wmmask_file):
+            print("{} not found. Skipping.".format(wmmask_file))
+            continue
 
         print("Joining {}, {}".format(bmask_file,wmmask_file))
 

@@ -7,7 +7,7 @@ from skimage import img_as_ubyte
 
 nii = nib.load('/home/maryana/storage2/Posdoc/AVID/AV13/blockface/nii/av13_blockface.nii')
 
-#nii = nib.load('/home/maryana/storage2/Posdoc/AVID/AV23/blockface/nii/av23_blockface.nii')
+#nii = nib.load('/homecreate_heatmap2block.py/maryana/storage2/Posdoc/AVID/AV23/blockface/nii/av23_blockface.nii')
 vol = nii.get_data()
 vol2 = np.zeros(vol.shape)
 
