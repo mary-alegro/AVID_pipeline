@@ -49,7 +49,8 @@ def create_adj_dic(grid_shape):
     return tiles_dic
 
 
-def create_xml_metadata(tile_dir, seg_dir, grid_rows, grid_cols, img_rows, img_cols, nblocks_tile, file_pt = 'tile_{:04d}.tif', file_pt_mask = 'tile_{:04d}_mask.tif', pix_mm=PIX_MM):
+def create_xml_metadata(tile_dir, seg_dir, grid_rows, grid_cols, img_rows, img_cols, nblocks_tile,
+                        file_pt = 'tile_{:04d}.tif', file_pt_mask = 'tile_{:04d}_mask.tif', pix_mm=PIX_MM):
     grid_shape = np.array([grid_rows,grid_cols])
     tiles_dic = create_adj_dic(grid_shape)
 
@@ -78,7 +79,8 @@ def create_xml_metadata(tile_dir, seg_dir, grid_rows, grid_cols, img_rows, img_c
                 continue
 
         img_shape = img.series[0].shape
-        tile_xml = ET.SubElement(root_xml, 'Tile', attrib={'is_mask':str(is_mask), 'name':img_name, 'rows':str(img_shape[0]), 'cols':str(img_shape[1])})
+        tile_xml = ET.SubElement(root_xml, 'Tile', attrib={'is_mask':str(is_mask), 'name':img_name,
+                                                           'rows':str(img_shape[0]), 'cols':str(img_shape[1])})
 
         nbors = tiles_dic[tile_num] #Neighbors are always in N,S,E,W order
         #get north:

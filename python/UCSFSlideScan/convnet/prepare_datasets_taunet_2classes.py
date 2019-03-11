@@ -132,7 +132,8 @@ def create_dataset(original_imgs_dir, mask_img_dir, dataset_img_dir, dataset_mas
 def main():
 
     if len(sys.argv) != 7 and len(sys.argv) != 8:
-        print('Usage: prepare_datasets_taunet_2classes <absolute_path_to_imgs> <absolute_path_to_masks> <dataset_path_images> <dataset_path_masks> <patch_size> <stride> [<mask_size>]')
+        print('Usage: prepare_datasets_taunet_2classes <absolute_path_to_imgs> <absolute_path_to_masks> <dataset_path_images> '
+              '<dataset_path_masks> <patch_size> <stride> [<mask_size>]')
         exit()
 
     original_imgs_dir = str(sys.argv[1])
