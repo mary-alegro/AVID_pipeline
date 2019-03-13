@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import sklearn.feature_extraction as fx
 from skimage import img_as_ubyte
 import glob
-import strided_patches as sp
+import convnet.strided_patches as sp
 
 NPIX_BKG = 0.93
 S = 16

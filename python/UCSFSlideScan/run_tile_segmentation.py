@@ -2,10 +2,7 @@ import os
 import sys
 import glob
 from deprecated import prepare_tiles_4seg as prep_4seg
-from convnet import unet_segmentation as useg
-
-
-
+from convnet.deprecated import unet_segmentation as useg
 
 
 def get_dir_dic(root_dir):
