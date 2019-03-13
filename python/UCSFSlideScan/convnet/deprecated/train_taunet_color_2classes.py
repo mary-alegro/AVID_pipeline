@@ -19,7 +19,7 @@ from keras.callbacks import ModelCheckpoint, LearningRateScheduler, TensorBoard
 from keras import backend as K
 from keras.utils.vis_utils import plot_model
 from keras.optimizers import SGD, Adam
-from TauImageGenerator import TauImageGenerator
+from convnet.net.TauImageGenerator import TauImageGenerator
 
 import sys
 from convnet.util.help_functions import *

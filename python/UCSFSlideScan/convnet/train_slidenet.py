@@ -16,8 +16,8 @@ import os
 # os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler, TensorBoard
-from TauImageGenerator import TauImageGenerator
-import Slidenet
+from convnet.net.TauImageGenerator import TauImageGenerator
+import convnet.net.Slidenet
 
 
 
@@ -54,7 +54,7 @@ def run_training(conf_path):
     mask_dim = (200,200)
 
     #model = Slidenet.get_slidenet2(n_ch, patch_height, patch_width)  #the model
-    model = Slidenet.get_slidenet2(n_ch,204, 204)
+    model = convnet.net.Slidenet.get_slidenet2(n_ch, 204, 204)
     print "Check: final output of the network:"
     print model.output_shape
     json_string = model.to_json()
