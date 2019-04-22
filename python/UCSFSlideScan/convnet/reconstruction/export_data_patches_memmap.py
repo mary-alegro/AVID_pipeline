@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import sklearn.feature_extraction as fx
 from skimage import img_as_ubyte
 import glob
-import convnet.strided_patches as sp
+import convnet.stridded_patches as sp
 import tifffile
 
 S = 16 #stride
@@ -44,14 +44,14 @@ def create_dataset(orig_imgs_dir, patches_dir, patch_size, stride):
     for c in range(nCh):
         file_name = files[c]
         img = io.imread(file_name)
-        strided_img = sp.get_strided_view(img, F, S)
+        strided_img = sp.get_stridded_view(img, F, S)
         strided_list.append(strided_img)
 
     for c in range(nCh):
         print('Processing channel {}'.format(c))
         file_name = files[c]
         img = io.imread(file_name)
-        strided_img = sp.get_strided_view(img, F, S)
+        strided_img = sp.get_stridded_view(img, F, S)
         patch_index = 0
 
         #get min and max values

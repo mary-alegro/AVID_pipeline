@@ -131,6 +131,12 @@ def get_gray_matter(img_arr):
     coordinates = [(nonzero[0][i], nonzero[1][i]) for i in range(len(nonzero[0]))]
     return coordinates
 
+def get_num_white(block):
+    # num. non zeros in the blue channel
+    tmp_nnz_b = block.flatten().nonzero()
+    nnz_b = float(len(tmp_nnz_b[0]))  # number of non-zero pixel in BLOCK matrix
+    return nnz_b
+
 # def significant_overlap(left, right, top, bottom, patch_points):
 #     for point_set in patch_points:
 #         x_overlap = max(0, min(patch_points[1], right) - max(patch_points[0], left));
@@ -199,12 +205,17 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
             snum =  filename[idx1+1:idx2]
             snum = int(snum)
 
+            if snum == 255:
+                pass
+
             #load tile
             tile_arr = cv2.imread(mask_file_name)
             if tile_arr.ndim > 1:
                 tile_arr = tile_arr[...,0]
             #set minumum amount of pixels necessary in each tile
             tile_thresh = THRESH * tile_arr.shape[0] * tile_arr.shape[1]
+
+            total_pixel_coords = get_num_white(tile_arr)
 
             if patch_mask:
                 #load respective tile from patch mask
@@ -219,7 +230,7 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
             # get grey matter coordinates
             coordinates = get_gray_matter(tile_arr)
 
-            if (len(coordinates) == 0) or (len(coordinates) < tile_thresh):
+            if (len(coordinates) == 0) or (total_pixel_coords < tile_thresh):
                 os.chdir(home_dir)
                 continue
 

@@ -29,7 +29,7 @@ def compute_num_patches(W, S):
 '''
 Get strided version of a square array
 '''
-def get_strided_view_square(arr, F, S):
+def get_stridded_view_square(arr, F, S):
 
     W = arr.shape[0] #I'm assuming all arrays are square
 
@@ -54,7 +54,7 @@ def get_strided_view_square(arr, F, S):
 '''
 Get strided version of an array of arbitrary size
 '''
-def get_strided_view(arr, F, S):
+def get_stridded_view(arr, F, S):
 
     W_row = arr.shape[0]
     W_col = arr.shape[1]

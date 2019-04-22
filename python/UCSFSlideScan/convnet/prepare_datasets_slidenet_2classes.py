@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import sklearn.feature_extraction as fx
 from skimage import img_as_ubyte
 import glob
-import strided_patches as sp
+import stridded_patches as sp
 import cv2
 
 NPIX_BKG = 0.98
@@ -74,14 +74,14 @@ def create_dataset(original_imgs_dir, mask_img_dir, dataset_img_dir, dataset_mas
         # img_patches = fx.image.extract_patches_2d(img, (y_dim, x_dim))
         # mask_patches = fx.image.extract_patches_2d(mask, (y_dim, x_dim))
 
-        Rx = sp.get_strided_view_square(R, F, S)
-        Gx = sp.get_strided_view_square(G, F, S)
-        Bx = sp.get_strided_view_square(B, F, S)
+        Rx = sp.get_stridded_view_square(R, F, S)
+        Gx = sp.get_stridded_view_square(G, F, S)
+        Bx = sp.get_stridded_view_square(B, F, S)
 
         #MCx = sp.get_strided_view_square(mask_cell, F, S)
         #MTx = sp.get_strided_view_square(mask_thread, F, S)
-        MTx = sp.get_strided_view_square(mask_fore, F, S)
-        MBx = sp.get_strided_view_square(mask_bkg, F, S)
+        MTx = sp.get_stridded_view_square(mask_fore, F, S)
+        MBx = sp.get_stridded_view_square(mask_bkg, F, S)
 
 
         nPatches = Rx.shape[0]
