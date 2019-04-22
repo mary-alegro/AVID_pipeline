@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9bd152e2-1d65-4ba4-9b75-f2168f2326b7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/LargeSlideScan.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/LargeSlideScan.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/deprecated/prepare_datasets_taunet.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/deprecated/prepare_datasets_taunet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/prepare_datasets_slidenet_2classes.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/prepare_datasets_slidenet_2classes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/reconstruction/export_data_patches.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/reconstruction/export_data_patches.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/reconstruction/export_data_patches_memmap.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/reconstruction/export_data_patches_memmap.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/strided_patches.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/stridded_patches.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py" afterDir="false" />
-    </list>
+    <list default="true" id="9bd152e2-1d65-4ba4-9b75-f2168f2326b7" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,8 +22,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="580">
-              <caret line="346" column="13" selection-start-line="346" selection-start-column="13" selection-end-line="346" selection-end-column="13" />
+            <state relative-caret-position="2065">
+              <caret line="346" column="28" lean-forward="true" selection-start-line="346" selection-start-column="28" selection-end-line="346" selection-end-column="28" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -245,7 +235,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="586" y="38" width="1863" height="1378" extended-state="0" />
+    <frame x="577" y="45" width="1863" height="1378" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
@@ -347,8 +337,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="580">
-          <caret line="346" column="13" selection-start-line="346" selection-start-column="13" selection-end-line="346" selection-end-column="13" />
+        <state relative-caret-position="2065">
+          <caret line="346" column="28" lean-forward="true" selection-start-line="346" selection-start-column="28" selection-end-line="346" selection-end-column="28" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
