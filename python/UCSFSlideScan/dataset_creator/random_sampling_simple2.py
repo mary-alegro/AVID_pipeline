@@ -205,9 +205,6 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
             snum =  filename[idx1+1:idx2]
             snum = int(snum)
 
-            if snum == 255:
-                pass
-
             #load tile
             tile_arr = cv2.imread(mask_file_name)
             if tile_arr.ndim > 1:
@@ -284,7 +281,7 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
                 #create UUID for file name
                 uu_id = str(uuid.uuid1())
 
-                scipy.misc.imsave('patch' + '_' + uu_id +'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
+                scipy.misc.imsave('patch' + '_' + str(snum) + '_' + uu_id +'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
                 #scipy.misc.imsave('patch' + '_' + str(patch_count)+'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
                 patch_count += 1
 
