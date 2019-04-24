@@ -281,7 +281,7 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
                 #create UUID for file name
                 uu_id = str(uuid.uuid1())
 
-                scipy.misc.imsave('patch' + '_' + str(snum) + '_' + uu_id +'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
+                scipy.misc.imsave('patch' + '_' + str(root_dir) + '_' + uu_id +'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
                 #scipy.misc.imsave('patch' + '_' + str(patch_count)+'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
                 patch_count += 1
 
