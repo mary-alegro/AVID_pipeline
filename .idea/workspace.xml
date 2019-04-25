@@ -15,11 +15,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="292" lean-forward="true" selection-start-line="292" selection-end-line="292" />
+            <state relative-caret-position="-1414">
+              <caret line="198" selection-start-line="198" selection-end-line="198" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file:///usr/lib/python2.7/posixpath.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="357">
+              <caret line="73" selection-start-line="73" selection-end-line="73" />
             </state>
           </provider>
         </entry>
@@ -77,9 +86,9 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="577" />
+    <option name="x" value="425" />
     <option name="y" value="45" />
-    <option name="width" value="1924" />
+    <option name="width" value="2076" />
     <option name="height" value="1378" />
   </component>
   <component name="ProjectView">
@@ -191,7 +200,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py" />
-      <option name="PARAMETERS" value="$USER_HOME$/storage2/Posdoc/AVID/AV23/MC1/full_res 1024 1024 $USER_HOME$/storage2/Posdoc/AVID/AV23/MC1/patches_test" />
+      <option name="PARAMETERS" value="$USER_HOME$/storage2/Posdoc/AVID/AV23/MC1/full_res 1024 1024 $USER_HOME$/storage2/Posdoc/AVID/AV23/MC1/full_res/patches_test" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -224,23 +233,22 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="577" y="45" width="1924" height="1378" extended-state="0" />
-    <editor active="true" />
+    <frame x="425" y="45" width="2076" height="1378" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2419779" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22406235" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32981315" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39967507" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.39967507" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.3290008" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.3290008" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -256,7 +264,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py</url>
-          <line>347</line>
+          <line>350</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -319,10 +327,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///usr/lib/python2.7/posixpath.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="73" selection-start-line="73" selection-end-line="73" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="292" lean-forward="true" selection-start-line="292" selection-end-line="292" />
+        <state relative-caret-position="-1414">
+          <caret line="198" selection-start-line="198" selection-end-line="198" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
