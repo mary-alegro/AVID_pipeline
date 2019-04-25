@@ -206,6 +206,9 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
             snum =  filename[idx1+1:idx2]
             snum = int(snum)
 
+            if snum == 83:
+                pass
+
             #load tile
             tile_arr = cv2.imread(mask_file_name)
             if tile_arr.ndim > 1:
@@ -277,10 +280,10 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
                 patch_y = coordinates[patch_centers[i]][1] - y/2
                 patch = extract_color_patch(patch_x, x, patch_y, y, (count-1), colored_file_list)
 
-                print('*** center: {}, x: {}, y: {}, patch_x: {}, patch_y: {}, tile: {}'.format(patch_centers[i],
+                print('*** center: {}, x: {}, y: {}, patch_x: {}, patch_y: {}, tile: {}, count: {}'.format(patch_centers[i],
                                                             coordinates[patch_centers[i]][0],
                                                             coordinates[patch_centers[i]][1],
-                                                            patch_x,patch_y,snum))
+                                                            patch_x,patch_y,snum,count))
 
                 os.chdir(home_dir)
                 os.chdir('patches')
@@ -288,7 +291,9 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
                 #create UUID for file name
                 uu_id = str(uuid.uuid1())
 
-                scipy.misc.imsave('patch' + '_' + re.sub('[^A-Za-z0-9]+', '_', root_dir) + '_' + uu_id +'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
+                output_name = 'patch' + '_' + re.sub('[^A-Za-z0-9]+', '_', root_dir) + '_' + uu_id +'.tif'
+                #scipy.misc.imsave('patch' + '_' + re.sub('[^A-Za-z0-9]+', '_', root_dir) + '_' + uu_id +'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
+                cv2.imwrite(output_name,patch)
                 #scipy.misc.imsave('patch' + '_' + str(patch_count)+'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
                 patch_count += 1
 
@@ -299,6 +304,7 @@ def extract_color_patch(patch_x, x, patch_y, y, fn, colored_file_list):
 
     #os.chdir(colored_file_list[fn])
     print('dir during actual extraction: ' + os.getcwd())
+    print('*** {}'.format(colored_file_list[fn]))
     colored_tile_arr = cv2.imread(colored_file_list[fn])
     #tile_arr = np.array(file)
     print("extract color patch")

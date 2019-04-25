@@ -15,20 +15,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="341">
-              <caret line="285" selection-start-line="285" selection-end-line="285" />
+            <state relative-caret-position="453">
+              <caret line="289" lean-forward="true" selection-start-line="289" selection-end-line="289" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file:///usr/lib/python2.7/posixpath.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="73" selection-start-line="73" selection-end-line="73" />
             </state>
           </provider>
         </entry>
@@ -86,8 +77,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="425" />
-    <option name="y" value="45" />
+    <option name="x" value="408" />
+    <option name="y" value="39" />
     <option name="width" value="2076" />
     <option name="height" value="1378" />
   </component>
@@ -233,15 +224,16 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="425" y="45" width="2076" height="1378" extended-state="0" />
+    <frame x="408" y="39" width="2076" height="1378" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22406235" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32981315" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.39967507" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32981315" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39967507" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -264,7 +256,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py</url>
-          <line>353</line>
+          <line>359</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -274,8 +266,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py</url>
-          <line>277</line>
-          <option name="timeStamp" value="8" />
+          <line>209</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py</url>
+          <line>280</line>
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -336,8 +333,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="341">
-          <caret line="285" selection-start-line="285" selection-end-line="285" />
+        <state relative-caret-position="453">
+          <caret line="289" lean-forward="true" selection-start-line="289" selection-end-line="289" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
