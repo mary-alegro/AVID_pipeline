@@ -15,8 +15,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1414">
-              <caret line="198" selection-start-line="198" selection-end-line="198" />
+            <state relative-caret-position="341">
+              <caret line="285" selection-start-line="285" selection-end-line="285" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -264,7 +264,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py</url>
-          <line>350</line>
+          <line>353</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -336,8 +336,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1414">
-          <caret line="198" selection-start-line="198" selection-end-line="198" />
+        <state relative-caret-position="341">
+          <caret line="285" selection-start-line="285" selection-end-line="285" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>

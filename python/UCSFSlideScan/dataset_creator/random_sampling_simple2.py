@@ -277,7 +277,10 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
                 patch_y = coordinates[patch_centers[i]][1] - y/2
                 patch = extract_color_patch(patch_x, x, patch_y, y, (count-1), colored_file_list)
 
-                print('*** center: {}, x: {}, y: {}'.format(patch_centers[i],coordinates[patch_centers[i]][0],coordinates[patch_centers[i]][1]))
+                print('*** center: {}, x: {}, y: {}, patch_x: {}, patch_y: {}, tile: {}'.format(patch_centers[i],
+                                                            coordinates[patch_centers[i]][0],
+                                                            coordinates[patch_centers[i]][1],
+                                                            patch_x,patch_y,snum))
 
                 os.chdir(home_dir)
                 os.chdir('patches')
