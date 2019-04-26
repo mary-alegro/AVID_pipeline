@@ -85,38 +85,6 @@ def print_dirs_info(dir_dic):
         print(dc['xml_file'])
 
 
-# def save_color_images(root_dir):
-#     file_list = {}
-#     print("colored tiles pre-parse")
-#     #save all tiled images in this directory
-#     for root, dir, files in os.walk(root_dir):
-#         print("walking file system for colored tiles")
-#         if fnmatch.fnmatch(root,'*heat_map/seg_tiles'): #we want to fetch the tiles, so verify we are in /tiles*
-#             print("found colored tiles folder")
-#             for fn in fnmatch.filter(files,'*_*.tif'): #fetch tif images
-#                 file_list[fn] = root
-#
-#     return file_list
-
-
-# def fetch_tiles(root_dir):
-#     file_list =  {}
-#     print("masked tiles pre-parse")
-#
-#     #save all tiled images in this directory
-#     for root, dir, files in os.walk(root_dir):
-#         print("walking file system for masked tiles")
-#         if fnmatch.fnmatch(root,'*mask/final_mask/tiles'): #we want to fetch the tiles, so verify we are in /tiles*
-#             print("found masked tiles folder")
-#             for fn in fnmatch.filter(files,'*_*.tif'): #fetch tif images
-#                 #file_name = os.path.join(root,fn)
-#                 file_list[fn] = root
-#
-#     return file_list
-
-
-
-
 def calc_percentage(img_arr):
     print(np.count_nonzero(img_arr))
     print(np.count_nonzero(img_arr==0))
@@ -137,13 +105,6 @@ def get_num_white(block):
     tmp_nnz_b = block.flatten().nonzero()
     nnz_b = float(len(tmp_nnz_b[0]))  # number of non-zero pixel in BLOCK matrix
     return nnz_b
-
-# def significant_overlap(left, right, top, bottom, patch_points):
-#     for point_set in patch_points:
-#         x_overlap = max(0, min(patch_points[1], right) - max(patch_points[0], left));
-#         y_overlap = max(0, min(patch_points[3], bottom) - max(patch_points[2], top));
-#         overlap_area = x_overlap * y_overlap;
-#     return (overlap_area/(x_len * y_len) > .1)
 
 
 def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
@@ -173,7 +134,8 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
         masked_file_list = glob.glob(os.path.join(mask_tiles_dir,'*.tif'))
 
         #fetch list of all histo tiles
-        colored_file_list = glob.glob(os.path.join(seg_tiles_dir,'*.tif'))
+        #colored_file_list = glob.glob(os.path.join(seg_tiles_dir,'*.tif'))
+
 
         if patch_mask:
             #read metadata
@@ -206,8 +168,7 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
             snum =  filename[idx1+1:idx2]
             snum = int(snum)
 
-            if snum == 83:
-                pass
+            colored_file_name = os.path.join(seg_tiles_dir,'tile_{:04d}.tif'.format(snum))
 
             #load tile
             tile_arr = cv2.imread(mask_file_name)
@@ -278,7 +239,8 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
             for i in range(len(patch_centers)):
                 patch_x = coordinates[patch_centers[i]][0] - x/2
                 patch_y = coordinates[patch_centers[i]][1] - y/2
-                patch = extract_color_patch(patch_x, x, patch_y, y, (count-1), colored_file_list)
+                #patch = extract_color_patch(patch_x, x, patch_y, y, (count-1), colored_file_list)
+                patch = extract_color_patch(patch_x, x, patch_y, y, colored_file_name)
 
                 print('*** center: {}, x: {}, y: {}, patch_x: {}, patch_y: {}, tile: {}, count: {}'.format(patch_centers[i],
                                                             coordinates[patch_centers[i]][0],
@@ -291,7 +253,8 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
                 #create UUID for file name
                 uu_id = str(uuid.uuid1())
 
-                output_name = 'patch' + '_' + re.sub('[^A-Za-z0-9]+', '_', root_dir) + '_' + uu_id +'.tif'
+                #output_name = 'patch' + '_' + re.sub('[^A-Za-z0-9]+', '_', root_dir) + '_' + uu_id +'.tif'
+                output_name = 'patch' + '_' + uu_id +'.tif'
                 #scipy.misc.imsave('patch' + '_' + re.sub('[^A-Za-z0-9]+', '_', root_dir) + '_' + uu_id +'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
                 cv2.imwrite(output_name,patch)
                 #scipy.misc.imsave('patch' + '_' + str(patch_count)+'.tif', cv2.cvtColor(patch, cv2.COLOR_BGR2RGB))
@@ -300,44 +263,17 @@ def collect_samples(root_dir, x_len, y_len, patch_count, hdir):
             os.chdir(home_dir)
 
 
-def extract_color_patch(patch_x, x, patch_y, y, fn, colored_file_list):
+def extract_color_patch(patch_x, x, patch_y, y, colored_file_name):
 
     #os.chdir(colored_file_list[fn])
     print('dir during actual extraction: ' + os.getcwd())
-    print('*** {}'.format(colored_file_list[fn]))
-    colored_tile_arr = cv2.imread(colored_file_list[fn])
+    print('*** {}'.format(colored_file_name))
+    colored_tile_arr = cv2.imread(colored_file_name)
     #tile_arr = np.array(file)
     print("extract color patch")
     #coordinates = get_white_matter(tile_arr)
     #needed_samples = int(calc_percentage(tile_arr) * 10)
     return colored_tile_arr[patch_x:(patch_x + x), patch_y:(patch_y + y)]
-
-
-# def test_coords_per_tile():
-#     root_dir = '/home/maryana/storage/Posdoc/AVID/AV13/TEMP2/AT100_424'
-#     coords_file = os.path.join(root_dir,'output/RES(0x0)/tiles/tile_coordinates.npy')
-#     meta_xml_file = os.path.join(root_dir,'output/RES(0x0)/tiles/tiling_info.xml')
-#     patches_mask_file = os.path.join(root_dir,'mask/patches_mask/AT100_424_res10_patches_mask.tif')
-#     percent_from_mask = 0.95
-#     npatches_total = 100
-#
-#     tile_coords_full = np.load(coords_file).astype('int')
-#     grid_rows, grid_cols, img_rows, img_cols, img_home, img_file = XMLUtils.parse_tiles_metadata(meta_xml_file)
-#     tiffLoader = TiffTileLoader()
-#     tiffLoader.open_file(patches_mask_file)
-#     tiffLoader.compute_tile_coords(grid_rows, grid_cols)
-#
-#     mask_patches = io.imread(patches_mask_file)
-#     if mask_patches.ndim > 2:
-#         mask_patches = mask_patches[...,0]
-#     roi_row, roi_col = (mask_patches > 0).nonzero()
-#     bkg_row,bkg_col = (mask_patches <= 0).nonzero()
-#
-#     nRoi = len(roi_row)
-#     nBkg =
-
-
-
 
 
 
@@ -350,12 +286,6 @@ def main():
         hdir = str(sys.argv[4])
         print("collected arguments")
 
-        # folders = get_dirs_to_process(root_dir)
-        # nFolders = len(folders)
-        # print('Num. folders: {}'.format(nFolders))
-        # patch_count = 0
-        # for rt in folders:
-        #    patch_count = collect_samples(rt, x_len, y_len,patch_count)
         patch_count = 0
         collect_samples(root_dir, x_len, y_len,patch_count,hdir)
     else:
