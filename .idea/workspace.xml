@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9bd152e2-1d65-4ba4-9b75-f2168f2326b7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/find_slidenet_lr.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/util/create_debug_datasets.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/python/UCSFSlideScan/deprecated/change_file_id.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/LargeSlideScan.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/LargeSlideScan.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/net/Slidenet.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/net/Slidenet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/train_slidenet.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/UCSFSlideScan/convnet/train_slidenet.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,54 +19,109 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/prepare_datasets_slidenet_2classes.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="450">
+              <caret line="41" column="24" selection-start-line="41" selection-start-column="24" selection-end-line="41" selection-end-column="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/train_slidenet.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="435">
+              <caret line="80" selection-start-line="80" selection-end-line="80" />
+              <folding>
+                <element signature="e#228#246#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/util/create_debug_datasets.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="147">
+              <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
+              <folding>
+                <element signature="e#1#11#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/net/Slidenet.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="18" column="16" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
+              <folding>
+                <element signature="e#0#30#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py">
+        <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/find_slidenet_lr.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="256" column="44" selection-start-line="256" selection-start-column="44" selection-end-line="256" selection-end-column="44" />
+            <state relative-caret-position="225">
+              <caret line="18" column="17" lean-forward="true" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="17" />
               <folding>
-                <element signature="e#0#10#0" expanded="true" />
+                <element signature="e#228#246#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/pipeline/ImageTiler.py">
+        <entry file="file:///usr/local/lib/python2.7/dist-packages/keras/callbacks.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-405">
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="238">
+              <caret line="145" column="6" selection-start-line="145" selection-start-column="6" selection-end-line="145" selection-end-column="6" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/pipeline/HeatmapCreator.py">
+        <entry file="file://$USER_HOME$/.PyCharmCE2018.3/system/python_stubs/-1247972723/__builtin__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="96" selection-start-line="96" selection-end-line="100" selection-end-column="20" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="230">
+              <caret line="4337" column="8" selection-start-line="4337" selection-start-column="8" selection-end-line="4337" selection-end-column="8" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/misc/TiffTileLoader.py">
+        <entry file="file:///usr/local/lib/python2.7/dist-packages/keras_lr_finder/lr_finder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="14" column="22" lean-forward="true" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
+            <state relative-caret-position="420">
+              <caret line="31" selection-start-line="31" selection-end-line="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/stridded_patches.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
               <folding>
-                <element signature="e#0#9#0" expanded="true" />
+                <element signature="e#0#18#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -73,14 +135,20 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py" />
+        <option value="$PROJECT_DIR$/python/UCSFSlideScan/deprecated/change_file_id.py" />
+        <option value="$PROJECT_DIR$/python/UCSFSlideScan/convnet/train_slidenet.py" />
+        <option value="$PROJECT_DIR$/python/UCSFSlideScan/convnet/util/create_debug_datasets.py" />
+        <option value="$PROJECT_DIR$/python/UCSFSlideScan/convnet/net/Slidenet.py" />
+        <option value="$PROJECT_DIR$/python/UCSFSlideScan/convnet/lr_finder.py" />
+        <option value="$PROJECT_DIR$/python/UCSFSlideScan/convnet/find_slidenet_lr.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="408" />
-    <option name="y" value="39" />
+    <option name="x" value="101" />
+    <option name="y" value="41" />
     <option name="width" value="2076" />
-    <option name="height" value="1378" />
+    <option name="height" value="1380" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -110,28 +178,23 @@
               <item name="LargeSlideScan" type="462c0819:PsiDirectoryNode" />
               <item name="python" type="462c0819:PsiDirectoryNode" />
               <item name="UCSFSlideScan" type="462c0819:PsiDirectoryNode" />
-              <item name="dataset_creator" type="462c0819:PsiDirectoryNode" />
+              <item name="convnet" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="LargeSlideScan" type="b2602c69:ProjectViewProjectNode" />
               <item name="LargeSlideScan" type="462c0819:PsiDirectoryNode" />
               <item name="python" type="462c0819:PsiDirectoryNode" />
               <item name="UCSFSlideScan" type="462c0819:PsiDirectoryNode" />
-              <item name="deprecated" type="462c0819:PsiDirectoryNode" />
+              <item name="convnet" type="462c0819:PsiDirectoryNode" />
+              <item name="net" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="LargeSlideScan" type="b2602c69:ProjectViewProjectNode" />
               <item name="LargeSlideScan" type="462c0819:PsiDirectoryNode" />
               <item name="python" type="462c0819:PsiDirectoryNode" />
               <item name="UCSFSlideScan" type="462c0819:PsiDirectoryNode" />
-              <item name="pipeline" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="LargeSlideScan" type="b2602c69:ProjectViewProjectNode" />
-              <item name="LargeSlideScan" type="462c0819:PsiDirectoryNode" />
-              <item name="python" type="462c0819:PsiDirectoryNode" />
-              <item name="UCSFSlideScan" type="462c0819:PsiDirectoryNode" />
-              <item name="scripts" type="462c0819:PsiDirectoryNode" />
+              <item name="convnet" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -141,8 +204,14 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../MultiplexSeg" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/python/UCSFSlideScan/convnet" />
+      <recent name="$PROJECT_DIR$/python/UCSFSlideScan/convnet/util" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -156,7 +225,49 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.random_sampling_simple2">
+  <component name="RunManager" selected="Python.lr_finder">
+    <configuration name="change_file_id" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="LargeSlideScan" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/python/UCSFSlideScan/deprecated" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/python/UCSFSlideScan/deprecated/change_file_id.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="create_debug_datasets" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="LargeSlideScan" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/python/UCSFSlideScan/convnet/util" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/python/UCSFSlideScan/convnet/util/create_debug_datasets.py" />
+      <option name="PARAMETERS" value="$USER_HOME$/storage2/Posdoc/AVID/AT100/slidenet_2classes/testing/images $USER_HOME$/storage2/Posdoc/AVID/AT100/slidenet_2classes/testing/masks $USER_HOME$/storage2/Posdoc/AVID/AT100/slidenet_2classes/debug_testing/images $USER_HOME$/storage2/Posdoc/AVID/AT100/slidenet_2classes/debug_testing/masks 100" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="create_histo_masks" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="LargeSlideScan" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -171,6 +282,27 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/python/UCSFSlideScan/create_histo_masks.py" />
       <option name="PARAMETERS" value="$USER_HOME$/storage2/Posdoc/AVID/AV23/MC1/res10/brain_mask $USER_HOME$/storage2/Posdoc/AVID/AV23/MC1/res10/wm_mask $USER_HOME$/storage2/Posdoc/AVID/AV23/MC1/res10/final_mask" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="lr_finder" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="LargeSlideScan" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/python/UCSFSlideScan/convnet" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/python/UCSFSlideScan/convnet/find_slidenet_lr.py" />
+      <option name="PARAMETERS" value="$USER_HOME$/storage2/Posdoc/AVID/AT100/slidenet_2classes/configuration_avid_slidenet_2class_204px.txt" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -202,9 +334,15 @@
     <list>
       <item itemvalue="Python.create_histo_masks" />
       <item itemvalue="Python.random_sampling_simple2" />
+      <item itemvalue="Python.change_file_id" />
+      <item itemvalue="Python.create_debug_datasets" />
+      <item itemvalue="Python.lr_finder" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.lr_finder" />
+        <item itemvalue="Python.create_debug_datasets" />
+        <item itemvalue="Python.change_file_id" />
         <item itemvalue="Python.random_sampling_simple2" />
         <item itemvalue="Python.create_histo_masks" />
       </list>
@@ -224,23 +362,23 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="408" y="39" width="2076" height="1378" extended-state="0" />
+    <frame x="101" y="41" width="2076" height="1380" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22406235" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22406235" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32981315" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39967507" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32927817" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39821574" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.3290008" />
+      <window_info anchor="bottom" id="Python Console" order="8" weight="0.39821574" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.40617386" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -274,6 +412,21 @@
           <line>170</line>
           <option name="timeStamp" value="14" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/util/create_debug_datasets.py</url>
+          <line>49</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/find_slidenet_lr.py</url>
+          <line>49</line>
+          <option name="timeStamp" value="20" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/find_slidenet_lr.py</url>
+          <line>86</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
@@ -291,16 +444,7 @@
     <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/misc/TiffTileLoader.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
-          <caret line="14" column="22" lean-forward="true" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/pipeline/ImageTiler.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-405">
+          <caret line="14" column="22" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
@@ -326,17 +470,141 @@
     </entry>
     <entry file="file:///usr/lib/python2.7/posixpath.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="73" selection-start-line="73" selection-end-line="73" />
+        <state relative-caret-position="312">
+          <caret line="70" column="22" lean-forward="true" selection-start-line="70" selection-start-column="22" selection-end-line="70" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/deprecated/change_file_id.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+          <folding>
+            <element signature="e#1#10#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/dataset_creator/random_sampling_simple2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="256" column="44" selection-start-line="256" selection-start-column="44" selection-end-line="256" selection-end-column="44" />
+        <state relative-caret-position="510">
+          <caret line="253" column="41" selection-start-line="253" selection-start-column="16" selection-end-line="253" selection-end-column="41" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/util/compute_mean_image_rgb_AVID.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="735">
+          <caret line="54" column="7" selection-start-line="54" selection-start-column="7" selection-end-line="54" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/slidenet_segmentation_2classes.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/pipeline/ImageTiler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="540">
+          <caret line="90" column="33" selection-start-line="90" selection-start-column="33" selection-end-line="90" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/prepare_datasets_slidenet_2classes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="41" column="24" selection-start-line="41" selection-start-column="24" selection-end-line="41" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/stridded_patches.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/train_slidenet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="80" selection-start-line="80" selection-end-line="80" />
+          <folding>
+            <element signature="e#228#246#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/util/create_debug_datasets.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="147">
+          <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
+          <folding>
+            <element signature="e#1#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/util/find_lr.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" column="27" lean-forward="true" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/net/Slidenet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="16" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python2.7/dist-packages/keras_lr_finder/lr_finder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python2.7/dist-packages/keras/callbacks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="145" column="6" selection-start-line="145" selection-start-column="6" selection-end-line="145" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2018.3/system/python_stubs/-1247972723/__builtin__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="4337" column="8" selection-start-line="4337" selection-start-column="8" selection-end-line="4337" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/util/lr_finder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="34" column="19" selection-start-line="34" selection-start-column="19" selection-end-line="34" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/UCSFSlideScan/convnet/find_slidenet_lr.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="18" column="17" lean-forward="true" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="17" />
+          <folding>
+            <element signature="e#228#246#0" expanded="true" />
           </folding>
         </state>
       </provider>

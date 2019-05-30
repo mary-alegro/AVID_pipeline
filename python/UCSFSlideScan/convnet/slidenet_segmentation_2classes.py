@@ -120,6 +120,7 @@ def run_segmentation(root_dir,config_file):
             #overlay = imoverlay(orig_img,bw,[0.3,1,0.3])
             #out_name = os.path.join(out_dir,basename[0:-4]+'_over.tif')
             out_name_seg = os.path.join(out_dir,basename[0:-4]+'_mask.tif')
+            out_name_prob = os.path.join(out_dir,basename[0:-4]+'_prob.npy')
 
             test_imgs_original = os.path.join(tiles_dir,fname)
             print('Segmenting image {}.'.format(test_imgs_original))
@@ -215,8 +216,11 @@ def run_segmentation(root_dir,config_file):
 
 
             #img = 1-img
-            mask = img > 0.7
+            mask = img > 0.7 #img has class probabilities
             #bw = mh.bwperim(mask)
+
+            print('Saving probability file {}'.format(out_name_prob))
+            np.save(out_name_prob,img)
 
             #mask out background just in case
             mask_bkg = orig_img[...,0] < 1.

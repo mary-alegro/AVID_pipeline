@@ -1,6 +1,5 @@
 import skimage.io as io
 import matplotlib.pyplot as plt
-from keras.preprocessing.image import ImageDataGenerator
 import keras.preprocessing.image as k_image
 import glob
 import convnet.util.pre_processing as pp
@@ -35,6 +34,7 @@ class TauImageGenerator:
         #self.back_img_list = glob.glob(os.path.join(images_dir, '*_1_*.tif'))
         self.fore_img_list = glob.glob(os.path.join(images_dir, '*_0_*.tif'))
         self.back_img_list = self.fore_img_list
+        #self.back_img_list = []
 
         #shuffle arrays and balance data
         self.shuffle_files()
@@ -200,7 +200,7 @@ class TauImageGenerator:
             # get mask
             mask = np.load(mask_path)
             if self.resize_mask != []:
-                mask = cv2.resize(mask,self.resize_mask,interpolation=cv2.INTER_NEAREST)
+                mask = cv2.resize(mask,(self.resize_mask[1],self.resize_mask[0]),interpolation=cv2.INTER_NEAREST)
             mask = mask.astype('float')
             mask /= 255
             mask_bkp = mask.copy()
@@ -389,17 +389,17 @@ class KerasDataGenerator(keras.preprocessing.image.ImageDataGenerator):
 
 #test generator
 def main():
-    images_dir = '/home/maryana/storage2/Posdoc/AVID/AV23/AT100/slidenet_2classes/training/images204/patches'
-    masks_dir = '/home/maryana/storage2/Posdoc/AVID/AV23/AT100/slidenet_2classes/training/masks204/patches'
-    mean_img = '/home/maryana/storage2/Posdoc/AVID/AV23/AT100/db_training/images/mean_image.npy'
+    images_dir = '/home/maryana/storage2/Posdoc/AVID/AT100/slidenet_2classes/debug_training/images'
+    masks_dir = '/home/maryana/storage2/Posdoc/AVID/AT100/slidenet_2classes/debug_training/masks'
+    mean_img = '/home/maryana/storage2/Posdoc/AVID/AT100/slidenet_2classes/training/mean_image.npy'
     img_dim = (204,204,3)
     mask_dim=(200,200)
     nClasses = 2
     batch_size = 32
-    do_augmentation = False
+    do_augmentation = True
     augment_percent = 0.40
     #self,gen_name,images_dir,masks_dir,mean_img,img_dim,mask_dim,nClasses,batch_size,do_augmentation=False,augment_percent=0.40,resize_mask=[]
-    tau_gen = TauImageGenerator('Debug',images_dir,masks_dir,mean_img,img_dim,(200,200),nClasses,batch_size,do_augmentation,augment_percent,resize_mask=(200,200),class_weights=(0.8,0.2))
+    tau_gen = TauImageGenerator('Debug',images_dir,masks_dir,mean_img,img_dim,(200,200),nClasses,batch_size,do_augmentation,augment_percent,resize_mask=[200,200],class_weights=[0.8,0.2])
 
     nEpochs = tau_gen.__len__()
     for i in range(nEpochs):

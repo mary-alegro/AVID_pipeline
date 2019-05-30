@@ -8,6 +8,13 @@ from keras.optimizers import SGD
 import numpy as np
 
 
+#set random seed
+from numpy.random import seed
+seed(17)
+from tensorflow import set_random_seed
+set_random_seed(17)
+
+
 #Define the neural network
 def get_slidenet(n_ch=3,patch_height=818,patch_width=818): #(3,818,818)
     inputs = Input(shape=(n_ch, patch_height, patch_width))
@@ -67,7 +74,8 @@ def get_slidenet(n_ch=3,patch_height=818,patch_width=818): #(3,818,818)
     model = Model(input=inputs, output=softmax)
 
     # sgd = SGD(lr=0.01, decay=1e-6, momentum=0.3, nesterov=False)
-    model.compile(optimizer=SGD(lr=0.001), loss='categorical_crossentropy',metrics=['accuracy'])
+    adam = Adam(lr=3e-4)
+    model.compile(optimizer=SGD(lr=0.021), loss='categorical_crossentropy',metrics=['accuracy'])
 
     model.summary()
 
@@ -121,9 +129,10 @@ def get_slidenet2(n_ch=3,patch_height=204,patch_width=204):
     #softmax = core.Activation('sigmoid')(conv7)
     model = Model(input=inputs, output=softmax)
 
-    sgd = SGD(lr = 0.01, decay = 1e-6, momentum = 0.9, nesterov = False)
-    adam = Adam(lr=0.002)
-    #sgd = SGD(lr=0.001)
+    #sgd = SGD(lr = 0.01, decay = 1e-6, momentum = 0.9, nesterov = False)
+    #adam = Adam(lr=0.0021) #AT100
+    adam = Adam(lr=0.002701)  # AT8
+    sgd = SGD(lr=0.005)
     model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'], sample_weight_mode='temporal')
     #model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['binary_accuracy', 'categorical_accuracy', dice_coef])
 
