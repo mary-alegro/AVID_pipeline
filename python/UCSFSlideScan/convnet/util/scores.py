@@ -73,15 +73,11 @@ def precision(y_true,y_pred):
 
     # num. TP
     TP = np.intersect1d(idx_y_pred,idx_y_true)
-    nTP = float(np.sum(TP))
+    nTP = float(len(TP))
 
     #num. FP
     FP = np.setdiff1d(idx_y_pred,idx_y_true)
-    nFP = float(np.sum(FP))
-
-    # #num FN
-    # FN = np.setdiff1d(idx_y_true,idx_y_pred)
-    # nFN = float(np.sum(FN))
+    nFP = float(len(FP))
 
     try:
         P = nTP / (nTP + nFP)
@@ -102,15 +98,11 @@ def recall(y_true,y_pred):
 
     # num. TP
     TP = np.intersect1d(idx_y_pred,idx_y_true)
-    nTP = float(np.sum(TP))
-
-    # #num. FP
-    # FP = np.setdiff1d(idx_y_pred,idx_y_true)
-    # nFP = float(np.sum(FP))
+    nTP = float(len(TP))
 
     #num FN
     FN = np.setdiff1d(idx_y_true,idx_y_pred)
-    nFN = float(np.sum(FN))
+    nFN = float(len(FN))
 
     try:
         R = nTP / (nTP + nFN)
@@ -138,8 +130,8 @@ def FPR(y_true,y_pred):
     idx_y_n_true = np.nonzero(y_true_n_f > 0)
     idx_y_n_pred = np.nonzero(y_pred_n_f > 0)
 
-    TN = np.intersect1d(idx_y_n_pred,idx_y_n_true)
-    nTN = float(np.sum(TN))
+    TN = np.intersect1d(idx_y_n_pred,idx_y_n_true) #index of true negative elements
+    nTN = float(len(TN))
 
     y_true_f = y_true.flatten()
     y_pred_f = y_pred.flatten()
@@ -148,7 +140,7 @@ def FPR(y_true,y_pred):
 
     #num. FP
     FP = np.setdiff1d(idx_y_pred,idx_y_true)
-    nFP = float(np.sum(FP))
+    nFP = float(len(FP))
 
     FPR = nFP/(nFP+nTN)
 
@@ -167,4 +159,6 @@ def TN_rate(y_true,y_pred):
     idx_y_pred = np.nonzero(y_pred_f > 0)
 
     TN = np.intersect1d(idx_y_pred,idx_y_true)
-    nTN = float(np.sum(TN))
+    nTN = float(len(TN))
+
+    return nTN
