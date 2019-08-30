@@ -28,6 +28,8 @@ import glob
 import matplotlib.pyplot as plt
 import cv2
 
+import time
+
 
 
 
@@ -183,7 +185,10 @@ def run_segmentation(root_dir,config_file):
 
 
             # Calculate the predictions
+            start = time.clock()
             predictions = model.predict(patches_imgs_test, batch_size=32, verbose=2)
+            end = time.clock()
+            print("**Time per image: {} ".format((end-start)/32))
             print "predicted images size :"
             print predictions.shape
 
@@ -219,8 +224,8 @@ def run_segmentation(root_dir,config_file):
             mask = img > 0.7 #img has class probabilities
             #bw = mh.bwperim(mask)
 
-            print('Saving probability file {}'.format(out_name_prob))
-            np.save(out_name_prob,img)
+            # print('Saving probability file {}'.format(out_name_prob))
+            # np.save(out_name_prob,img)
 
             #mask out background just in case
             mask_bkg = orig_img[...,0] < 1.

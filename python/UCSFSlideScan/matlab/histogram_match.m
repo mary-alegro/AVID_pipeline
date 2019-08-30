@@ -1,5 +1,8 @@
 function new_img = histogram_match(img_name_ref,img_name_tgt)
 
+%REF : reference image
+%TGT: image that needs to be normalized
+
     img_ref= niftiread(img_name_ref);
     img_tgt = niftiread(img_name_tgt);
 
@@ -51,7 +54,9 @@ function new_img = histogram_match(img_name_ref,img_name_tgt)
         %compute new value
         new_v = linear_map(tgt_range,ref_range,v);
         new_img(idx) = new_v;
-    end       
+    end     
+    
+    new_img = new_img*1000;
 
 end
 
@@ -60,7 +65,7 @@ function new_value = linear_map(tgt,ref,x)
 end
 
 %
-% find bin by devide-and-conquer
+% find bin by binary search
 %
 function [bin_idx, tgt_range] = find_bin(bin_edges, v)
 
