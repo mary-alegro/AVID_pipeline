@@ -131,8 +131,10 @@ def get_slidenet2(n_ch=3,patch_height=204,patch_width=204):
 
     #sgd = SGD(lr = 0.01, decay = 1e-6, momentum = 0.9, nesterov = False)
     #adam = Adam(lr=0.0021) #AT100
-    adam = Adam(lr=0.002701)  # AT8
-    sgd = SGD(lr=0.005)
+    #adam = Adam(lr=0.002701)  # AT8
+    adam = Adam(lr=0.005) #MC1
+
+    #sgd = SGD(lr=0.005)
     model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'], sample_weight_mode='temporal')
     #model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['binary_accuracy', 'categorical_accuracy', dice_coef])
 

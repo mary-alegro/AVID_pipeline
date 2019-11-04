@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Copy element &apos;ImageHelper.java&apos; to &apos;UCSF SlideScan/src/SlideScan&apos;&#x0D;&#x0A;- Original project: &apos;PLI Control&apos;&#x0D;&#x0A;- Destination element: &apos;UCSF SlideScan/src/SlideScan&apos;&#x0D;&#x0A;- Original element: &apos;PLI.ImageHelper.java&apos;" description="Copy compilation unit" destination="=UCSF SlideScan/src&lt;SlideScan" element1="/src&lt;PLI{ImageHelper.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1500484587482" units="1" version="1.0"/>
-</session>

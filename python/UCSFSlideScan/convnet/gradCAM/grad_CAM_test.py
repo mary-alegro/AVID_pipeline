@@ -10,6 +10,11 @@ from keras.applications.vgg16 import VGG16, preprocess_input, decode_predictions
 import tensorflow as tf
 from tensorflow.python.framework import ops
 
+
+#
+# Code from: https://github.com/eclique/keras-gradcam/blob/master/gradcam_vgg.ipynb
+#
+
 H, W = 224, 224  # Input shape, defined by the model (model.input_shape)
 
 def build_model():
@@ -189,6 +194,8 @@ def compute_saliency(model, guided_model, img_path, layer_name='block5_conv3', c
     return gradcam, gb, guided_gradcam
 
 model = build_model()
+model.summary()
+
 guided_model = build_guided_model()
 gradcam, gb, guided_gradcam = compute_saliency(model, guided_model, 'cat_dog.png', layer_name='block5_conv3',
                                                cls=-1, visualize=True, save=True)

@@ -1,1 +1,0 @@
-This was the 1st version of the PLI controller. Protocol may be outdated.

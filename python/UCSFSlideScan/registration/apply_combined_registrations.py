@@ -12,7 +12,7 @@ def get_tform_files(slice_dir):
     reg_dir = os.path.join(slice_dir,'reg')
     for root, dir, files in os.walk(reg_dir):
         order = -1
-        if fnmatch.fnmatch(root, '*/*Step:Auto*'):  # it's inside /RES*
+        if fnmatch.fnmatch(root, '*/*Step_Auto*'):  # it's inside /RES*
             direc = os.path.split(root)[1]
             order = int(direc[0]) # folder name should always be something like '1stStep:Auto'
             for fn in fnmatch.filter(files, '*0GenericAffine.mat'): #there should be only one

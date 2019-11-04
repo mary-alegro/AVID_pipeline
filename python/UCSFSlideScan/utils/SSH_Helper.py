@@ -51,7 +51,7 @@ class SSH_Helper:
 
     def exists(self,remote_path):
         try:
-            print(self.sftp.stat(remote_path))
+            self.sftp.stat(remote_path)
             return True
         except IOError:
             return False
@@ -61,3 +61,13 @@ class SSH_Helper:
 
     def send_file(self,remote_path,local_file):
         self.sftp.put(localpath=local_file,remotepath=remote_path,confirm=True)
+
+    # def compare_files(self, remote_path, local_path):
+    #     if not self.exists(remote_path):
+    #         raise IOError('Remote file {} does not exist'. format(remote_path))
+    #
+    #     if not os.path.exists(local_path):
+    #         raise IOError('Local file {} does not exist'. format(local_path))
+
+
+

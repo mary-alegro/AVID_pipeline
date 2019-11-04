@@ -164,9 +164,6 @@ def main():
     out_file = sys.argv[3]
     run_compute_stats(seg_dir,gt_dir,out_file)
 
-    #gt_file = '/home/maryana/storage2/Posdoc/AVID/AT100/db_testing/masks/patch_77f99f48-6d05-11e9-81c1-484d7ede57b2_mask.tif'
-    #seg_file = '/home/maryana/storage2/Posdoc/AVID/AT100/results/testing/heat_map/TAU_seg_tiles/patch_77f99f48-6d05-11e9-81c1-484d7ede57b2_prob.npy'
-    #run_test_stats(seg_file,gt_file)
 
 
 if __name__ == '__main__':

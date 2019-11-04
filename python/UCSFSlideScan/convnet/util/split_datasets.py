@@ -36,11 +36,12 @@ def main():
 
     if len(sys.argv) != 6:
         print('Usage: split_datasets <absolute_path_to_imgs> <absolute_path_to_masks> <path_to_dataset_images>'
-              ' <path_to_dataset_masks> <percentage>')
+              ' <path_to_dataset_masks> <percentage [0,1]>')
         exit()
 
     original_imgs_dir = str(sys.argv[1])
     mask_imgs_dir = str(sys.argv[2])
+
     dataset_img_dir = str(sys.argv[3])
     dataset_mask_dir = str(sys.argv[4])
     percent = float(sys.argv[5])

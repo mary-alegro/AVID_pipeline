@@ -80,16 +80,17 @@ def run_training(conf_path):
     model = convnet.net.Slidenet.get_slidenet2(n_ch, 204, 204)
 
     print('Creating dataset.')
-    nBatches_ds = 30
+    nBatches_ds = 60
     img_train,mask_train = get_data(nBatches_ds, train_imgs_dir, train_masks_dir, mean_img_path, img_dim, mask_dim, nClasses, batch_size)
 
     lr_finder = LRFinder(min_lr=1e-6,
                          max_lr=1e-1,
                          steps_per_epoch=np.ceil(img_train.shape[0] / float(nBatches_ds)),
-                         epochs=30)
-    model.fit(img_train, mask_train, callbacks=[lr_finder], epochs=30)
+                         epochs=60)
+    model.fit(img_train, mask_train, callbacks=[lr_finder], epochs=60)
 
     lr_finder.plot_loss()
+    pass
 
     # lr_finder = kf.LRFinder(model)
     # lr_finder.find(img_train, mask_train, start_lr=0.0001, end_lr=0.1, batch_size=batch_size, epochs=10)

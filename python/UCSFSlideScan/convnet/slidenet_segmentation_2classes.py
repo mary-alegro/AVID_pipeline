@@ -160,8 +160,8 @@ def run_segmentation(root_dir,config_file):
             orig_img_pad = pad_image(orig_img.copy(), patch_height, patch_width)
 
 
-            if average_mode == True:
-                patches_imgs_test, new_height, new_width, masks_test = get_data_segmenting_overlap(
+            #if average_mode == True:
+            patches_imgs_test, new_height, new_width, masks_test = get_data_segmenting_overlap(
                     #test_img_original=test_imgs_original,  # image path to segment
                     test_img_original=orig_img_pad.astype('float'),  # image path to segment
                     Imgs_to_test=int(config.get('testing settings', 'full_images_to_test')),
@@ -171,15 +171,15 @@ def run_segmentation(root_dir,config_file):
                     stride_height=stride_height,
                     stride_width=stride_width,
                     is_color=True
-                )
-            else:
-                patches_imgs_test, patches_masks_test = get_data_testing(
-                    test_imgs_original=test_imgs_original,  # original
-                    test_groudTruth=path_data + config.get('data paths', 'test_groundTruth'),  # masks
-                    Imgs_to_test=int(config.get('testing settings', 'full_images_to_test')),
-                    patch_height=patch_height,
-                    patch_width=patch_width,
-                )
+            )
+            # else:
+            #     patches_imgs_test, patches_masks_test = get_data_testing(
+            #         test_imgs_original=test_imgs_original,  # original
+            #         test_groudTruth=path_data + config.get('data paths', 'test_groundTruth'),  # masks
+            #         Imgs_to_test=int(config.get('testing settings', 'full_images_to_test')),
+            #         patch_height=patch_height,
+            #         patch_width=patch_width,
+            #     )
 
             # ================ Run the prediction of the patches ==================================
 
@@ -224,8 +224,8 @@ def run_segmentation(root_dir,config_file):
             mask = img > 0.7 #img has class probabilities
             #bw = mh.bwperim(mask)
 
-            # print('Saving probability file {}'.format(out_name_prob))
-            # np.save(out_name_prob,img)
+            print('Saving probability file {}'.format(out_name_prob))
+            np.save(out_name_prob,img)
 
             #mask out background just in case
             mask_bkg = orig_img[...,0] < 1.

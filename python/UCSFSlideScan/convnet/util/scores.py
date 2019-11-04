@@ -2,6 +2,12 @@
 import numpy as np
 
 
+def dice_coef2(gt,seg):
+    k = 255
+    dice = np.sum(seg[gt == k] == k) * 2.0 / (np.sum(seg[seg == k] == k) + np.sum(gt[gt == k] == k))
+
+    return dice
+
 
 def dice_coef_simple(y_true,y_pred):
     y_true_f = y_true.flatten()
