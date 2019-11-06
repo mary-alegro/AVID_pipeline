@@ -68,22 +68,20 @@ def run_segmentation(root_dir,config_file):
     path_project = config.get('data paths', 'path_project')
     path_model = os.path.join(path_project, config.get('data paths', 'path_model'))
 
-
-
     # dimension of the patches
     patch_height = int(config.get('data attributes', 'patch_height'))
     patch_width = int(config.get('data attributes', 'patch_width'))
 
-    patch_height = 204
-    patch_width = 204
+    #patch_height = 204
+    #patch_width = 204
     mask_dim = (200, 200)
 
     # model name
     name_experiment = config.get('experiment name', 'name')
-    Imgs_to_test = int(config.get('testing settings', 'full_images_to_test'))
-    N_visual = int(config.get('testing settings', 'N_group_visual'))
+    #Imgs_to_test = int(config.get('testing settings', 'full_images_to_test'))
+    #N_visual = int(config.get('testing settings', 'N_group_visual'))
     average_mode = config.getboolean('testing settings', 'average_mode')
-    best_last = config.get('testing settings', 'best_last')
+    #best_last = config.get('testing settings', 'best_last')
 
 
     # Load the saved model
@@ -92,8 +90,6 @@ def run_segmentation(root_dir,config_file):
 
     stride_height = 90
     stride_width = 90
-    #stride_height = 15
-    #stride_width = 15
 
     #for root, dir, files in os.walk(img_dir):
     for folder in dir_list:
@@ -128,15 +124,9 @@ def run_segmentation(root_dir,config_file):
             print('Segmenting image {}.'.format(test_imgs_original))
 
             # ============ Load the data and divide in patches
-            patches_imgs_test = None
-            new_height = None
-            new_width = None
-            masks_test = None
-            patches_masks_test = None
 
             try:
                 #load image to segment
-                #orig_img = load_hdf5(test_imgs_original)
                 orig_img = io.imread(test_imgs_original)
             except:
                 nError += 1
@@ -150,17 +140,12 @@ def run_segmentation(root_dir,config_file):
                 print('Image has too little tissue. Skipping.')
                 continue
 
-
             # mean_img_path = os.path.join(tiles_dir,'mean_image.npy')
             # if not os.path.exists(mean_img_path):
             mean_img_path = os.path.join(path_project,config.get('data paths', 'mean_image'))
 
-
             #pad sides
             orig_img_pad = pad_image(orig_img.copy(), patch_height, patch_width)
-
-
-            #if average_mode == True:
             patches_imgs_test, new_height, new_width, masks_test = get_data_segmenting_overlap(
                     #test_img_original=test_imgs_original,  # image path to segment
                     test_img_original=orig_img_pad.astype('float'),  # image path to segment
@@ -172,17 +157,6 @@ def run_segmentation(root_dir,config_file):
                     stride_width=stride_width,
                     is_color=True
             )
-            # else:
-            #     patches_imgs_test, patches_masks_test = get_data_testing(
-            #         test_imgs_original=test_imgs_original,  # original
-            #         test_groudTruth=path_data + config.get('data paths', 'test_groundTruth'),  # masks
-            #         Imgs_to_test=int(config.get('testing settings', 'full_images_to_test')),
-            #         patch_height=patch_height,
-            #         patch_width=patch_width,
-            #     )
-
-            # ================ Run the prediction of the patches ==================================
-
 
             # Calculate the predictions
             start = time.clock()
@@ -193,7 +167,7 @@ def run_segmentation(root_dir,config_file):
             print predictions.shape
 
             # ===== Convert the prediction arrays in corresponding images
-            pred_patches = pred_to_imgs(predictions, 200, 200, "original")
+            pred_patches = pred_to_imgs(predictions, mask_dim[0], mask_dim[1], "original")
 
             new_pred_patches = np.zeros((pred_patches.shape[0],1,patch_height,patch_width))
             nP = pred_patches.shape[0]
@@ -219,7 +193,6 @@ def run_segmentation(root_dir,config_file):
             #remove padding 2
             img = img[patch_height:img.shape[0]-patch_height, patch_width:img.shape[1]-patch_width,...]
 
-
             #img = 1-img
             mask = img > 0.7 #img has class probabilities
             #bw = mh.bwperim(mask)
@@ -230,7 +203,6 @@ def run_segmentation(root_dir,config_file):
             #mask out background just in case
             mask_bkg = orig_img[...,0] < 1.
             mask[mask_bkg == True] = False
-
 
             # print('Saving {}'.format(out_name))
             # io.imsave(out_name,overlay)
