@@ -106,7 +106,7 @@ def pred_to_imgs(pred, patch_height, patch_width, mode="original"):
                 else:
                     pred_images[i,pix]=0
     else:
-        print "mode " +str(mode) +" not recognized, it can be 'original' or 'threshold'"
+        print("mode " +str(mode) +" not recognized, it can be 'original' or 'threshold'")
         exit()
     pred_images = np.reshape(pred_images,(pred_images.shape[0],1, patch_height, patch_width))
     return pred_images
@@ -128,7 +128,7 @@ def pred_to_imgs_3classes(pred, patch_height, patch_width, mode="original"):
         #             pred_images[i,pix]=0
         pass
     else:
-        print "mode " +str(mode) +" not recognized, it can be 'original' or 'threshold'"
+        print("mode " +str(mode) +" not recognized, it can be 'original' or 'threshold'")
         exit()
     pred_images_c1 = np.reshape(pred_images_c1,(pred_images_c1.shape[0],1, patch_height, patch_width))
     pred_images_c2 = np.reshape(pred_images_c2, (pred_images_c2.shape[0], 1, patch_height, patch_width))

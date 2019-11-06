@@ -163,8 +163,8 @@ def run_segmentation(root_dir,config_file):
             predictions = model.predict(patches_imgs_test, batch_size=32, verbose=2)
             end = time.clock()
             print("**Time per image: {} ".format((end-start)/32))
-            print "predicted images size :"
-            print predictions.shape
+            print("predicted images size :")
+            print(predictions.shape)
 
             # ===== Convert the prediction arrays in corresponding images
             pred_patches = pred_to_imgs(predictions, mask_dim[0], mask_dim[1], "original")
