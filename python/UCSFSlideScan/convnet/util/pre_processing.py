@@ -1,14 +1,7 @@
-###################################################
-#
-#   Script to pre-process the original imgs
-#
-##################################################
-
-
 import numpy as np
 from PIL import Image
 import cv2
-
+import skimage.color as color
 from convnet.util.help_functions import *
 
 
@@ -17,14 +10,13 @@ def my_PreProc(data):
     assert(len(data.shape)==4)
     assert (data.shape[1]==3)  #Use the original images
     #black-white conversion
-    train_imgs = rgb2gray(data)
+    train_imgs = color.rgb2gray(data)
     #my preprocessing:
     train_imgs = dataset_normalized(train_imgs)
     train_imgs = clahe_equalized(train_imgs)
     train_imgs = adjust_gamma(train_imgs, 1.2)
     train_imgs = train_imgs/255.  #reduce to 0-1 range
     return train_imgs
-
 
 
 def preproc_color(data,path_mu):
