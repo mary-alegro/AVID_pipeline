@@ -206,19 +206,19 @@ def get_data_segmenting_overlap(test_img_original, Imgs_to_test, mean_image_path
     #check masks are within 0-1
     #assert(np.max(test_masks)==1  and np.min(test_masks)==0)
 
-    print ("\ntest images shape:")
-    print (test_img.shape)
-    print ("\ntest mask shape:")
-    print (test_mask.shape)
-    print ("test images range (min-max): " +str(np.min(test_img)) +' - '+str(np.max(test_img)))
-    print ("test masks are within 0-1\n")
+    #print ("\ntest images shape:")
+    #print (test_img.shape)
+    #print ("\ntest mask shape:")
+    #print (test_mask.shape)
+    #print ("test images range (min-max): " +str(np.min(test_img)) +' - '+str(np.max(test_img)))
+    #print ("test masks are within 0-1\n")
 
     #extract the TEST patches from the full images
     patches_imgs_test = extract_ordered_overlap(test_img,patch_height,patch_width,stride_height,stride_width)
 
-    print ("\ntest PATCHES images shape:")
-    print (patches_imgs_test.shape)
-    print ("test PATCHES images range (min-max): " +str(np.min(patches_imgs_test)) +' - '+str(np.max(patches_imgs_test)))
+    #print ("\ntest PATCHES images shape:")
+    #print (patches_imgs_test.shape)
+    #print ("test PATCHES images range (min-max): " +str(np.min(patches_imgs_test)) +' - '+str(np.max(patches_imgs_test)))
 
     return patches_imgs_test, test_img.shape[2], test_img.shape[3], test_mask
 

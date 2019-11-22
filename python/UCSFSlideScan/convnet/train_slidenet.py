@@ -66,7 +66,7 @@ def run_training(conf_path):
     json_string = model.to_json()
 
     model_file = os.path.join(path_model,name_experiment + '_architecture.json')
-    best_weights_file = os.path.join(path_model,name_experiment + 'weights_{epoch:03d}_{val_loss:.2f}.h5')
+    best_weights_file = os.path.join(path_model,name_experiment + 'weights_{epoch:03d}_{val_loss:.4f}.h5')
     last_weights_files = os.path.join(path_model,name_experiment + '_last_weights.h5')
 
     open(model_file, 'w').write(json_string)

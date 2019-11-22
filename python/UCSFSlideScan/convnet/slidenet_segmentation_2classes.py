@@ -120,7 +120,7 @@ def run_segmentation(root_dir,config_file):
             out_name_seg = os.path.join(out_dir,basename[0:-4]+'_mask.tif')
             out_name_prob = os.path.join(out_dir,basename[0:-4]+'_prob.npy')
 
-            test_imgs_original = os.path.join(tiles_dir,fname)
+            test_imgs_original = os.path.join(tiles_dir,basename)
             print('Segmenting image {}.'.format(test_imgs_original))
 
             # ============ Load the data and divide in patches

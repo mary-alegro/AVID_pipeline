@@ -53,7 +53,7 @@ def run_dice(histo_dir,block_dir,results_file):
 
 
 if __name__ == '__main__':
-    histo_dir = '/home/maryana/R_DRIVE/Experiments/1_AVID/Cases/1811-001/Master_Package_1181-001/Images/1181-001_BLOCKFACE/blockface_transformed_for_Lea/maks_to_right_hipocampus/done/AT100/masks'
-    block_dir = '/home/maryana/R_DRIVE/Experiments/1_AVID/Cases/1811-001/Master_Package_1181-001/Images/1181-001_BLOCKFACE/blockface_transformed_for_Lea/maks_to_right_hipocampus/done/block/masks'
-    out_file = '/home/maryana/R_DRIVE/Experiments/1_AVID/Cases/1811-001/Master_Package_1181-001/Images/1181-001_BLOCKFACE/blockface_transformed_for_Lea/maks_to_right_hipocampus/done/AT100/AT100_Dice_dict.pickle'
+    histo_dir = '/home/maryana/R_DRIVE/Experiments/1_AVID/Cases/1811-001/Master_Package_1181-001/Images/1181-001_BLOCKFACE/dice_masks/maks_to_right_hipocampus/done/AT100/masks'
+    block_dir = '/home/maryana/R_DRIVE/Experiments/1_AVID/Cases/1811-001/Master_Package_1181-001/Images/1181-001_BLOCKFACE/dice_masks/maks_to_right_hipocampus/done/block/masks'
+    out_file = '/home/maryana/R_DRIVE/Experiments/1_AVID/Cases/1811-001/Master_Package_1181-001/Images/1181-001_BLOCKFACE/dice_masks/maks_to_right_hipocampus/done/AT100/AT100_Dice_dict.pickle'
     run_dice(histo_dir,block_dir,out_file)

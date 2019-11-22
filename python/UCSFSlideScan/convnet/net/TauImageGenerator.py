@@ -77,7 +77,7 @@ class TauImageGenerator:
         if len(class_weights) == self.nClasses:
             self.class_weights = class_weights
         else:
-            print('Erro: class_weights must have the same number of components than nClasses. Ignoring weights.')
+            print('Warning: class_weights must have the same number of components than nClasses. Ignoring weights.')
 
 
         print('{}: #batches: {}'.format(gen_name,self.nBatches))
