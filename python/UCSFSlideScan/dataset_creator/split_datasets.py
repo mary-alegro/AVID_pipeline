@@ -13,23 +13,28 @@ def split_dataset(orig_imgs_dir,mask_imgs_dir,data_img_dir,data_mask_dir,ptest):
 
     #shuffle list
     random.shuffle(imgs_list)
-
     test_list = imgs_list[0:nTest]
 
     print('Creating data set...')
     for l in test_list:
         img_bname = os.path.basename(l)
         mask_bname = 'patch' + img_bname[5:-4] + '_mask.tif'
+
         img_name = os.path.join(orig_imgs_dir, img_bname)
         new_img_name = os.path.join(data_img_dir, img_bname)
-
         mask_name = os.path.join(mask_imgs_dir, mask_bname)
         new_mask_name = os.path.join(data_mask_dir, mask_bname)
 
-        print('{} --> {}'.format(img_name, new_img_name))
-        print('{} --> {}'.format(mask_name, new_mask_name))
+        if not os.path.exists(img_name):
+            print('Warning: image file {} does not exist. Skipping it.'.format(img_name))
+            continue
+        elif not os.path.exists(mask_name):
+            print('Warning: mask file {} does not exist. Skipping it.'.format(mask_name))
+            continue
 
+        print('{} --> {}'.format(img_name, new_img_name))
         os.rename(img_name,new_img_name)
+        print('{} --> {}'.format(mask_name, new_mask_name))
         os.rename(mask_name,new_mask_name)
 
 def main():

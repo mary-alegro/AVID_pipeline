@@ -459,7 +459,7 @@ def norm_batch3():
 
 
 if __name__ == '__main__':
-    #norm_batch4()
-    #norm_batch1()
+    norm_batch4()
+    norm_batch1()
     norm_batch3()
     #print_batch_graphs()

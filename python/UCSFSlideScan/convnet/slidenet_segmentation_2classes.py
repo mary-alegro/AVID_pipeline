@@ -15,10 +15,8 @@ import ConfigParser
 from keras.models import model_from_json
 import sys
 from convnet.util.help_functions import *
-from convnet.util.extract_patches import recompone
 from convnet.util.extract_patches import recompone_overlap
-from convnet.util.extract_patches import get_data_testing
-from convnet.util.extract_patches import get_data_testing_overlap,get_data_segmenting_overlap
+from convnet.util.extract_patches import get_data_segmenting_overlap
 
 import fnmatch
 from misc.imoverlay import imoverlay as imoverlay

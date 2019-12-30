@@ -59,7 +59,7 @@ for s in range(nSlices):
 
         # for ss in range(id-1,id2-1):
         #     vol2[:,:,ss] = simg
-        vol2[:,:,id] = simg
+        vol2[:,:,id-1] = simg
     except Exception as e:
         print("Error loading slice {}".format(id))
         print(e)

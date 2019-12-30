@@ -11,8 +11,8 @@ ctab[1,:] = [200,10,20,255]
 #AV1
 
 #left hemisphere
-lh_curv_file = '/home/maryana/bin/freesurfer/subjects/av13/surf/lh.curv'
-lh_annot_file = '/home/maryana/bin/freesurfer/subjects/av13/label/lh_sulci_gyri.annot'
+lh_curv_file = '/home/maryana/bin/freesurfer/subjects/av23_pm/surf/lh.curv'
+lh_annot_file = '/home/maryana/bin/freesurfer/subjects/av23_pm/label/lh_sulci_gyri.annot'
 
 lh_curv = fs.read_morph_data(lh_curv_file)
 lh_sulci = np.zeros(lh_curv.shape,dtype='int')
@@ -22,8 +22,8 @@ lh_sulci[lh_curv > 0] = 1
 fs.io.write_annot(lh_annot_file,lh_sulci,ctab,names)
 
 #right hemisphere
-rh_curv_file = '/home/maryana/bin/freesurfer/subjects/av13/surf/rh.curv'
-rh_annot_file = '/home/maryana/bin/freesurfer/subjects/av13/label/rh_sulci_gyri.annot'
+rh_curv_file = '/home/maryana/bin/freesurfer/subjects/av23_pm/surf/rh.curv'
+rh_annot_file = '/home/maryana/bin/freesurfer/subjects/av23_pm/label/rh_sulci_gyri.annot'
 
 rh_curv = fs.read_morph_data(rh_curv_file)
 rh_sulci = np.zeros(rh_curv.shape,dtype='int')
@@ -33,7 +33,7 @@ rh_sulci[rh_curv > 0] = 1
 fs.io.write_annot(rh_annot_file,rh_sulci,ctab,names)
 
 
-# #create left hemisphere sulci and gyri volumes
+# #create left hemisphere sulci and gyri volumes(use freesurfer command line  tools)
 # mri_annotation2label --subject av13 --hemi lh --annotation av13/label/lh_sulci_gyri.annot --outdir av13/label
 # mri_label2vol --label av13/label/lh.sulci.label --subject av13 --hemi lh --identity --temp av13/mri/T1.mgz --o av13/mri/lh.sulci.nii.gz --proj frac 0 1 0.01
 # mri_binarize --dilate 1 --erode 1 --i av13/mri/lh.sulci.nii.gz --o av13/mri/lh.sulci2.nii.gz --min 1
@@ -54,14 +54,15 @@ fs.io.write_annot(rh_annot_file,rh_sulci,ctab,names)
 # mris_calc -o av13/mri/rh.gyri_final.nii.gz av13/mri/rh.gyri2.nii.gz mul av13/mri/rh.ribbon.mgz
 
 
-lh_sulci_nii = nib.load('av13/mri/lh.sulci_final.nii.gz')
+#join lh and rh sulci/gyri volumes into a single file
+lh_sulci_nii = nib.load('/home/maryana/bin/freesurfer/subjects/av23_pm/mri/lh.sulci_final.nii.gz')
 lh_sulci = lh_sulci_nii.get_data()
-lh_gyri_nii = nib.load('av13/mri/lh.gyri_final.nii.gz')
+lh_gyri_nii = nib.load('/home/maryana/bin/freesurfer/subjects/av23_pm/mri/lh.gyri_final.nii.gz')
 lh_gyri = lh_gyri_nii.get_data()
 
-rh_sulci_nii = nib.load('av13/mri/rh.sulci_final.nii.gz')
+rh_sulci_nii = nib.load('/home/maryana/bin/freesurfer/subjects/av23_pm/mri/rh.sulci_final.nii.gz')
 rh_sulci = rh_sulci_nii.get_data()
-rh_gyri_nii = nib.load('av13/mri/rh.gyri_final.nii.gz')
+rh_gyri_nii = nib.load('/home/maryana/bin/freesurfer/subjects/av23_pm/mri/rh.gyri_final.nii.gz')
 rh_gyri = rh_gyri_nii.get_data()
 
 vol = np.zeros(lh_sulci.shape)
@@ -70,18 +71,18 @@ vol[rh_sulci > 0] = 255
 vol[lh_gyri > 0] = 100
 vol[rh_gyri > 0] = 100
 sulci_gyri_nii = nib.Nifti1Image(vol,lh_sulci_nii.affine)
-nib.save(sulci_gyri_nii,'av13/mri/sulci_gyri_final.nii.gz')
+nib.save(sulci_gyri_nii,'/home/maryana/bin/freesurfer/subjects/av23_pm/mri/sulci_gyri_final.nii.gz')
 
 
 
 
 #visualize annotations
-# freeview -f  good_output/surf/lh.pial:annot=aparc.annot:name=pial_aparc:visible=0 \
-# good_output/surf/lh.pial:annot=aparc.a2009s.annot:name=pial_aparc_des:visible=0 \
-# good_output/surf/lh.inflated:overlay=lh.thickness:overlay_threshold=0.1,3::name=inflated_thickness:visible=0 \
-# good_output/surf/lh.inflated:visible=0 \
-# good_output/surf/lh.white:visible=0 \
-# good_output/surf/lh.pial \
+# freeview -f  av23_pm/surf/lh.pial:annot=aparc.annot:name=pial_aparc:visible=0 \
+# av23_pm/surf/lh.pial:annot=aparc.a2009s.annot:name=pial_aparc_des:visible=0 \
+# av23_pm/surf/lh.inflated:overlay=lh.thickness:overlay_threshold=0.1,3::name=inflated_thickness:visible=0 \
+# av23_pm/surf/lh.inflated:visible=0 \
+# av23_pm/surf/lh.white:visible=0 \
+# av23_pm/surf/lh.pial \
 # --viewport 3d
 
 #from: https://ggooo.wordpress.com/2014/10/12/extracting-a-volumetric-roi-from-an-annotation-file/

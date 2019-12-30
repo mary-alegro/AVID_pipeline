@@ -17,7 +17,10 @@ import nibabel as nib
 def save_nii(img,size,nii_file):
     M = np.array([[size[0], 0, 0, 0],[0, size[1], 0, 0],[0, 0, size[2], 0],[0, 0, 0, 1]])
     if img.ndim > 2:
-        img = color.rgb2gray(img)
+        if img.shape[2] == 3:
+            img = color.rgb2gray(img)
+        else:
+            img = img[...,0]
     nii = nib.Nifti1Image(img, M)
     nib.save(nii,nii_file)
 
@@ -25,7 +28,10 @@ def create_nii(img,size):
     M = np.array([[size[0], 0, 0, 0],[0, size[1], 0, 0],[0, 0, size[2], 0],[0, 0, 0, 1]])
     #img = io.imread(img_file)
     if img.ndim > 2:
-        img = color.rgb2gray(img)
+        if img.shape[2] == 3:
+            img = color.rgb2gray(img)
+        else:
+            img = img[...,0]
     nii = nib.Nifti1Image(img, M)
     return nii
     #nib.save(nii,nii_file)

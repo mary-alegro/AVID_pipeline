@@ -143,7 +143,8 @@ class SlidenetFactory:
         model = Model(input=inputs, output=softmax)
 
         adam = Adam(lr=lr_rate)
-        model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'], sample_weight_mode='temporal')
+        sgd = SGD(lr=lr_rate)
+        model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'], sample_weight_mode='temporal')
 
 
         model.summary()
